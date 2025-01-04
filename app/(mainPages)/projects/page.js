@@ -3,6 +3,7 @@ import Image from "next/image";
 import styles from "./page.module.scss";
 
 import VInput from "components/VInput";
+import Block from "components/Block";
 
 export default function Home() {
 	return (
@@ -34,7 +35,17 @@ export default function Home() {
 				</div>
 			</div>
 			<div className={styles.workingSpace}>
-				Here projects redactor should be
+				<Block>
+					<VInput text="Название проекта" placeholder="Введите название" style={{
+						marginTop: "-20px",
+						width: "calc(50% - 15px)"
+					}}/>
+					<VInput text="Название проекта" placeholder="Введите название" style={{
+						marginTop: "-20px",
+						marginLeft: "30px",
+						width: "calc(50% - 15px)"
+					}}/>
+				</Block>
 			</div>
 		</main>
 	);
