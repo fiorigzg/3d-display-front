@@ -1,10 +1,24 @@
-import styles from "./css/vinput.module.scss"
+"use client";
 
-export default function VInput({text, placeholder, style}) {
+import cx from "classnames";
+
+import styles from "./css/vInput.module.scss";
+
+export default function VInput({
+	text="VInput", placeholder="", value="",
+	style={}, className=null,
+	onChange=() => console.log("changed")
+}) {
 	return (
-		<div className={styles.vinput} style={style}>
-            <p>{text}</p>
-            <input placeholder={placeholder}/>
+		<div className={cx(styles.vInput, className)} style={style}>
+            <p>
+				{text}
+			</p>
+            <input
+				value={value}
+				placeholder={placeholder}
+				onChange={e => onChange(e.target.value)}
+			/>
 		</div>
 	);
 }

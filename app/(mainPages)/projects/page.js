@@ -1,51 +1,162 @@
-import cx from "classnames";
-import Image from "next/image";
+"use client";
+
+import { useProjectsStore } from "store/projectsStore";
+
 import styles from "./page.module.scss";
 
 import VInput from "components/VInput";
+import HInput from "components/HInput";
+import VSelect from "components/VSelect";
+import SelectList from "components/SelectList";
 import Block from "components/Block";
+import Subblock from "components/Subblock";
+import ColorBtn from "components/ColorBtn";
 
 export default function Home() {
+	const clients = [{value: "Nintendo", id: 1}, {value: "Sony", id: 2}, {value: "Microsoft", id: 3}, {value: "Apple", id: 4}, {value: "Samsung", id: 5}, {value: "Sony Films", id: 6}, {value: "Sony Music", id: 7}, {value: "Milka", id: 8}, {value: "Sberbank", id: 9}, {value: "VTB", id: 10}, {value: "Gazprom", id: 11}];
+	const projectsStore = useProjectsStore();
+	console.log(projectsStore)
+
+	let filtredProjects = projectsStore.projects.filter(project => project.name.includes(projectsStore.projectNameFilter));
+	if(projectsStore.clientIdsFilter.length != 0)
+		filtredProjects = filtredProjects.filter(project => projectsStore.clientIdsFilter.includes(project.clientId));
+	console.log(projectsStore.clientIdsFilter, filtredProjects)
+
+
+	let projectsArr = [];
+	for(const project of filtredProjects) {
+		let standsArr = [];
+		for(const stand of project.stands) {
+			standsArr.push(<Subblock key={stand.id}>
+				<VInput
+					value={stand.name}
+					onChange={value => projectsStore.setStandValue(project.id, stand.id, "name", value)}
+					text="Название стойки"
+					placeholder="Введите название"
+					disabled={stand.isMade}
+				/>
+				<HInput
+					value={stand.width}
+					onChange={value => projectsStore.setStandValue(project.id, stand.id, "width", value)}
+					text="Ширина"
+					disabled={stand.isMade}
+				/>
+				<HInput
+					value={stand.height}
+					onChange={value => projectsStore.setStandValue(project.id, stand.id, "height", value)}
+					text="Высота"
+					disabled={stand.isMade}
+				/>
+				<HInput
+					value={stand.depth}
+					onChange={value => projectsStore.setStandValue(project.id, stand.id, "depth", value)}
+					text="Глубина"
+					disabled={stand.isMade}
+				/>
+				<HInput
+					value={stand.shelfNumber}
+					onChange={value => projectsStore.setStandValue(project.id, stand.id, "shelfNumber", value)}
+					twoLines={true}
+					unit="штук"
+					text="Кол-во полок"
+					disabled={stand.isMade}
+				/>
+				<div className={styles.subblockEndBtns}>
+					<ColorBtn
+						text="Спроектировать"
+						disabledText="Спроектировано"
+						icon="/rightArrow.svg"
+						className={styles.makeStandBtn}
+						onClick={() => projectsStore.setStandValue(project.id, stand.id, "isMade", true)}
+						disabled={stand.isMade}
+					/>
+					<ColorBtn
+						text="Удалить"
+						color="#e16c6c"
+						icon="/trash.svg"
+						onClick={() => projectsStore.deleteStand(project.id, stand.id)}
+					/>
+				</div>
+			</Subblock>);
+		}
+
+		projectsArr.push(<Block key={project.id}>
+			<VInput
+				value={project.name}
+				onChange={value => projectsStore.setProjectValue(project.id, "name", value)}
+				text="Название проекта"
+				placeholder="Введите название"
+				className={styles.blockStartInput}
+			/>
+			<VSelect
+				text="Клиент проекта"
+				placeholder="Выберите клиента"
+				optionIcon="/client.svg"
+				options={clients}
+				selectedOptionId={project.clientId}
+				className={styles.blockStartInput}
+				onSelect={value => projectsStore.setProjectValue(project.id, "clientId", value)}
+			/>
+			{standsArr}
+			<ColorBtn
+				text="Добавить"
+				icon="/plus.svg"
+				onClick={() => projectsStore.addStand(project.id)}
+			/>
+			<div className={styles.blockEndBtns}>
+				<ColorBtn
+					text="Удалить"
+					color="#e16c6c"
+					icon="/trash.svg"
+					onClick={() => projectsStore.deleteProject(project.id)}
+				/>
+			</div>
+		</Block>);
+	}
+
 	return (
 		<main>
 			<div className={styles.menu}>
 				<div className={styles.projectFindMenu}>
-					<VInput text="Поиск по названию проекта" placeholder="Поиск проекта"/>
+					<VInput 
+						value={projectsStore.projectNameFilter}
+						onChange={value => projectsStore.setProjectNameFilter(value)}
+						text="Поиск по названию проекта"
+						placeholder="Поиск проекта"
+					/>
 				</div>
 				<div className={styles.clientFindMenu}>
-					<VInput text="Поиск по клиенту" placeholder="Поиск клиента"/>
+					<VInput 
+						value={projectsStore.clientNameFilter}
+						onChange={value => projectsStore.setClientNameFilter(value)}
+						text="Поиск по клиенту"
+						placeholder="Поиск клиента"
+					/>
 					<div className={styles.clients}>
-						<div className={styles.client}>
-							<img src="/client.svg"/>
-							<p>Клиент 1</p>
-						</div>
-						<div className={cx(styles.client, styles.selectedColor)}>
-							<img src="/client.svg"/>
-							<p>Клиент 2</p>
-						</div>
-						<div className={styles.client}>
-							<img src="/client.svg"/>
-							<p>Клиент 3</p>
-						</div>
-						<div className={styles.client}>
-							<img src="/client.svg"/>
-							<p>Клиент 4</p>
-						</div>
+						<SelectList 
+							onSelect={id => {
+								if(projectsStore.clientIdsFilter.includes(id))
+									projectsStore.removeFromClientIdsFilter(id);
+								else
+									projectsStore.addToClientIdsFilter(id);
+							}}
+							options={clients.filter(option => option.value.includes(projectsStore.clientNameFilter))}
+							selectedOptionIds={projectsStore.clientIdsFilter}
+							optionIcon="/client.svg"
+						/>
 					</div>
 				</div>
 			</div>
 			<div className={styles.workingSpace}>
-				<Block>
-					<VInput text="Название проекта" placeholder="Введите название" style={{
-						marginTop: "-20px",
-						width: "calc(50% - 15px)"
-					}}/>
-					<VInput text="Название проекта" placeholder="Введите название" style={{
-						marginTop: "-20px",
-						marginLeft: "30px",
-						width: "calc(50% - 15px)"
-					}}/>
-				</Block>
+				<div className={styles.title}>
+					<h1 className={styles.titleText}>Проекты и стойки</h1>
+					<ColorBtn
+						text="Добавить"
+						icon="/plus.svg"
+						onClick={() => projectsStore.addProject()}
+					/>
+				</div>
+				{projectsArr}
 			</div>
 		</main>
 	);

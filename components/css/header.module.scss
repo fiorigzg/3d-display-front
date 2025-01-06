@@ -1,23 +1,37 @@
 .header {
-    background-color: #ffffff;
-    border-bottom: 1px solid #e1e4e8;
+    position: fixed;
     height: calc(10px - 1px);
+    width: calc(100% - 50px);
     padding: 20px 30px;
-    display: flex;  
+    border-bottom: 1px solid #e1e4e8;
+
+    display: flex;
+    flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    z-index: 1;
+
+    background-color: #ffffff;
 }
 .header-left {
+    position: relative;
+    
     font-size: 20px;
     font-weight: 700;
     color: #3d3d3d;
 }
 .header-right {
+    position: relative;
+
     display: flex;
+    flex-direction: row;
     gap: 30px;
+    
     a {
+        position: relative;
+
         font-size: 16px;
-        font-weight: 600;
+        font-weight: 700;
         text-decoration: none;
         color: #3d3d3d;
     }

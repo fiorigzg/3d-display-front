@@ -1,0 +1,69 @@
+.hInput {
+    height: 32px;
+
+    display: flex;
+    flex-direction: row;
+
+    p {
+        position: relative;
+        align-self: left;
+        width: 110px;
+        margin-top: 0;
+
+        font-weight: 700;
+        font-size: 16px;
+        text-align: left;
+        color: #3d3d3d;
+    }
+    .oneLine {
+        line-height: 30px;
+    }
+    .twoLines {
+        line-height: 15px;
+    }
+    input {
+        position: relative;
+        height: 30px;
+        width: calc(100% - 110px - 30px);
+        padding: 0;
+        padding-left: 20px;
+        padding-right: 20px;
+        border: 1px solid #d0d7de;
+        border-radius: 5px 0 0 5px;
+        outline: none;
+
+        line-height: 30px;
+        font-weight: 400;
+        font-size: 14px;
+        text-align: center;
+        color: #3d3d3d;
+
+        background-color: #f6f8fa;
+        transition: border-color 150ms;
+
+        &:focus {
+            border-color: #4e96fa;
+        }
+        &::-webkit-file-upload-button {
+            display: none;
+        }
+        &::file-selector-button {
+            display: none;
+        }
+    }
+    div {
+        width: 50px;
+        height: 30px;
+        border-radius: 0 5px 5px 0;
+        border: 1px solid #d0d7de;
+        border-left: none;
+
+        line-height: 30px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 14px;
+        color: #3d3d3d;
+
+        background-color: #f6f8fa;
+    }
+}

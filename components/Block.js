@@ -1,8 +1,14 @@
-import styles from "./css/block.module.scss"
+"use client"
 
-export default function Block({children}) {
+import cx from "classnames";
+
+import styles from "./css/block.module.scss";
+
+export default function Block({
+    style={}, className=null, children=null
+}) {
     return (
-        <div className={styles.block}>
+        <div className={cx(styles.block, className)} style={style}>
             {children}
         </div>
     );

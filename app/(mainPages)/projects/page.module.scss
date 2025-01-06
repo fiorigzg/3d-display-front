@@ -1,62 +1,85 @@
 .menu {
-    position: absolute;
-    margin-left: 0;
+    position: fixed;
+    align-items: center;
     width: calc(300px - 1px);
     height: calc(100% - 50px);
-    text-align: center;
+    margin-top: 50px;
+    margin-left: 0;
+    border-right: 1px solid #e1e4e8;
+    
     display: flex;
     flex-direction: column;
-    align-items: center;
+
+    text-align: center;
+
     background-color: #ffffff;
-    border-right: 1px solid #e1e4e8;
+
     .projectFindMenu {
-        height: 125px;
+        height: 80px;
         width: calc(100% - 50px);
-        padding-left: 25px;
-        padding-right: 25px;
+        padding: 25px;
         border-bottom: 1px solid #e1e4e8;
     }
     .clientFindMenu {
         height: calc(100% - 130px - 50px);
         width: calc(100% - 50px);
-        padding-left: 25px;
-        padding-right: 25px;
+        padding: 25px;
+
+        overflow-y: scroll;
+
         .clients {
             margin-top: 15px;
-            .client {
-                width: 100%;
-                height: 40px;
-                display: flex;
-                flex-direction: row;
-                gap: 5px;
-                img {
-                    width: 17px;
-                    margin-left: 10px;
-                }
-                p {
-                    margin-top: 11px;
-                    font-weight: 300;
-                    font-size: 16px;
-                    color: #3d3d3d;
-                    align-self: left;
-                    text-align: left;
-                }
-                border-radius: 5px;
-            }
-            .selectedColor {
-                background-color: #d9e2f8;
-            }
         }
     }
 }
 .workingSpace {
     position: absolute;
+    align-items: center;
     margin-left: 300px;
+    margin-top: 35px;
     width: calc(100% - 300px);
-    text-align: center;
+    height: calc(100% - 50px - 80px);
+    padding-top: 40px;
+    padding-bottom: 40px;
+
     display: flex;
     flex-direction: column;
-    align-items: center;
+    gap: 25px;
+
+    text-align: center;
+
     background-color: #ffffff;
-    padding-top: 40px;
+    overflow-y: scroll;
+
+    .title {
+        width: calc(100% - 150px + 80px);
+
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+        h1 {
+            margin: 0;
+            
+            line-height: 30px;
+            font-size: 20px;
+            font-weight: 700;
+            color: #3d3d3d;
+        }
+    }
+    .blockStartInput {
+        width: calc(50% - 13.5px);
+    }
+    .subblockEndBtns {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+        .makeStandBtn {
+            width: calc(100% - 150px - 20px);
+        }
+    }
+    .blockEndBtns {
+        width: 100%;
+    }
 }

@@ -1,23 +1,74 @@
 .menu {
-    position: absolute;
-    margin-left: 0;
+    position: fixed;
+    align-items: center;
     width: calc(300px - 1px);
     height: calc(100% - 50px);
-    text-align: center;
+    margin-top: 50px;
+    margin-left: 0;
+    border-right: 1px solid #e1e4e8;
+    
     display: flex;
     flex-direction: column;
-    align-items: center;
+
+    text-align: center;
+
     background-color: #ffffff;
-    border-right: 1px solid #e1e4e8;
+
+    .clientFindMenu {
+        height: 80px;
+        width: calc(100% - 50px);
+        padding: 25px;
+        border-bottom: 1px solid #e1e4e8;
+    }
 }
 .workingSpace {
     position: absolute;
+    align-items: center;
     margin-left: 300px;
+    margin-top: 35px;
     width: calc(100% - 300px);
-    text-align: center;
+    height: calc(100% - 50px - 80px);
+    padding-top: 40px;
+    padding-bottom: 40px;
+
     display: flex;
     flex-direction: column;
-    align-items: center;
+    gap: 25px;
+
+    text-align: center;
+
     background-color: #ffffff;
-    padding-top: 40px;
+    overflow-y: scroll;
+
+    .title {
+        width: calc(100% - 150px + 80px);
+
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+        h1 {
+            margin: 0;
+            
+            line-height: 30px;
+            font-size: 20px;
+            font-weight: 700;
+            color: #3d3d3d;
+        }
+    }
+    .blockStartInput {
+        width: calc(100%);
+    }
+    .subblockEndBtns {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+        .makeStandBtn {
+            width: calc(100% - 150px - 20px);
+        }
+    }
+    .blockEndBtns {
+        width: 100%;
+    }
 }
