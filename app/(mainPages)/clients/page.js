@@ -62,7 +62,7 @@ export default function Home() {
 						disabledText="Выложено"
 						icon="/rightArrow.svg"
 						className={styles.makeStandBtn}
-						onClick={() => clientsStore.setProductValue(client.id, product.id, "isMade", {value: value, files: files})}
+						onClick={() => clientsStore.setProductValue(client.id, product.id, "isMade", true)}
 						disabled={product.isMade}
 					/>
 					<ColorBtn
