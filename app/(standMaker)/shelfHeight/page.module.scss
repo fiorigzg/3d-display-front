@@ -1,0 +1,23 @@
+.main {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #ffffff;
+}
+.menu {
+    position: absolute;
+    align-items: center;
+    width: calc(100% - 300px);
+    height: calc(100% - 80px);
+    margin-top: 40px;
+    border: 1px solid #e1e4e8;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #ffffff;
+}
+.box {
+    position: absolute;
+    border: 2px solid #e1e4e8;
+}
