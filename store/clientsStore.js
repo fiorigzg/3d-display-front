@@ -4,7 +4,7 @@ import { create } from "zustand";
 
 export const useCliensStore = create((set) => ({
   clientNameFilter: "",
-  lastClientId: 1,
+  lastClientId: 0,
   clients: [],
   setClients: (value) => set({ clients: value }),
   setClientNameFilter: (value) => set({ clientNameFilter: value }),

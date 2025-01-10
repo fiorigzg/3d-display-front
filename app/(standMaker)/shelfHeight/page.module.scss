@@ -1,23 +1,45 @@
 .main {
     width: 100%;
     text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     background-color: #ffffff;
 }
-.menu {
+.ws {
     position: absolute;
     align-items: center;
-    width: calc(100% - 300px);
+    width: calc(100% - 120px - 300px);
     height: calc(100% - 80px);
     margin-top: 40px;
+    margin-left: 40px;
     border: 1px solid #e1e4e8;
     border-radius: 10px;
     overflow: hidden;
     background-color: #ffffff;
 }
+.menu {
+    position: absolute;
+    width: calc(300px);
+    height: calc(120px);
+    margin-left: calc(100% - 300px - 40px);
+    margin-top: 40px;
+    border: 1px solid #e1e4e8;
+    border-radius: 10px;
+    .completeBtn {
+        position: relative;
+        width: 200px;
+        margin-left: calc(50% - 100px);
+        margin-top: 40px;
+    }
+}
 .box {
     position: absolute;
-    border: 2px solid #e1e4e8;
+    border: 1px solid #bebebe;
+}
+.product {
+    position: absolute;
+    z-index: 1;
+}
+.liner {
+    position: absolute;
+    border: 1px solid #bebebe;
+    background-color: #e6f2d0;
 }
