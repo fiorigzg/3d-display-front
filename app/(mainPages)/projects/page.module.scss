@@ -1,85 +1,35 @@
-.menu {
-    position: fixed;
-    align-items: center;
-    width: calc(300px - 1px);
-    height: calc(100% - 50px);
-    margin-top: 50px;
-    margin-left: 0;
-    border-right: 1px solid #e1e4e8;
-    
-    display: flex;
-    flex-direction: column;
-
-    text-align: center;
-
-    background-color: #ffffff;
-
-    .projectFindMenu {
-        height: 80px;
-        width: calc(100% - 50px);
-        padding: 25px;
-        border-bottom: 1px solid #e1e4e8;
-    }
-    .clientFindMenu {
-        height: calc(100% - 130px - 50px);
-        width: calc(100% - 50px);
-        padding: 25px;
-
-        overflow-y: scroll;
-
-        .clients {
-            margin-top: 15px;
-        }
-    }
-}
 .workingSpace {
     position: absolute;
     align-items: center;
-    margin-left: 300px;
     margin-top: 35px;
-    width: calc(100% - 300px);
+    width: calc(100% - 50px);
     height: calc(100% - 50px - 80px);
     padding-top: 40px;
     padding-bottom: 40px;
+    padding-left: 25px;
+    padding-right: 25px;
 
     display: flex;
     flex-direction: column;
-    gap: 25px;
-
-    text-align: center;
+    gap: 10px;
 
     background-color: #ffffff;
     overflow-y: scroll;
 
     .title {
-        width: calc(100% - 150px + 80px);
+        width: 100%;
 
         display: flex;
         flex-direction: row;
         justify-content: space-between;
 
-        h1 {
+        .text {
             margin: 0;
-            
+
             line-height: 30px;
             font-size: 20px;
             font-weight: 700;
             color: #3d3d3d;
         }
-    }
-    .blockStartInput {
-        width: calc(50% - 13.5px);
-    }
-    .subblockEndBtns {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-
-        .makeStandBtn {
-            width: calc(100% - 150px - 20px);
-        }
-    }
-    .blockEndBtns {
-        width: 100%;
     }
 }
