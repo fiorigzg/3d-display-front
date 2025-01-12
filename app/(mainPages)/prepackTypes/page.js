@@ -4,10 +4,10 @@ import { Table, Button, Input } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 
 import styles from "./page.module.scss";
-import { useClientsStore } from "store/clientsStore";
+import { useProjectsStore } from "store/projectsStore";
 
 export default function Home() {
-    const clientsStore = useClientsStore();
+    const projectsStore = useProjectsStore();
 
     const columns = [
         {
@@ -22,7 +22,7 @@ export default function Home() {
                         size="small"
                         value={text}
                         onChange={(e) =>
-                            clientsStore.changeClient(
+                            projectsStore.changePrepackType(
                                 record.id,
                                 "name",
                                 e.target.value,
@@ -43,7 +43,7 @@ export default function Home() {
                         size="small"
                         type="primary"
                         icon={<PlusOutlined />}
-                        onClick={() => clientsStore.createClient()}
+                        onClick={() => projectsStore.createPrepackType()}
                     >
                         Добавить
                     </Button>
@@ -53,7 +53,7 @@ export default function Home() {
                         type="primary"
                         danger
                         icon={<DeleteOutlined />}
-                        onClick={() => clientsStore.deleteClient(record.id)}
+                        onClick={() => projectsStore.deletePrepackType(record.id)}
                     >
                         Удалить
                     </Button>
@@ -62,8 +62,8 @@ export default function Home() {
     ];
 
     let dataSource = [];
-    for (const client of clientsStore.clients) {
-        dataSource.push({ ...client, action: "delete" });
+    for (const prepackType of projectsStore.prepackTypes) {
+        dataSource.push({ ...prepackType, action: "delete" });
     }
     dataSource.push({ id: null, name: null, action: "add" });
 

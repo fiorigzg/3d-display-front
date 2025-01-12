@@ -4,10 +4,10 @@ import { Table, Button, Input } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 
 import styles from "./page.module.scss";
-import { useClientsStore } from "store/clientsStore";
+import { useProductsStore } from "store/productsStore";
 
 export default function Home() {
-    const clientsStore = useClientsStore();
+    const productsStore = useProductsStore();
 
     const columns = [
         {
@@ -22,7 +22,7 @@ export default function Home() {
                         size="small"
                         value={text}
                         onChange={(e) =>
-                            clientsStore.changeClient(
+                            productsStore.changeCategory(
                                 record.id,
                                 "name",
                                 e.target.value,
@@ -43,7 +43,7 @@ export default function Home() {
                         size="small"
                         type="primary"
                         icon={<PlusOutlined />}
-                        onClick={() => clientsStore.createClient()}
+                        onClick={() => productsStore.createCategory()}
                     >
                         Добавить
                     </Button>
@@ -53,7 +53,7 @@ export default function Home() {
                         type="primary"
                         danger
                         icon={<DeleteOutlined />}
-                        onClick={() => clientsStore.deleteClient(record.id)}
+                        onClick={() => productsStore.deleteCategory(record.id)}
                     >
                         Удалить
                     </Button>
@@ -62,8 +62,8 @@ export default function Home() {
     ];
 
     let dataSource = [];
-    for (const client of clientsStore.clients) {
-        dataSource.push({ ...client, action: "delete" });
+    for (const category of productsStore.categories) {
+        dataSource.push({ ...category, action: "delete" });
     }
     dataSource.push({ id: null, name: null, action: "add" });
 
