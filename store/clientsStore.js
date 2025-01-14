@@ -1,18 +1,25 @@
 "use client";
 
 import { initClient } from "constants/initValues";
-import { createClient, deleteClient, changeClient } from "api/clientsApi";
+import { getClients, createClient, deleteClient, changeClient } from "api/clientsApi";
 
 import { create } from "zustand";
 
 export const useClientsStore = create((set) => ({
-    clients: [{ ...initClient }],
-    createClient: () => {
+    clients: [],
+
+    initClients: async () => {
+        const clients = await getClients();
+        set({ clients: clients });
+    },
+
+    createClient: async () => {
+        let client = { ...initClient };
+        client = await createClient(client);
+
         set((state) => {
             let clients = state.clients;
-            let client = { ...initClient };
 
-            client = createClient(client);
             clients.push(client);
 
             return {
@@ -20,32 +27,35 @@ export const useClientsStore = create((set) => ({
             };
         });
     },
-    deleteClient: (id) => {
+    deleteClient: async (id) => {
+        await deleteClient(id);
+
         set((state) => {
             let clients = state.clients;
 
             clients = clients.filter((client) => client.id != id);
-            deleteClient(id);
 
             return {
                 clients: clients,
             };
         });
     },
-    changeClient: (id, param, value, type) => {
+    changeClient: async (id, param, value, type) => {
+        const reg = /^-?\d*(\.\d*)?$/;
+        let realValue = null;
+        if (type == "number" && reg.test(value)) realValue = Number(value);
+        if (type == "text" || type == "select" || type == "file")
+            realValue = value;
+
+        if (realValue != null)
+            changeClient(id, { [param]: realValue });
+
         set((state) => {
-            const reg = /^-?\d*(\.\d*)?$/;
             let clients = state.clients;
             let client = clients.find((client) => client.id == id);
-
-            let realValue = client[param];
-
-            if (type == "number" && reg.test(value)) realValue = Number(value);
-            if (type == "text" || type == "select" || type == "file")
-                realValue = value;
-
-            client[param] = realValue;
-            changeClient(id, client);
+            
+            if (realValue != null)
+                client[param] = realValue;
 
             return {
                 clients: clients,

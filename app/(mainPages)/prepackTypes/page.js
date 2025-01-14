@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Table, Button, Input } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 
@@ -8,6 +9,10 @@ import { useProjectsStore } from "store/projectsStore";
 
 export default function Home() {
     const projectsStore = useProjectsStore();
+
+    useEffect(() => {
+        projectsStore.initPrepackTypes();
+    }, []);
 
     const columns = [
         {
@@ -53,7 +58,9 @@ export default function Home() {
                         type="primary"
                         danger
                         icon={<DeleteOutlined />}
-                        onClick={() => projectsStore.deletePrepackType(record.id)}
+                        onClick={() =>
+                            projectsStore.deletePrepackType(record.id)
+                        }
                     >
                         Удалить
                     </Button>

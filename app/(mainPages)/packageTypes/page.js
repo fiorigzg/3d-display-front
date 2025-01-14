@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Table, Button, Input } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 
@@ -8,6 +9,10 @@ import { useProductsStore } from "store/productsStore";
 
 export default function Home() {
     const productsStore = useProductsStore();
+
+    useEffect(() => {
+        productsStore.initPackageTypes();
+    }, []);
 
     const columns = [
         {

@@ -6,12 +6,15 @@ import {
     initPackageType,
 } from "constants/initValues";
 import {
+    getProducts,
     createProduct,
     deleteProduct,
     changeProduct,
+    getCategories,
     createCategory,
     deleteCategory,
     changeCategory,
+    getPackageTypes,
     createPackageType,
     deletePackageType,
     changePackageType,
@@ -20,17 +23,31 @@ import {
 import { create } from "zustand";
 
 export const useProductsStore = create((set) => ({
-    products: [{ ...initProduct }],
-    categories: [{ ...initCategory }],
-    packageTypes: [{ ...initPackageType }],
+    products: [],
+    categories: [],
+    packageTypes: [],
 
-    createProduct: (clientId) => {
+    initProducts: async () => {
+        const products = await getProducts();
+        set({ products: products });
+    },
+    initCategories: async () => {
+        const categories = await getCategories();
+        set({ categories: categories });
+    },
+    initPackageTypes: async () => {
+        const packageTypes = await getPackageTypes();
+        set({ packageTypes: packageTypes });
+    },
+
+    createProduct: async (clientId) => {
+        let product = { ...initProduct };
+
+        product.clientId = clientId;
+        product = await createProduct(product);
+
         set((state) => {
             let products = state.products;
-            let product = { ...initProduct };
-
-            product.clientId = clientId;
-            product = createProduct(product);
             products.push(product);
 
             return {
@@ -38,44 +55,46 @@ export const useProductsStore = create((set) => ({
             };
         });
     },
-    deleteProduct: (id) => {
+    deleteProduct: async (id) => {
+        await deleteProduct(id);
+
         set((state) => {
             let products = state.products;
 
             products = products.filter((product) => product.id != id);
-            deleteProduct(id);
 
             return {
                 products: products,
             };
         });
     },
-    changeProduct: (id, param, value, type) => {
+    changeProduct: async (id, param, value, type) => {
+        const reg = /^-?\d*(\.\d*)?$/;
+        let realValue = null;
+        if (type == "number" && reg.test(value)) realValue = Number(value);
+        if (type == "text" || type == "select" || type == "file")
+            realValue = value;
+
+        if (realValue != null) changeProduct(id, { [param]: realValue });
+
         set((state) => {
-            const reg = /^-?\d*(\.\d*)?$/;
             let products = state.products;
             let product = products.find((product) => product.id == id);
 
-            let realValue = product[param];
-
-            if (type == "number" && reg.test(value)) realValue = Number(value);
-            if (type == "text" || type == "select" || type == "file")
-                realValue = value;
-
-            product[param] = realValue;
-            changeProduct(id, product);
+            if (realValue != null) product[param] = realValue;
 
             return {
                 products: products,
             };
         });
     },
-    createCategory: () => {
+
+    createCategory: async () => {
+        let category = { ...initCategory };
+        category = await createCategory(category);
+
         set((state) => {
             let categories = state.categories;
-            let category = { ...initCategory };
-
-            category = createCategory(category);
             categories.push(category);
 
             return {
@@ -83,44 +102,46 @@ export const useProductsStore = create((set) => ({
             };
         });
     },
-    deleteCategory: (id) => {
+    deleteCategory: async (id) => {
+        await deleteCategory(id);
+
         set((state) => {
             let categories = state.categories;
 
             categories = categories.filter((category) => category.id !== id);
-            deleteCategory(id);
 
             return {
                 categories: categories,
             };
         });
     },
-    changeCategory: (id, param, value, type) => {
+    changeCategory: async (id, param, value, type) => {
+        const reg = /^-?\d*(\.\d*)?$/;
+        let realValue = null;
+        if (type == "number" && reg.test(value)) realValue = Number(value);
+        if (type == "text" || type == "select" || type == "file")
+            realValue = value;
+
+        if (realValue != null) changeCategory(id, { [param]: realValue });
+
         set((state) => {
-            const reg = /^-?\d*(\.\d*)?$/;
             let categories = state.categories;
             let category = categories.find((category) => category.id === id);
 
-            let realValue = category[param];
-
-            if ((type == "number" || type == "select") && reg.test(value))
-                realValue = Number(value);
-            if (type == "text" || type == "file") realValue = value;
-
-            category[param] = realValue;
-            changeCategory(id, category);
+            if (realValue != null) category[param] = realValue;
 
             return {
                 categories: categories,
             };
         });
     },
-    createPackageType: () => {
+
+    createPackageType: async () => {
+        let packageType = { ...initPackageType };
+        packageType = await createPackageType(packageType);
+
         set((state) => {
             let packageTypes = state.packageTypes;
-            let packageType = { ...initPackageType };
-
-            packageType = createPackageType(packageType);
             packageTypes.push(packageType);
 
             return {
@@ -128,36 +149,37 @@ export const useProductsStore = create((set) => ({
             };
         });
     },
-    deletePackageType: (id) => {
+    deletePackageType: async (id) => {
+        await deletePackageType(id);
+
         set((state) => {
             let packageTypes = state.packageTypes;
 
             packageTypes = packageTypes.filter(
                 (packageType) => packageType.id !== id,
             );
-            deletePackageType(id);
 
             return {
                 packageTypes: packageTypes,
             };
         });
     },
-    changePackageType: (id, param, value, type) => {
+    changePackageType: async (id, param, value, type) => {
+        const reg = /^-?\d*(\.\d*)?$/;
+        let realValue = null;
+        if (type == "number" && reg.test(value)) realValue = Number(value);
+        if (type == "text" || type == "select" || type == "file")
+            realValue = value;
+
+        if (realValue != null) changePackageType(id, { [param]: realValue });
+
         set((state) => {
-            const reg = /^-?\d*(\.\d*)?$/;
             let packageTypes = state.packageTypes;
             let packageType = packageTypes.find(
                 (packageType) => packageType.id === id,
             );
 
-            let realValue = packageType[param];
-
-            if ((type == "number" || type == "select") && reg.test(value))
-                realValue = Number(value);
-            if (type == "text" || type == "file") realValue = value;
-
-            packageType[param] = realValue;
-            changePackageType(id, packageType);
+            if (realValue != null) packageType[param] = realValue;
 
             return {
                 packageTypes: packageTypes,

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Table, Button, Input } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 
@@ -8,6 +9,10 @@ import { useStaffStore } from "store/staffStore";
 
 export default function Home() {
     const staffStore = useStaffStore();
+
+    useEffect(() => {
+        staffStore.initMembers();
+    }, []);
 
     const columns = [
         {

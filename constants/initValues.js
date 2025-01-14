@@ -1,7 +1,7 @@
 export const initProduct = {
     id: 1,
     clientId: 1,
-    name: "Hello",
+    name: "Product",
     width: 10,
     height: 110,
     depth: 1110,
@@ -17,39 +17,39 @@ export const initProduct = {
 
 export const initCategory = {
     id: 1,
-    name: "First category",
+    name: "Category",
 };
 
 export const initPackageType = {
     id: 1,
-    name: "First package type",
+    name: "Package type",
 };
 
 export const initClient = {
     id: 1,
-    name: "First client",
+    name: "Client",
 };
 
 export const initPrepackType = {
     id: 1,
-    name: "First prepack type",
+    name: "1/8 напольный на держателях",
 };
 
 export const initMember = {
     id: 1,
-    name: "First staff member",
+    name: "Staff member",
 };
 
 export const initProject = {
     id: 1,
     clientId: 1,
-    name: "First project",
+    name: "Project",
 };
 
 export const initPrepack = {
     id: 1,
     projectId: 1,
-    name: "First prepack",
+    name: "Prepack",
     width: 10,
     height: 20,
     depth: 30,
@@ -58,11 +58,11 @@ export const initPrepack = {
 export const initShelf = {
     id: 1,
     prepackId: 1,
+    rows: [],
 };
 
 export const initRow = {
     id: 1,
-    shelfId: 1,
+    left: 10,
     productId: 1,
-    left: 1,
 };

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Table, Upload, Button, Input, Select } from "antd";
 import {
     UploadOutlined,
@@ -11,11 +12,18 @@ import styles from "./page.module.scss";
 import { useProjectsStore } from "store/projectsStore";
 import { useClientsStore } from "store/clientsStore";
 import { useProductsStore } from "store/productsStore";
+import { makeShelf } from "api/projectsApi";
 
 export default function Home() {
     const projectsStore = useProjectsStore();
     const productsStore = useProductsStore();
     const clientsStore = useClientsStore();
+
+    useEffect(() => {
+        projectsStore.initProjects();
+        productsStore.initProducts();
+        clientsStore.initClients();
+    }, []);
 
     const columns = [
         {
@@ -169,6 +177,7 @@ export default function Home() {
                         addonAfter="мм"
                         onChange={(e) =>
                             projectsStore.changeRow(
+                                record.shelfId,
                                 record.id,
                                 "left",
                                 e.target.value,
@@ -185,30 +194,36 @@ export default function Home() {
             dataIndex: "productId",
             key: "productId",
             width: 150,
-            render: (text, record) =>
-                record.fieldType === "row" ? (
-                    <Select
-                        size="small"
-                        value={text}
-                        placeholder="Продукт"
-                        onChange={(value) =>
-                            projectsStore.changeRow(
-                                record.id,
-                                "productId",
-                                value,
-                                "select",
-                            )
-                        }
-                    >
-                        {productsStore.products.map((product) => (
-                            <Select.Option key={product.id} value={product.id}>
-                                {product.name}
-                            </Select.Option>
-                        ))}
-                    </Select>
-                ) : (
-                    <div />
-                ),
+            render: (text, record) => {
+                if (record.fieldType === "row") {
+                    return (
+                        <Select
+                            size="small"
+                            placeholder="Продукт"
+                            value={record.productId}
+                            onChange={(value) =>
+                                projectsStore.changeRow(
+                                    record.shelfId,
+                                    record.id,
+                                    "productId",
+                                    value,
+                                    "select",
+                                )
+                            }
+                        >
+                            {productsStore.products.map((product) => (
+                                <Select.Option
+                                    key={product.id}
+                                    value={product.id}
+                                >
+                                    {product.name}
+                                </Select.Option>
+                            ))}
+                        </Select>
+                    );
+                }
+                return <div />;
+            },
         },
         {
             title: "Добавление",
@@ -256,7 +271,10 @@ export default function Home() {
                             else if (record.fieldType === "shelf")
                                 projectsStore.deleteShelf(record.id);
                             else if (record.fieldType === "row")
-                                projectsStore.deleteRow(record.id);
+                                projectsStore.deleteRow(
+                                    record.shelfId,
+                                    record.id,
+                                );
                         }}
                     >
                         Удалить
@@ -265,36 +283,56 @@ export default function Home() {
                     <div />
                 ),
         },
+        {
+            title: "Проектирование",
+            key: "action",
+            width: 100,
+            render: (text, record) =>
+                record.fieldType == "shelf" ? (
+                    <Button
+                        size="small"
+                        type="primary"
+                        onClick={() => {
+                            makeShelf(
+                                record,
+                                projectsStore.prepacks.find(
+                                    (prepack) => prepack.id == record.prepackId,
+                                ),
+                                productsStore.products,
+                            );
+                        }}
+                    >
+                        Спроектировать
+                    </Button>
+                ) : (
+                    <div />
+                ),
+        },
     ];
 
-    let rows = projectsStore.rows;
     let shelves = projectsStore.shelves;
     let prepacks = projectsStore.prepacks;
     let projects = projectsStore.projects;
     let clients = clientsStore.clients;
 
-    rows.forEach((row) => {
-        row.fieldType = "row";
-        row.key = `row-${row.id}`;
-    });
+    for (let shelf of shelves) {
+        for (let row of shelf.rows) {
+            row.fieldType = "row";
+            row.key = `row-${row.id}`;
+            row.shelfId = shelf.id;
+        }
 
-    const groupedRows = shelves.map((shelf) => {
-        return {
-            ...shelf,
-            key: `shelf-${shelf.id}`,
-            fieldType: "shelf",
-            children: rows.filter((row) => row.shelfId === shelf.id),
-        };
-    });
+        shelf.fieldType = "shelf";
+        shelf.key = `shelf-${shelf.id}`;
+        shelf.children = shelf.rows;
+    }
 
     const groupedShelves = prepacks.map((prepack) => {
         return {
             ...prepack,
             key: `prepack-${prepack.id}`,
             fieldType: "prepack",
-            children: groupedRows.filter(
-                (shelf) => shelf.prepackId === prepack.id,
-            ),
+            children: shelves.filter((shelf) => shelf.prepackId === prepack.id),
         };
     });
 

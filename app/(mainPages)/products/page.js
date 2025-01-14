@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Table, Upload, Button, Input, Select } from "antd";
 import {
     UploadOutlined,
@@ -14,6 +15,11 @@ import { useClientsStore } from "store/clientsStore";
 export default function Home() {
     const productsStore = useProductsStore();
     const clientsStore = useClientsStore();
+
+    useEffect(() => {
+        productsStore.initProducts();
+        clientsStore.initClients();
+    }, []);
 
     const columns = [
         {
@@ -369,14 +375,28 @@ export default function Home() {
     let dataSource = [];
 
     for (const client of clientsStore.clients) {
-        dataSource.push({
+        let data = {
+            key: client.id, // add key for each client
             clientName: client.name,
             clientId: client.id,
-            children: groupedProducts.find(
-                (productsGroup) => productsGroup.clientId == client.id,
-            ).products,
-        });
+            children: [],
+        };
+
+        let productsGroup = groupedProducts.find(
+            (productsGroup) => productsGroup.clientId == client.id,
+        );
+
+        if (productsGroup != undefined) {
+            data.children = productsGroup.products.map((product) => ({
+                ...product,
+                key: product.id, // add key for each product
+            }));
+        }
+
+        dataSource.push(data);
     }
+
+    console.log(dataSource);
 
     return (
         <main>
