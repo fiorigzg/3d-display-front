@@ -1,13 +1,20 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+import html2canvas from "html2canvas";
+
+import { serverUrl } from "constants/main";
 import { useShelvesStore } from "store/shelvesStore";
-
 import styles from "./page.module.scss";
-
 import Info from "components/Info";
 
 export default function Home() {
+    const standRef = useRef(null);
     const shelvesStore = useShelvesStore();
+
+    useEffect(() => {
+        shelvesStore.initAll();
+    }, []);
 
     let shelfBoxesArr = [];
     const { scale, standWidth, standHeight } = shelvesStore;
@@ -30,9 +37,12 @@ export default function Home() {
             let product = shelfProducts[productId - 1];
             productsArr.push(
                 <img
-                    src={`/${product.name}.png`}
+                    src={`${serverUrl}/loadfile/${product.image}`}
+                    alt={product.name}
                     key={productId}
                     className={styles.product}
+                    width={30}
+                    height={30}
                     style={{
                         width: `calc(${product.width * scale}px)`,
                         height: `calc(${product.height * scale}px)`,
@@ -101,6 +111,7 @@ export default function Home() {
             >
                 <div
                     className={styles.box}
+                    ref={standRef}
                     style={{
                         width: `calc(${standWidth * scale}px - 2px)`,
                         height: `calc(${standHeight * scale}px - 2px)`,
@@ -129,7 +140,22 @@ export default function Home() {
                     {shelfBoxesArr}
                 </div>
             </div>
-            <div className={styles.menu}></div>
+            <div className={styles.menu}>
+                <button
+                    className={styles.completeBtn}
+                    onClick={() => {
+                        html2canvas(standRef.current, {
+                            useCORS: true,
+                            allowTaint: true,
+                        }).then((canvas) => {
+                            const dataUrl = canvas.toDataURL("image/png");
+                            shelvesStore.saveAll(dataUrl);
+                        });
+                    }}
+                >
+                    Закончить
+                </button>
+            </div>
         </main>
     );
 }

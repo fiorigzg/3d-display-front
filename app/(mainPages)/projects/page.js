@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { Table, Upload, Button, Input, Select } from "antd";
+import { Table, Button, Input, Select } from "antd";
 import {
     UploadOutlined,
     PlusOutlined,
@@ -12,7 +12,7 @@ import styles from "./page.module.scss";
 import { useProjectsStore } from "store/projectsStore";
 import { useClientsStore } from "store/clientsStore";
 import { useProductsStore } from "store/productsStore";
-import { makeShelf } from "api/projectsApi";
+import { makeShelf, makePrepack } from "api/projectsApi";
 
 export default function Home() {
     const projectsStore = useProjectsStore();
@@ -288,18 +288,24 @@ export default function Home() {
             key: "action",
             width: 100,
             render: (text, record) =>
-                record.fieldType == "shelf" ? (
+                ["shelf", "prepack"].includes(record.fieldType) ? (
                     <Button
                         size="small"
                         type="primary"
                         onClick={() => {
-                            makeShelf(
-                                record,
-                                projectsStore.prepacks.find(
-                                    (prepack) => prepack.id == record.prepackId,
-                                ),
-                                productsStore.products,
-                            );
+                            switch (record.fieldType) {
+                                case "shelf":
+                                    makeShelf(
+                                        record,
+                                        projectsStore.prepacks.find(
+                                            (prepack) =>
+                                                prepack.id == record.prepackId,
+                                        ),
+                                        productsStore.products,
+                                    );
+                                case "prepack":
+                                    makePrepack(record);
+                            }
                         }}
                     >
                         Спроектировать

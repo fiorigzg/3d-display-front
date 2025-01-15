@@ -206,6 +206,7 @@ export async function makeShelf(shelf, prepack, products) {
         let product = products.find((product) => product.id == row.productId);
         const count = Math.floor(prepack.depth / product.depth);
         let depth = 0;
+        console.log(product);
         for (let i = 0; i < count; i++) {
             elems.push({
                 x: row.left,
@@ -217,6 +218,7 @@ export async function makeShelf(shelf, prepack, products) {
                 height: product.height,
                 topSvg: product.packagingType.top_svg,
                 sideSvg: product.packagingType.side_svg,
+                frontImg: product.frontProjection,
                 shelfIndex: 0,
             });
             depth += product.depth;
@@ -227,9 +229,15 @@ export async function makeShelf(shelf, prepack, products) {
         json_shelf: { elems: elems },
     });
 
-    console.log(elems, res);
     window.open(
         `http://94.103.83.218:8080/?width=${prepack.width}&&height=${prepack.height}&&depth=${prepack.depth}&&shelf_id=${shelf.id}`,
+        "_blank",
+    );
+}
+
+export async function makePrepack(prepack) {
+    window.open(
+        `http://localhost:3000/shelfHeight?poulticeId=${prepack.id}`,
         "_blank",
     );
 }

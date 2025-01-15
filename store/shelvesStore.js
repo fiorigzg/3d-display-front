@@ -1,46 +1,35 @@
 "use client";
 
 import { create } from "zustand";
+import { getAll, saveAll } from "api/shelvesApi";
 
-export const useShelvesStore = create((set) => ({
-    standHeight: 2000,
-    standWidth: 500,
+export const useShelvesStore = create((set, get) => ({
+    standId: 0,
+    standHeight: 100,
+    standWidth: 100,
     scale: 0.3,
-    shelfSpacings: [500, 400, 1020],
-    products: [
-        [
-            { name: "lays", left: 0, bottom: 0, width: 163, height: 200 },
-            { name: "nivea", left: 163, bottom: 0, width: 100, height: 300 },
-            { name: "lays", left: 263, bottom: 0, width: 163, height: 200 },
-        ],
-        [
-            { name: "nivea", left: 30, bottom: 40, width: 100, height: 300 },
-            { name: "nivea", left: 140, bottom: 40, width: 100, height: 300 },
-            { name: "nivea", left: 250, bottom: 40, width: 100, height: 300 },
-            { name: "nivea", left: 360, bottom: 40, width: 100, height: 300 },
-            { name: "nivea", left: 85, bottom: 0, width: 100, height: 300 },
-            { name: "nivea", left: 195, bottom: 0, width: 100, height: 300 },
-            { name: "nivea", left: 305, bottom: 0, width: 100, height: 300 },
-        ],
-        [
-            { name: "lays", left: 10, bottom: 0, width: 163, height: 200 },
-            { name: "lays", left: 300, bottom: 50, width: 163, height: 200 },
-        ],
-    ],
-    liners: [
-        [],
-        [{ left: 30, bottom: 0, width: 430, height: 40 }],
-        [
-            { left: 250, bottom: 0, width: 200, height: 20 },
-            { left: 300, bottom: 20, width: 150, height: 30 },
-        ],
-    ],
+    shelfSpacings: [70],
+    products: [[]],
+    liners: [[]],
     partWidths: {
         side: 10,
         top: 10,
         bottom: 20,
         shelf: 30,
     },
+
+    initAll: async () => {
+        const partWidths = get().partWidths;
+        let data = await getAll(partWidths);
+        set(() => {
+            return { ...data };
+        });
+    },
+    saveAll: async (standImageDataUrl) => {
+        let standImageName = `paultice_${get().standId}.png`;
+        await saveAll(standImageDataUrl, standImageName);
+    },
+
     setShelfSpacing: (shelfSpacingId, value) =>
         set((state) => {
             let newShelfSpacings = state.shelfSpacings;
