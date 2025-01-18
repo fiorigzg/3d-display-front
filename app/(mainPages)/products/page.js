@@ -176,7 +176,7 @@ export default function Home() {
                 record.children ? null : (
                     <Input
                         size="small"
-                        addonAfter="мм2"
+                        addonAfter="мм3"
                         value={text}
                         onChange={(e) =>
                             productsStore.changeProduct(

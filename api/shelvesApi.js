@@ -3,6 +3,16 @@ import axios from "axios";
 import { serverUrl } from "constants/main";
 
 export async function getAll(partWidths) {
+    let productImageNames = {};
+    async function getProductImageName(productId) {
+        if (!(productId in productImageNames)) {
+            let product = (await axios.get(`${serverUrl}/product_${productId}`))
+                .data.product;
+            productImageNames[productId] = product.facing_preview;
+        }
+        return productImageNames[productId];
+    }
+
     const urlParams = new URLSearchParams(window.location.search);
     const standId = urlParams.get("poulticeId");
     const stand = (await axios.get(`${serverUrl}/poultice_${standId}`)).data
@@ -26,13 +36,14 @@ export async function getAll(partWidths) {
             const serverShelfProducts = shelf.json_shelf.elems;
 
             for (const serverProduct of serverShelfProducts) {
+                console.log(serverProduct.productId);
                 shelfProducts.push({
                     name: "nivea",
                     left: serverProduct.x,
-                    bottom: serverProduct.y,
+                    bottom: serverProduct.z,
                     width: serverProduct.width,
                     height: serverProduct.height,
-                    image: serverProduct.frontImg,
+                    image: await getProductImageName(serverProduct.productId),
                 });
             }
         }

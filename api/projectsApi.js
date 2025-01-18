@@ -210,15 +210,15 @@ export async function makeShelf(shelf, prepack, products) {
         for (let i = 0; i < count; i++) {
             elems.push({
                 x: row.left,
-                y: 0,
-                z: depth,
+                y: depth,
+                z: 0,
                 type: "goods",
                 depth: product.depth,
                 width: product.width,
                 height: product.height,
                 topSvg: product.packagingType.top_svg,
                 sideSvg: product.packagingType.side_svg,
-                frontImg: product.frontProjection,
+                productId: product.id,
                 shelfIndex: 0,
             });
             depth += product.depth;
@@ -230,7 +230,7 @@ export async function makeShelf(shelf, prepack, products) {
     });
 
     window.open(
-        `http://94.103.83.218:8080/?width=${prepack.width}&&height=${prepack.height}&&depth=${prepack.depth}&&shelf_id=${shelf.id}`,
+        `http://94.103.83.218:8080/?width=${prepack.width}&&height=${prepack.height}&&length=${prepack.depth}&&shelf_id=${shelf.id}`,
         "_blank",
     );
 }
