@@ -303,10 +303,10 @@ export default function Home() {
                                         ),
                                         productsStore.products,
                                     );
-                                    break;
+                                    return;
                                 case "prepack":
                                     makePrepack(record);
-                                    break;
+                                    return;
                             }
                         }}
                     >
