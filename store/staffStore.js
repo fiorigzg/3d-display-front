@@ -1,65 +1,74 @@
-"use client";
+"use member";
 
 import { initMember } from "constants/initValues";
-import { getMembers, createMember, deleteMember, changeMember } from "api/staffApi";
+import { memberFields } from "constants/fields";
+import {
+    getAll,
+    createOne,
+    deleteOne,
+    checkValueType,
+    changeOne,
+} from "api/common";
 
 import { create } from "zustand";
 
 export const useStaffStore = create((set) => ({
-    members: [],
+    members: {},
 
     initMembers: async () => {
-        const members = await getMembers();
-        set({ members: members });
+        const members = await getAll("/employees", "employees", memberFields);
+
+        set((state) => {
+            return { members: members };
+        });
     },
 
     createMember: async () => {
         let member = { ...initMember };
-        member = await createMember(member);
+        let id = await createOne(
+            "/create_employee",
+            "employee_id",
+            member,
+            memberFields,
+        );
 
         set((state) => {
             let members = state.members;
-
-            members.push(member);
-
+            members[id] = member;
             return {
                 members: members,
             };
         });
     },
     deleteMember: async (id) => {
-        await deleteMember(id);
+        await deleteOne(`/employee_${id}`);
 
         set((state) => {
             let members = state.members;
-
-            members = members.filter((member) => member.id != id);
-
+            delete members[id];
             return {
                 members: members,
             };
         });
     },
-    changeMember: async (id, param, value, type) => {
-        const reg = /^-?\d*(\.\d*)?$/;
-        let realValue = null;
-        if (type == "number" && reg.test(value)) realValue = Number(value);
-        if (type == "text" || type == "select" || type == "file")
-            realValue = value;
+    changeMember: async (id, param, value, type, isReq) => {
+        let realValue = checkValueType(value, type);
+        if (realValue != null) {
+            if (isReq)
+                await changeOne(
+                    `/employee_${id}`,
+                    { [param]: realValue },
+                    memberFields,
+                );
 
-        if (realValue != null)
-            changeMember(id, { [param]: realValue })
-
-        set((state) => {
-            let members = state.members;
-            let member = members.find((member) => member.id === id);
-
-            if (realValue != null)
+            set((state) => {
+                let members = state.members;
+                let member = members[id];
                 member[param] = realValue;
-
-            return {
-                members: members,
-            };
-        });
+                return {
+                    members: members,
+                };
+            });
+        }
     },
 }));

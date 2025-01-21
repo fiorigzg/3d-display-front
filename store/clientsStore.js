@@ -1,65 +1,73 @@
 "use client";
 
 import { initClient } from "constants/initValues";
-import { getClients, createClient, deleteClient, changeClient } from "api/clientsApi";
+import { clientFields } from "constants/fields";
+import {
+    getAll,
+    createOne,
+    deleteOne,
+    checkValueType,
+    changeOne,
+} from "api/common";
 
 import { create } from "zustand";
 
 export const useClientsStore = create((set) => ({
-    clients: [],
+    clients: {},
 
     initClients: async () => {
-        const clients = await getClients();
-        set({ clients: clients });
-    },
+        const clients = await getAll("/clients", "clients", clientFields);
 
+        set((state) => {
+            return { clients: clients };
+        });
+    },
     createClient: async () => {
         let client = { ...initClient };
-        client = await createClient(client);
+        let id = await createOne(
+            "/create_client",
+            "client_id",
+            client,
+            clientFields,
+        );
 
         set((state) => {
             let clients = state.clients;
-
-            clients.push(client);
-
+            clients[id] = client;
             return {
                 clients: clients,
             };
         });
     },
     deleteClient: async (id) => {
-        await deleteClient(id);
+        await deleteOne(`/client_${id}`);
 
         set((state) => {
             let clients = state.clients;
-
-            clients = clients.filter((client) => client.id != id);
-
+            delete clients[id];
             return {
                 clients: clients,
             };
         });
     },
-    changeClient: async (id, param, value, type) => {
-        const reg = /^-?\d*(\.\d*)?$/;
-        let realValue = null;
-        if (type == "number" && reg.test(value)) realValue = Number(value);
-        if (type == "text" || type == "select" || type == "file")
-            realValue = value;
+    changeClient: async (id, param, value, type, isReq) => {
+        let realValue = checkValueType(value, type);
+        if (realValue != null) {
+            if (isReq)
+                await changeOne(
+                    `/client_${id}`,
+                    { [param]: realValue },
+                    clientFields,
+                );
 
-        if (realValue != null)
-            changeClient(id, { [param]: realValue });
-
-        set((state) => {
-            let clients = state.clients;
-            let client = clients.find((client) => client.id == id);
-            
-            if (realValue != null)
+            set((state) => {
+                let clients = state.clients;
+                let client = clients[id];
                 client[param] = realValue;
-
-            return {
-                clients: clients,
-            };
-        });
+                return {
+                    clients: clients,
+                };
+            });
+        }
     },
 }));

@@ -5,6 +5,7 @@ import {
     initCategory,
     initPackageType,
 } from "constants/initValues";
+import { packageTypeFields } from "constants/fields";
 import {
     getProducts,
     createProduct,
@@ -19,8 +20,39 @@ import {
     deletePackageType,
     changePackageType,
 } from "api/productsApi";
+import {
+    getAll,
+    createOne,
+    deleteOne,
+    checkValueType,
+    changeOne,
+} from "api/common";
 
 import { create } from "zustand";
+
+function packageTypeCostil(json, direction) {
+    let realJson = { ...json };
+    if (direction == "to" && "object" in json) {
+        realJson = {
+            ...realJson,
+            frontSvg: "front.svg",
+            sideSvg: "side.svg",
+            topSvg: "top.svg",
+        };
+        delete realJson.object;
+    } else if (
+        direction == "from" &&
+        "frontSvg" in json &&
+        "sideSvg" in json &&
+        "topSvg" in json
+    ) {
+        realJson = { ...realJson, object: "object.obj" };
+        delete realJson.frontSvg;
+        delete realJson.sideSvg;
+        delete realJson.topSvg;
+    }
+    return realJson;
+}
 
 export const useProductsStore = create((set) => ({
     products: [],
@@ -34,10 +66,6 @@ export const useProductsStore = create((set) => ({
     initCategories: async () => {
         const categories = await getCategories();
         set({ categories: categories });
-    },
-    initPackageTypes: async () => {
-        const packageTypes = await getPackageTypes();
-        set({ packageTypes: packageTypes });
     },
 
     createProduct: async (clientId) => {
@@ -72,8 +100,10 @@ export const useProductsStore = create((set) => ({
         const reg = /^-?\d*(\.\d*)?$/;
         let realValue = null;
         if (type == "number" && reg.test(value)) realValue = Number(value);
-        if (type == "text" || type == "select" || type == "file")
-            realValue = value;
+        if (type == "select" || type == "file") realValue = value;
+        if (type == "file") {
+            realValue = file.name;
+        }
 
         if (realValue != null) changeProduct(id, { [param]: realValue });
 
@@ -136,54 +166,72 @@ export const useProductsStore = create((set) => ({
         });
     },
 
+    initPackageTypes: async () => {
+        const packageTypes = await getAll(
+            "/packagingtypes",
+            "packagingtypes",
+            packageTypeFields,
+        );
+
+        for (let packageTypeId in packageTypes) {
+            packageTypes[packageTypeId] = packageTypeCostil(
+                packageTypes[packageTypeId],
+                "from",
+            );
+        }
+
+        console.log(packageTypes);
+
+        set((state) => {
+            return { packageTypes: packageTypes };
+        });
+    },
     createPackageType: async () => {
         let packageType = { ...initPackageType };
-        packageType = await createPackageType(packageType);
+        let id = await createOne(
+            "/packagingtype",
+            "packagingtype_id",
+            packageTypeCostil(packageType, "to"),
+            packageTypeFields,
+        );
 
         set((state) => {
             let packageTypes = state.packageTypes;
-            packageTypes.push(packageType);
-
+            packageTypes[id] = packageType;
             return {
                 packageTypes: packageTypes,
             };
         });
     },
     deletePackageType: async (id) => {
-        await deletePackageType(id);
+        await deleteOne(`/packagingtype_${id}`);
 
         set((state) => {
             let packageTypes = state.packageTypes;
-
-            packageTypes = packageTypes.filter(
-                (packageType) => packageType.id !== id,
-            );
-
+            delete packageTypes[id];
             return {
                 packageTypes: packageTypes,
             };
         });
     },
-    changePackageType: async (id, param, value, type) => {
-        const reg = /^-?\d*(\.\d*)?$/;
-        let realValue = null;
-        if (type == "number" && reg.test(value)) realValue = Number(value);
-        if (type == "text" || type == "select" || type == "file")
-            realValue = value;
+    changePackageType: async (id, param, value, type, isReq) => {
+        let realValue = checkValueType(value, type);
+        if (realValue != null) {
+            if (isReq)
+                await changeOne(
+                    `/packagingtype_${id}`,
+                    packageTypeCostil({ [param]: realValue }, "to"),
+                    packageTypeFields,
+                );
 
-        if (realValue != null) changePackageType(id, { [param]: realValue });
-
-        set((state) => {
-            let packageTypes = state.packageTypes;
-            let packageType = packageTypes.find(
-                (packageType) => packageType.id === id,
-            );
-
-            if (realValue != null) packageType[param] = realValue;
-
-            return {
-                packageTypes: packageTypes,
-            };
-        });
+            set((state) => {
+                let packageTypes = state.packageTypes;
+                let packageType = packageTypes[id];
+                packageType[param] = realValue;
+                return {
+                    packageTypes: packageTypes,
+                };
+            });
+        }
     },
 }));

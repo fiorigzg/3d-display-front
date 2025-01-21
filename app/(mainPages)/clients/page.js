@@ -21,8 +21,16 @@ export default function Home() {
             key: "name",
             fixed: "left",
             width: 170,
-            render: (text, record) =>
-                text == null ? null : (
+            render: (text, record) => {
+                const onEnter = (e) =>
+                    clientsStore.changeClient(
+                        record.id,
+                        "name",
+                        e.target.value,
+                        "text",
+                        true,
+                    );
+                return text == null ? null : (
                     <Input
                         size="small"
                         value={text}
@@ -32,10 +40,14 @@ export default function Home() {
                                 "name",
                                 e.target.value,
                                 "text",
+                                false,
                             )
                         }
+                        onBlur={onEnter}
+                        onPressEnter={onEnter}
                     />
-                ),
+                );
+            },
         },
         {
             title: "Действие",
@@ -67,8 +79,9 @@ export default function Home() {
     ];
 
     let dataSource = [];
-    for (const client of clientsStore.clients) {
-        dataSource.push({ ...client, action: "delete" });
+    for (const clientId in clientsStore.clients) {
+        const client = clientsStore.clients[clientId];
+        dataSource.push({ ...client, id: clientId, action: "delete" });
     }
     dataSource.push({ id: null, name: null, action: "add" });
 
@@ -81,7 +94,7 @@ export default function Home() {
                     columns={columns}
                     dataSource={dataSource}
                     pagination={false}
-                    scroll={{ x: "max-content", y: "calc(100%)" }}
+                    scroll={{ x: "max-content", y: "100%" }}
                 />
             </div>
         </main>

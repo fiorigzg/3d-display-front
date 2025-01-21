@@ -9,6 +9,7 @@ import {
 } from "@ant-design/icons";
 
 import styles from "./page.module.scss";
+import { serverUrl } from "constants/main";
 import { useProductsStore } from "store/productsStore";
 import { useClientsStore } from "store/clientsStore";
 
@@ -275,34 +276,6 @@ export default function Home() {
                 ),
         },
         {
-            title: "Объект товара",
-            dataIndex: "object",
-            key: "object",
-            width: 150,
-            render: (file, record) =>
-                record.children ? null : (
-                    <Upload
-                        maxCount={1}
-                        accept=".obj"
-                        beforeUpload={(file) => {
-                            productsStore.changeProduct(
-                                record.id,
-                                "object",
-                                file,
-                                "file",
-                            );
-                            // Prevent upload default behavior
-                            return false;
-                        }}
-                        defaultFileList={file == null ? [] : [file]}
-                    >
-                        <Button size="small" icon={<UploadOutlined />}>
-                            Файл (.obj)
-                        </Button>
-                    </Upload>
-                ),
-        },
-        {
             title: "Передняя проекция",
             dataIndex: "frontProjection",
             key: "frontProjection",
@@ -376,7 +349,7 @@ export default function Home() {
 
     for (const client of clientsStore.clients) {
         let data = {
-            key: client.id, // add key for each client
+            key: client.id,
             clientName: client.name,
             clientId: client.id,
             children: [],
@@ -389,14 +362,12 @@ export default function Home() {
         if (productsGroup != undefined) {
             data.children = productsGroup.products.map((product) => ({
                 ...product,
-                key: product.id, // add key for each product
+                key: product.id,
             }));
         }
 
         dataSource.push(data);
     }
-
-    console.log(dataSource);
 
     return (
         <main>

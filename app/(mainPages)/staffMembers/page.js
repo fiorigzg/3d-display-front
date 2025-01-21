@@ -21,8 +21,17 @@ export default function Home() {
             key: "name",
             fixed: "left",
             width: 170,
-            render: (text, record) =>
-                text == null ? null : (
+            render: (text, record) => {
+                console.log(record);
+                const onEnter = (e) =>
+                    staffStore.changeMember(
+                        record.id,
+                        "name",
+                        e.target.value,
+                        "text",
+                        true,
+                    );
+                return text == null ? null : (
                     <Input
                         size="small"
                         value={text}
@@ -32,10 +41,14 @@ export default function Home() {
                                 "name",
                                 e.target.value,
                                 "text",
+                                false,
                             )
                         }
+                        onBlur={onEnter}
+                        onPressEnter={onEnter}
                     />
-                ),
+                );
+            },
         },
         {
             title: "Действие",
@@ -67,8 +80,9 @@ export default function Home() {
     ];
 
     let dataSource = [];
-    for (const member of staffStore.members) {
-        dataSource.push({ ...member, action: "delete" });
+    for (const memberId in staffStore.members) {
+        const member = staffStore.members[memberId];
+        dataSource.push({ ...member, id: memberId, action: "delete" });
     }
     dataSource.push({ id: null, name: null, action: "add" });
 

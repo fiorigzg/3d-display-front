@@ -22,7 +22,8 @@ export const initCategory = {
 
 export const initPackageType = {
     id: 1,
-    name: "Package type",
+    name: "1: Овал/Blister",
+    object: "",
 };
 
 export const initClient = {

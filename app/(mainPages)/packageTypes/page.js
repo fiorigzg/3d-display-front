@@ -1,11 +1,24 @@
 "use client";
 
 import { useEffect } from "react";
-import { Table, Button, Input } from "antd";
-import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Table, Button, Select, Upload } from "antd";
+import {
+    PlusOutlined,
+    DeleteOutlined,
+    UploadOutlined,
+} from "@ant-design/icons";
 
+import { serverUrl } from "constants/main";
 import styles from "./page.module.scss";
 import { useProductsStore } from "store/productsStore";
+
+const packageTypeNames = [
+    "1: Овал/Blister",
+    "2: Короб",
+    "3: Спичечный",
+    "4: Подвесной",
+    "5: Накопочный короб",
+];
 
 export default function Home() {
     const productsStore = useProductsStore();
@@ -20,22 +33,69 @@ export default function Home() {
             dataIndex: "name",
             key: "name",
             fixed: "left",
-            width: 170,
+            width: 200,
             render: (text, record) =>
                 text == null ? null : (
-                    <Input
+                    <Select
                         size="small"
                         value={text}
-                        onChange={(e) =>
+                        placeholder="Название"
+                        style={{
+                            width: "200px",
+                        }}
+                        onChange={(value) =>
                             productsStore.changePackageType(
                                 record.id,
                                 "name",
-                                e.target.value,
+                                value,
                                 "text",
+                                true,
                             )
                         }
-                    />
+                    >
+                        {packageTypeNames.map((packageTypeName) => (
+                            <Select.Option
+                                key={packageTypeName}
+                                value={packageTypeName}
+                            >
+                                {packageTypeName}
+                            </Select.Option>
+                        ))}
+                    </Select>
                 ),
+        },
+        {
+            title: "Объект товара",
+            dataIndex: "object",
+            key: "object",
+            width: 150,
+            render: (text, record) => {
+                return text == null ? null : (
+                    <Upload
+                        maxCount={1}
+                        accept=".obj"
+                        action={`${serverUrl}/uploadFile?save_name=${text}`}
+                        onChange={(info) => {
+                            const { status, response, file } = info;
+                            if (status === "done" && response) {
+                                productsStore.changeProduct(
+                                    record.id,
+                                    "object",
+                                    file,
+                                    "file",
+                                    true,
+                                );
+                                console.log("File upload");
+                            }
+                        }}
+                        defaultFileList={text == "" ? [] : [text]}
+                    >
+                        <Button size="small" icon={<UploadOutlined />}>
+                            Файл (.obj)
+                        </Button>
+                    </Upload>
+                );
+            },
         },
         {
             title: "Действие",
@@ -69,10 +129,15 @@ export default function Home() {
     ];
 
     let dataSource = [];
-    for (const packageType of productsStore.packageTypes) {
-        dataSource.push({ ...packageType, action: "delete" });
+    for (const packageTypeId in productsStore.packageTypes) {
+        let packageType = productsStore.packageTypes[packageTypeId];
+        dataSource.push({
+            ...packageType,
+            id: packageTypeId,
+            action: "delete",
+        });
     }
-    dataSource.push({ id: null, name: null, action: "add" });
+    dataSource.push({ id: null, name: null, object: null, action: "add" });
 
     return (
         <main>
