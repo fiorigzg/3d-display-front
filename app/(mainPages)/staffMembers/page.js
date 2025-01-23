@@ -82,9 +82,14 @@ export default function Home() {
     let dataSource = [];
     for (const memberId in staffStore.members) {
         const member = staffStore.members[memberId];
-        dataSource.push({ ...member, id: memberId, action: "delete" });
+        dataSource.push({
+            ...member,
+            id: memberId,
+            action: "delete",
+            key: memberId,
+        });
     }
-    dataSource.push({ id: null, name: null, action: "add" });
+    dataSource.push({ id: null, name: null, action: "add", key: "add" });
 
     return (
         <main>

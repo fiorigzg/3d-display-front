@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { Table, Button, Select, Upload } from "antd";
+import { Table, Button, Select, Upload, message } from "antd";
 import {
     PlusOutlined,
     DeleteOutlined,
@@ -70,22 +70,27 @@ export default function Home() {
             key: "object",
             width: 150,
             render: (text, record) => {
+                console.log(text);
                 return text == null ? null : (
                     <Upload
                         maxCount={1}
                         accept=".obj"
-                        action={`${serverUrl}/uploadFile?save_name=${text}`}
-                        onChange={(info) => {
-                            const { status, response, file } = info;
-                            if (status === "done" && response) {
-                                productsStore.changeProduct(
+                        action={`${serverUrl}/uploadfile?save_name="${text}"`}
+                        onChange={async ({ file }) => {
+                            if (
+                                file.status == "done" &&
+                                file.response.status == "ok"
+                            ) {
+                                await productsStore.putPackageType(
                                     record.id,
-                                    "object",
-                                    file,
-                                    "file",
+                                    {
+                                        frontSvg: file.response.front_svg_file,
+                                        sideSvg: file.response.side_svg_file,
+                                        topSvg: file.response.top_svg_file,
+                                        object: file.response.original_file,
+                                    },
                                     true,
                                 );
-                                console.log("File upload");
                             }
                         }}
                         defaultFileList={text == "" ? [] : [text]}
@@ -135,9 +140,16 @@ export default function Home() {
             ...packageType,
             id: packageTypeId,
             action: "delete",
+            key: packageTypeId,
         });
     }
-    dataSource.push({ id: null, name: null, object: null, action: "add" });
+    dataSource.push({
+        id: null,
+        name: null,
+        object: null,
+        action: "add",
+        key: "add",
+    });
 
     return (
         <main>

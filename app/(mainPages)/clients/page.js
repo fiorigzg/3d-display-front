@@ -81,9 +81,14 @@ export default function Home() {
     let dataSource = [];
     for (const clientId in clientsStore.clients) {
         const client = clientsStore.clients[clientId];
-        dataSource.push({ ...client, id: clientId, action: "delete" });
+        dataSource.push({
+            ...client,
+            key: clientId,
+            id: clientId,
+            action: "delete",
+        });
     }
-    dataSource.push({ id: null, name: null, action: "add" });
+    dataSource.push({ key: "add", id: null, name: null, action: "add" });
 
     return (
         <main>

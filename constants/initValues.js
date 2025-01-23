@@ -24,6 +24,9 @@ export const initPackageType = {
     id: 1,
     name: "1: Овал/Blister",
     object: "",
+    frontSvg: "",
+    sideSvg: "",
+    topSvg: "",
 };
 
 export const initClient = {

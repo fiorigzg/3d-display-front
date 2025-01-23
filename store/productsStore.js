@@ -30,30 +30,6 @@ import {
 
 import { create } from "zustand";
 
-function packageTypeCostil(json, direction) {
-    let realJson = { ...json };
-    if (direction == "to" && "object" in json) {
-        realJson = {
-            ...realJson,
-            frontSvg: "front.svg",
-            sideSvg: "side.svg",
-            topSvg: "top.svg",
-        };
-        delete realJson.object;
-    } else if (
-        direction == "from" &&
-        "frontSvg" in json &&
-        "sideSvg" in json &&
-        "topSvg" in json
-    ) {
-        realJson = { ...realJson, object: "object.obj" };
-        delete realJson.frontSvg;
-        delete realJson.sideSvg;
-        delete realJson.topSvg;
-    }
-    return realJson;
-}
-
 export const useProductsStore = create((set) => ({
     products: [],
     categories: [],
@@ -174,10 +150,7 @@ export const useProductsStore = create((set) => ({
         );
 
         for (let packageTypeId in packageTypes) {
-            packageTypes[packageTypeId] = packageTypeCostil(
-                packageTypes[packageTypeId],
-                "from",
-            );
+            packageTypes[packageTypeId].object = "";
         }
 
         console.log(packageTypes);
@@ -191,7 +164,7 @@ export const useProductsStore = create((set) => ({
         let id = await createOne(
             "/packagingtype",
             "packagingtype_id",
-            packageTypeCostil(packageType, "to"),
+            packageType,
             packageTypeFields,
         );
 
@@ -220,7 +193,7 @@ export const useProductsStore = create((set) => ({
             if (isReq)
                 await changeOne(
                     `/packagingtype_${id}`,
-                    packageTypeCostil({ [param]: realValue }, "to"),
+                    { [param]: realValue },
                     packageTypeFields,
                 );
 
@@ -233,5 +206,20 @@ export const useProductsStore = create((set) => ({
                 };
             });
         }
+    },
+    putPackageType: async (id, changes, isReq) => {
+        if (isReq)
+            await changeOne(`/packagingtype_${id}`, changes, packageTypeFields);
+
+        set((state) => {
+            let packageTypes = state.packageTypes;
+            let packageType = packageTypes[id];
+            for (let param in changes) {
+                packageType[param] = changes[param];
+            }
+            return {
+                packageTypes: packageTypes,
+            };
+        });
     },
 }));
