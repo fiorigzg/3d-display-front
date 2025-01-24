@@ -5,7 +5,7 @@ import {
     initCategory,
     initPackageType,
 } from "constants/initValues";
-import { packageTypeFields } from "constants/fields";
+import { packageTypeFields, categoryFields } from "constants/fields";
 import {
     getProducts,
     createProduct,
@@ -32,16 +32,12 @@ import { create } from "zustand";
 
 export const useProductsStore = create((set) => ({
     products: [],
-    categories: [],
-    packageTypes: [],
+    categories: {},
+    packageTypes: {},
 
     initProducts: async () => {
         const products = await getProducts();
         set({ products: products });
-    },
-    initCategories: async () => {
-        const categories = await getCategories();
-        set({ categories: categories });
     },
 
     createProduct: async (clientId) => {
@@ -95,51 +91,64 @@ export const useProductsStore = create((set) => ({
         });
     },
 
+    initCategories: async () => {
+        const categories = await getAll(
+            "/product_categories",
+            "product_categories",
+            categoryFields,
+        );
+
+        set((state) => {
+            return { categories: categories };
+        });
+    },
     createCategory: async () => {
         let category = { ...initCategory };
-        category = await createCategory(category);
+        let id = await createOne(
+            "/productcategory",
+            "productcategory_id",
+            category,
+            categoryFields,
+        );
 
         set((state) => {
             let categories = state.categories;
-            categories.push(category);
-
+            categories[id] = category;
             return {
                 categories: categories,
             };
         });
     },
     deleteCategory: async (id) => {
-        await deleteCategory(id);
+        await deleteOne(`/productcategory_${id}`);
 
         set((state) => {
             let categories = state.categories;
-
-            categories = categories.filter((category) => category.id !== id);
-
+            delete categories[id];
             return {
                 categories: categories,
             };
         });
     },
-    changeCategory: async (id, param, value, type) => {
-        const reg = /^-?\d*(\.\d*)?$/;
-        let realValue = null;
-        if (type == "number" && reg.test(value)) realValue = Number(value);
-        if (type == "text" || type == "select" || type == "file")
-            realValue = value;
+    changeCategory: async (id, param, value, type, isReq) => {
+        let realValue = checkValueType(value, type);
+        if (realValue != null) {
+            if (isReq)
+                await changeOne(
+                    `/productcategory_${id}`,
+                    { [param]: realValue },
+                    categoryFields,
+                );
 
-        if (realValue != null) changeCategory(id, { [param]: realValue });
-
-        set((state) => {
-            let categories = state.categories;
-            let category = categories.find((category) => category.id === id);
-
-            if (realValue != null) category[param] = realValue;
-
-            return {
-                categories: categories,
-            };
-        });
+            set((state) => {
+                let categories = state.categories;
+                let category = categories[id];
+                category[param] = realValue;
+                return {
+                    categories: categories,
+                };
+            });
+        }
     },
 
     initPackageTypes: async () => {
@@ -152,8 +161,6 @@ export const useProductsStore = create((set) => ({
         for (let packageTypeId in packageTypes) {
             packageTypes[packageTypeId].object = "";
         }
-
-        console.log(packageTypes);
 
         set((state) => {
             return { packageTypes: packageTypes };

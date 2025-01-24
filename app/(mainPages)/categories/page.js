@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from 'react';
+import { useEffect } from "react";
 import { Table, Button, Input } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 
@@ -21,8 +21,16 @@ export default function Home() {
             key: "name",
             fixed: "left",
             width: 170,
-            render: (text, record) =>
-                text == null ? null : (
+            render: (text, record) => {
+                const onEnter = (e) =>
+                    productsStore.changeCategory(
+                        record.id,
+                        "name",
+                        e.target.value,
+                        "text",
+                        true,
+                    );
+                return text == null ? null : (
                     <Input
                         size="small"
                         value={text}
@@ -32,10 +40,14 @@ export default function Home() {
                                 "name",
                                 e.target.value,
                                 "text",
+                                false,
                             )
                         }
+                        onBlur={onEnter}
+                        onPressEnter={onEnter}
                     />
-                ),
+                );
+            },
         },
         {
             title: "Действие",
@@ -67,10 +79,16 @@ export default function Home() {
     ];
 
     let dataSource = [];
-    for (const category of productsStore.categories) {
-        dataSource.push({ ...category, action: "delete" });
+    for (const categoryId in productsStore.categories) {
+        const category = productsStore.categories[categoryId];
+        dataSource.push({
+            ...category,
+            id: categoryId,
+            action: "delete",
+            key: categoryId,
+        });
     }
-    dataSource.push({ id: null, name: null, action: "add" });
+    dataSource.push({ id: null, name: null, action: "add", key: "add" });
 
     return (
         <main>

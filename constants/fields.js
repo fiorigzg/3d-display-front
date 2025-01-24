@@ -12,3 +12,7 @@ export const packageTypeFields = {
     sideSvg: "side_svg",
     topSvg: "top_svg",
 };
+
+export const categoryFields = {
+    name: "name",
+};

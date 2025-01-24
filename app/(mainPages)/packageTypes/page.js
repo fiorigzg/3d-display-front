@@ -70,7 +70,6 @@ export default function Home() {
             key: "object",
             width: 150,
             render: (text, record) => {
-                console.log(text);
                 return text == null ? null : (
                     <Upload
                         maxCount={1}

@@ -22,7 +22,6 @@ export default function Home() {
             fixed: "left",
             width: 170,
             render: (text, record) => {
-                console.log(record);
                 const onEnter = (e) =>
                     staffStore.changeMember(
                         record.id,
