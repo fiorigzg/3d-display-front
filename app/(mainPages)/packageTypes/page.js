@@ -92,7 +92,7 @@ export default function Home() {
                                 );
                             }
                         }}
-                        defaultFileList={text == "" ? [] : [text]}
+                        defaultFileList={text == "" ? [] : [{ name: text }]}
                     >
                         <Button size="small" icon={<UploadOutlined />}>
                             Файл (.obj)

@@ -5,21 +5,11 @@ import {
     initCategory,
     initPackageType,
 } from "constants/initValues";
-import { packageTypeFields, categoryFields } from "constants/fields";
 import {
-    getProducts,
-    createProduct,
-    deleteProduct,
-    changeProduct,
-    getCategories,
-    createCategory,
-    deleteCategory,
-    changeCategory,
-    getPackageTypes,
-    createPackageType,
-    deletePackageType,
-    changePackageType,
-} from "api/productsApi";
+    packageTypeFields,
+    categoryFields,
+    productFields,
+} from "constants/fields";
 import {
     getAll,
     createOne,
@@ -31,64 +21,83 @@ import {
 import { create } from "zustand";
 
 export const useProductsStore = create((set) => ({
-    products: [],
+    products: {},
     categories: {},
     packageTypes: {},
 
-    initProducts: async () => {
-        const products = await getProducts();
-        set({ products: products });
-    },
+    initProducts: async (clientId) => {
+        const products = await getAll(
+            `/productsbyclient?client_id=${clientId}`,
+            "products",
+            productFields,
+        );
 
+        set((state) => {
+            return { products: { ...state.products, [clientId]: products } };
+        });
+    },
     createProduct: async (clientId) => {
-        let product = { ...initProduct };
-
-        product.clientId = clientId;
-        product = await createProduct(product);
+        let product = {
+            ...initProduct,
+            clientId: clientId,
+            packagingX: 0,
+            packagingY: 0,
+            packagingZ: 0,
+            packagingObj: "",
+        };
+        console.log(clientId);
+        let id = await createOne(
+            "/product",
+            "product_id",
+            product,
+            productFields,
+        );
 
         set((state) => {
             let products = state.products;
-            products.push(product);
-
+            if (!products[clientId]) products[clientId] = {};
+            products[clientId][id] = product;
             return {
                 products: products,
             };
         });
     },
-    deleteProduct: async (id) => {
-        await deleteProduct(id);
+    deleteProduct: async (clientId, id) => {
+        await deleteOne(`/product_${id}`);
 
         set((state) => {
             let products = state.products;
-
-            products = products.filter((product) => product.id != id);
-
+            delete products[clientId][id];
             return {
                 products: products,
             };
         });
     },
-    changeProduct: async (id, param, value, type) => {
-        const reg = /^-?\d*(\.\d*)?$/;
-        let realValue = null;
-        if (type == "number" && reg.test(value)) realValue = Number(value);
-        if (type == "select" || type == "file") realValue = value;
-        if (type == "file") {
-            realValue = file.name;
+    changeProduct: async (clientId, id, param, value, type, isReq) => {
+        let realValue = checkValueType(value, type);
+        if (realValue != null) {
+            if (isReq)
+                await changeOne(
+                    `/product_${id}`,
+                    {
+                        [param]: realValue,
+                        packagingX: 0,
+                        packagingY: 0,
+                        packagingZ: 0,
+                        packagingObj: "",
+                    },
+                    productFields,
+                );
+
+            set((state) => {
+                let products = state.products;
+                let product = products[clientId][id];
+                product[param] = realValue;
+                return {
+                    products: products,
+                };
+            });
         }
-
-        if (realValue != null) changeProduct(id, { [param]: realValue });
-
-        set((state) => {
-            let products = state.products;
-            let product = products.find((product) => product.id == id);
-
-            if (realValue != null) product[param] = realValue;
-
-            return {
-                products: products,
-            };
-        });
     },
 
     initCategories: async () => {

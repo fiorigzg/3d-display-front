@@ -1,6 +1,5 @@
 export const initProduct = {
     id: 1,
-    clientId: 1,
     name: "Product",
     width: 0,
     height: 0,
@@ -8,11 +7,11 @@ export const initProduct = {
     weight: 0,
     count: 0,
     volume: 0,
-    qrcode: 0,
-    categoryId: 1,
-    packageTypeId: 1,
-    object: null,
-    frontProjection: null,
+    qrcode: "",
+    categoryId: 14,
+    packageTypeId: 7,
+    clientId: 0,
+    frontProjection: "",
 };
 
 export const initCategory = {
