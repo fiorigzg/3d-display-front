@@ -333,7 +333,6 @@ export default function Home() {
                         category.id = categoryId;
                         categoriesArr.push(category);
                     }
-                    console.log(id, productsStore.categories);
                     return (
                         <Select
                             size="small"
@@ -379,7 +378,6 @@ export default function Home() {
                         packageType.id = packageTypeId;
                         packageTypesArr.push(packageType);
                     }
-                    console.log(id, productsStore.packageTypes);
                     return (
                         <Select
                             size="small"
@@ -417,7 +415,6 @@ export default function Home() {
             key: "frontProjection",
             width: 150,
             render: (text, record) => {
-                console.log(text);
                 return record.type == "product" ? (
                     <Upload
                         maxCount={1}

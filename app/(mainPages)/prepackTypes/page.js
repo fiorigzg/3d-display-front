@@ -1,11 +1,23 @@
 "use client";
 
 import { useEffect } from "react";
-import { Table, Button, Input } from "antd";
+import { Table, Button, Select } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 
 import styles from "./page.module.scss";
 import { useProjectsStore } from "store/projectsStore";
+
+const prepackTypeNames = [
+    "1/4 напольный патент",
+    "1/4 напольный эконом",
+    "1/4 напольный на держателях",
+    "1/4 напольный обейджик",
+    "1/8 напольный патент",
+    "1/8 напольный эконом",
+    "1/8 напольный на держателях",
+    "1/8 напольный обейджик",
+    "Подвесной",
+];
 
 export default function Home() {
     const projectsStore = useProjectsStore();
@@ -20,21 +32,35 @@ export default function Home() {
             dataIndex: "name",
             key: "name",
             fixed: "left",
-            width: 170,
+            width: 200,
             render: (text, record) =>
                 text == null ? null : (
-                    <Input
+                    <Select
                         size="small"
                         value={text}
-                        onChange={(e) =>
+                        placeholder="Название"
+                        style={{
+                            width: "250px",
+                        }}
+                        onChange={(value) =>
                             projectsStore.changePrepackType(
                                 record.id,
                                 "name",
-                                e.target.value,
+                                value,
                                 "text",
+                                true,
                             )
                         }
-                    />
+                    >
+                        {prepackTypeNames.map((prepackTypeName) => (
+                            <Select.Option
+                                key={prepackTypeName}
+                                value={prepackTypeName}
+                            >
+                                {prepackTypeName}
+                            </Select.Option>
+                        ))}
+                    </Select>
                 ),
         },
         {
@@ -69,10 +95,16 @@ export default function Home() {
     ];
 
     let dataSource = [];
-    for (const prepackType of projectsStore.prepackTypes) {
-        dataSource.push({ ...prepackType, action: "delete" });
+    for (const prepackTypeId in projectsStore.prepackTypes) {
+        const prepackType = projectsStore.prepackTypes[prepackTypeId];
+        dataSource.push({
+            ...prepackType,
+            action: "delete",
+            key: prepackTypeId,
+            id: prepackTypeId,
+        });
     }
-    dataSource.push({ id: null, name: null, action: "add" });
+    dataSource.push({ id: null, name: null, action: "add", key: "add" });
 
     return (
         <main>

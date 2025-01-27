@@ -35,3 +35,7 @@ export const productFields = {
     packagingZ: "packaging_z",
     packagingObj: "packaging_obj",
 };
+
+export const prepackTypeFields = {
+    name: "name",
+};

@@ -1,4 +1,4 @@
-"use client";
+"use prepackType";
 
 import {
     initProject,
@@ -7,6 +7,7 @@ import {
     initRow,
     initPrepackType,
 } from "constants/initValues";
+import { prepackTypeFields } from "constants/fields";
 
 import {
     getProjects,
@@ -27,6 +28,13 @@ import {
     deletePrepackType,
     changePrepackType,
 } from "api/projectsApi";
+import {
+    getAll,
+    createOne,
+    deleteOne,
+    checkValueType,
+    changeOne,
+} from "api/common";
 
 import { create } from "zustand";
 
@@ -34,7 +42,7 @@ export const useProjectsStore = create((set) => ({
     projects: [],
     prepacks: [],
     shelves: [],
-    prepackTypes: [],
+    prepackTypes: {},
 
     initProjects: async () => {
         const projects = await getProjects();
@@ -52,10 +60,10 @@ export const useProjectsStore = create((set) => ({
         set({ prepackTypes: prepackTypes });
     },
 
-    createProject: async (clientId) => {
+    createProject: async (prepackTypeId) => {
         let project = { ...initProject };
 
-        project.clientId = clientId;
+        project.prepackTypeId = prepackTypeId;
         project = await createProject(project);
 
         set((state) => {
@@ -258,52 +266,63 @@ export const useProjectsStore = create((set) => ({
         }
     },
 
+    initPrepackTypes: async () => {
+        const prepackTypes = await getAll(
+            "/preptypes",
+            "preptypes",
+            prepackTypeFields,
+        );
+
+        set((state) => {
+            return { prepackTypes: prepackTypes };
+        });
+    },
     createPrepackType: async () => {
         let prepackType = { ...initPrepackType };
-        prepackType = await createPrepackType(prepackType);
+        let id = await createOne(
+            "/preptype",
+            "preptype_id",
+            prepackType,
+            prepackTypeFields,
+        );
 
         set((state) => {
             let prepackTypes = state.prepackTypes;
-            prepackTypes.push(prepackType);
-
+            prepackTypes[id] = prepackType;
             return {
                 prepackTypes: prepackTypes,
             };
         });
     },
     deletePrepackType: async (id) => {
-        await deletePrepackType(id);
+        await deleteOne(`/preptype_${id}`);
 
         set((state) => {
-            let prepackTypes = state.prepackTypes.filter(
-                (prepackType) => prepackType.id !== id,
-            );
-
+            let prepackTypes = state.prepackTypes;
+            delete prepackTypes[id];
             return {
                 prepackTypes: prepackTypes,
             };
         });
     },
-    changePrepackType: async (id, param, value, type) => {
-        const reg = /^-?\d*(\.\d*)?$/;
-        let realValue = null;
-        if (type == "number" && reg.test(value)) realValue = Number(value);
-        if (type == "text" || type == "select" || type == "file")
-            realValue = value;
+    changePrepackType: async (id, param, value, type, isReq) => {
+        let realValue = checkValueType(value, type);
+        if (realValue != null) {
+            if (isReq)
+                await changeOne(
+                    `/preptype_${id}`,
+                    { [param]: realValue },
+                    prepackTypeFields,
+                );
 
-        if (realValue != null) changePrepackType(id, { [param]: realValue });
-
-        set((state) => {
-            let prepackTypes = state.prepackTypes;
-            let prepackType = prepackTypes.find(
-                (prepackType) => prepackType.id === id,
-            );
-
-            if (realValue != null) prepackType[param] = realValue;
-
-            return {
-                prepackTypes: prepackTypes,
-            };
-        });
+            set((state) => {
+                let prepackTypes = state.prepackTypes;
+                let prepackType = prepackTypes[id];
+                prepackType[param] = realValue;
+                return {
+                    prepackTypes: prepackTypes,
+                };
+            });
+        }
     },
 }));

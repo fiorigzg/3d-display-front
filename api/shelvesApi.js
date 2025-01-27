@@ -36,7 +36,6 @@ export async function getAll(partWidths) {
             const serverShelfProducts = shelf.json_shelf.elems;
 
             for (const serverProduct of serverShelfProducts) {
-                console.log(serverProduct.productId);
                 shelfProducts.push({
                     name: "nivea",
                     left: serverProduct.x,
@@ -48,7 +47,6 @@ export async function getAll(partWidths) {
             }
         }
         products.push(shelfProducts);
-        console.log(shelfProducts);
 
         let shelfLiners = [];
         if ("inserts" in shelf.json_shelf) {
@@ -109,7 +107,6 @@ export async function saveAll(standImageDataUrl, standImageName) {
                 save_name: true,
             },
         });
-        console.log(`Saved stand image: ${standImageName}`);
     } catch (error) {
         console.error("Error saving all data:", error);
     }

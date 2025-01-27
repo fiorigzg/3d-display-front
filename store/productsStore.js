@@ -45,7 +45,6 @@ export const useProductsStore = create((set) => ({
             packagingZ: 0,
             packagingObj: "",
         };
-        console.log(clientId);
         let id = await createOne(
             "/product",
             "product_id",

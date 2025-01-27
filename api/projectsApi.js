@@ -206,7 +206,6 @@ export async function makeShelf(shelf, prepack, products) {
         let product = products.find((product) => product.id == row.productId);
         const count = Math.floor(prepack.depth / product.depth);
         let depth = 0;
-        console.log(product);
         for (let i = 0; i < count; i++) {
             elems.push({
                 x: row.left,
