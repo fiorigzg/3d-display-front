@@ -34,8 +34,36 @@ export const productFields = {
     packagingY: "packaging_y",
     packagingZ: "packaging_z",
     packagingObj: "packaging_obj",
+    packagingType: "packaging_type",
 };
 
 export const prepackTypeFields = {
     name: "name",
+};
+
+export const projectFields = {
+    name: "name",
+    clientId: "client_id",
+};
+
+export const prepackFields = {
+    name: "name",
+    width: "size_x",
+    depth: "size_z",
+    height: "size_y",
+    prepackTypeId: "type_id",
+    projectId: "project_id",
+    image: "image",
+    number: "number",
+};
+
+export const shelfFields = {
+    rows: "json_rows",
+    productId: "product_id",
+    prepackId: "poulticle_id",
+    width: "width",
+    height: "heigth",
+    length: "length",
+    marginTop: "margin_top",
+    marginBottom: "margin_bottom",
 };

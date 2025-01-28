@@ -201,14 +201,16 @@ export async function changePrepackType(id, changes) {
 
 export async function makeShelf(shelf, prepack, products) {
     let elems = [];
-
-    for (let row of shelf.rows) {
-        let product = products.find((product) => product.id == row.productId);
+    let left = 0;
+    for (let rowId in shelf.children) {
+        let row = shelf.children[rowId];
+        let product = products[row.productId];
         const count = Math.floor(prepack.depth / product.depth);
         let depth = 0;
+        left += row.left;
         for (let i = 0; i < count; i++) {
             elems.push({
-                x: row.left,
+                x: left,
                 y: depth,
                 z: 0,
                 type: "goods",
@@ -222,21 +224,22 @@ export async function makeShelf(shelf, prepack, products) {
             });
             depth += product.depth;
         }
+        left += product.width;
     }
-
+    console.log(elems);
     let res = await axios.put(`${serverUrl}/shelf_${shelf.id}`, {
         json_shelf: { elems: elems },
     });
 
     window.open(
-        `http://94.103.83.218:8080/?width=${prepack.width}&&height=${prepack.height}&&length=${prepack.depth}&&shelf_id=${shelf.id}`,
+        `http://94.103.83.218:8080/?width=${prepack.width}&&height=${shelf.height}&&length=${prepack.depth}&&shelf_id=${shelf.id}`,
         "_blank",
     );
 }
 
 export async function makePrepack(prepack) {
     window.open(
-        `http://94.103.83.218:3000/shelfHeight?poulticeId=${prepack.id}`,
+        `http://localhost:3000/shelfHeight?poulticeId=${prepack.id}`,
         "_blank",
     );
 }

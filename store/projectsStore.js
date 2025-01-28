@@ -1,5 +1,7 @@
 "use prepackType";
 
+import { create } from "zustand";
+
 import {
     initProject,
     initPrepack,
@@ -7,27 +9,13 @@ import {
     initRow,
     initPrepackType,
 } from "constants/initValues";
-import { prepackTypeFields } from "constants/fields";
-
 import {
-    getProjects,
-    createProject,
-    deleteProject,
-    changeProject,
-    getPrepacks,
-    createPrepack,
-    deletePrepack,
-    changeShelfJson,
-    changePrepack,
-    getShelves,
-    createShelf,
-    deleteShelf,
-    changeShelf,
-    getPrepackTypes,
-    createPrepackType,
-    deletePrepackType,
-    changePrepackType,
-} from "api/projectsApi";
+    prepackTypeFields,
+    projectFields,
+    prepackFields,
+    shelfFields,
+} from "constants/fields";
+
 import {
     getAll,
     createOne,
@@ -36,234 +24,247 @@ import {
     changeOne,
 } from "api/common";
 
-import { create } from "zustand";
-
-export const useProjectsStore = create((set) => ({
-    projects: [],
-    prepacks: [],
-    shelves: [],
+export const useProjectsStore = create((set, get) => ({
+    projects: {},
+    prepacks: {},
+    shelves: {},
     prepackTypes: {},
 
-    initProjects: async () => {
-        const projects = await getProjects();
-        const prepacks = await getPrepacks();
-        const shelves = await getShelves();
-
-        set({
-            projects: projects,
-            prepacks: prepacks,
-            shelves: shelves,
-        });
-    },
-    initPrepackTypes: async () => {
-        const prepackTypes = await getPrepackTypes();
-        set({ prepackTypes: prepackTypes });
-    },
-
-    createProject: async (prepackTypeId) => {
-        let project = { ...initProject };
-
-        project.prepackTypeId = prepackTypeId;
-        project = await createProject(project);
+    initProjects: async (clientId) => {
+        let projects = await getAll("/projects", "projects", projectFields);
+        for (const projectId in projects) {
+            const project = projects[projectId];
+            if (project.clientId != clientId) delete projects[projectId];
+        }
 
         set((state) => {
-            let projects = state.projects;
-            projects.push(project);
+            return { projects: { ...state.projects, [clientId]: projects } };
+        });
+    },
+    createProject: async (clientId) => {
+        let project = { ...initProject, clientId };
+        let id = await createOne(
+            "/create_project",
+            "project_id",
+            project,
+            projectFields,
+        );
 
+        set((state) => {
             return {
-                projects: projects,
+                projects: {
+                    ...state.projects,
+                    [clientId]: { ...state.projects[clientId], [id]: project },
+                },
             };
         });
     },
-    deleteProject: async (id) => {
-        await deleteProject(id);
+    deleteProject: async (clientId, projectId) => {
+        await deleteOne(`/project_${projectId}`);
 
         set((state) => {
-            let projects = state.projects.filter(
-                (project) => project.id !== id,
-            );
-            return {
-                projects: projects,
-            };
+            let projects = state.projects[clientId];
+            delete projects[projectId];
+            return { projects: { ...state.projects, [clientId]: projects } };
         });
     },
-    changeProject: async (id, param, value, type) => {
-        const reg = /^-?\d*(\.\d*)?$/;
-        let realValue = null;
-        if (type == "number" && reg.test(value)) realValue = Number(value);
-        if (type == "text" || type == "select" || type == "file")
-            realValue = value;
-
-        if (realValue != null) changeProject(id, { [param]: realValue });
-
-        set((state) => {
-            let projects = state.projects;
-            let project = projects.find((project) => project.id == id);
-
-            if (realValue != null) project[param] = realValue;
-
-            return {
-                projects: projects,
-            };
-        });
-    },
-
-    createPrepack: async (projectId) => {
-        let prepack = { ...initPrepack };
-
-        prepack.projectId = projectId;
-        prepack = await createPrepack(prepack);
-
-        set((state) => {
-            let prepacks = state.prepacks;
-            prepacks.push(prepack);
-
-            return {
-                prepacks: prepacks,
-            };
-        });
-    },
-    deletePrepack: async (id) => {
-        await deletePrepack(id);
-
-        set((state) => {
-            let prepacks = state.prepacks.filter(
-                (prepack) => prepack.id !== id,
-            );
-            return {
-                prepacks: prepacks,
-            };
-        });
-    },
-    changePrepack: async (id, param, value, type) => {
-        const reg = /^-?\d*(\.\d*)?$/;
-        let realValue = null;
-        if ((type == "number" || type == "select") && reg.test(value))
-            realValue = Number(value);
-        if (type == "text" || type == "file") realValue = value;
-
-        if (realValue != null) changePrepack(id, { [param]: realValue });
-
-        set((state) => {
-            let prepacks = state.prepacks;
-            let prepack = prepacks.find((prepack) => prepack.id == id);
-
-            if (realValue != null) prepack[param] = realValue;
-
-            return {
-                prepacks: prepacks,
-            };
-        });
-    },
-
-    createShelf: async (prepackId) => {
-        let shelf = { ...initShelf };
-
-        shelf.prepackId = prepackId;
-        shelf = await createShelf(shelf);
-
-        set((state) => {
-            let shelves = state.shelves;
-            shelves.push(shelf);
-
-            return {
-                shelves: shelves,
-            };
-        });
-    },
-    deleteShelf: async (id) => {
-        await deleteShelf(id);
-
-        set((state) => {
-            let shelves = state.shelves.filter((shelf) => shelf.id !== id);
-            return {
-                shelves: shelves,
-            };
-        });
-    },
-    changeShelf: async (id, param, value, type) => {
-        const reg = /^-?\d*(\.\d*)?$/;
-        let realValue = null;
-        if (type == "number" && reg.test(value)) realValue = Number(value);
-        if (type == "text" || type == "select" || type == "file")
-            realValue = value;
-
-        if (realValue != null) changeShelf(id, { [param]: realValue });
-
-        set((state) => {
-            let shelves = state.shelves;
-            let shelf = shelves.find((shelf) => shelf.id == id);
-
-            if (realValue != null) shelf[param] = realValue;
-
-            return {
-                shelves: shelves,
-            };
-        });
-    },
-
-    createRow: async (shelfId) => {
-        set((state) => {
-            const shelves = state.shelves.map((shelf) => {
-                if (shelf.id !== shelfId) return shelf;
-
-                const maxRowId = shelf.rows.reduce(
-                    (maxId, row) => Math.max(maxId, row.id),
-                    0,
-                );
-                const newRow = { ...initRow, id: maxRowId + 1 };
-                const updatedShelf = {
-                    ...shelf,
-                    rows: [...shelf.rows, newRow],
-                };
-                return updatedShelf;
-            });
-
-            return { shelves };
-        });
-    },
-    deleteRow: (shelfId, rowId) => {
-        set((state) => {
-            // Find the shelf we need to update
-            const shelves = state.shelves.map((shelf) => {
-                if (shelf.id !== shelfId) return shelf;
-
-                // Filter out the row with the given rowId
-                const updatedRows = shelf.rows.filter(
-                    (row) => row.id !== rowId,
+    changeProject: async (clientId, projectId, param, value, type, isReq) => {
+        let realValue = checkValueType(value, type);
+        if (realValue != null) {
+            if (isReq)
+                await changeOne(
+                    `/project_${projectId}`,
+                    { [param]: realValue },
+                    projectFields,
                 );
 
-                // Return the updated shelf
-                return { ...shelf, rows: updatedRows };
-            });
-
-            // Return the new state with updated shelves
-            return { shelves };
-        });
-    },
-    changeRow: async (shelfId, rowId, param, value, type) => {
-        const reg = /^-?\d*(\.\d*)?$/;
-        let realValue = null;
-
-        if (type === "number" && reg.test(value)) realValue = Number(value);
-        if (["text", "select", "file"].includes(type)) realValue = value;
-
-        if (realValue !== null) {
             set((state) => {
-                const shelves = state.shelves.map((shelf) => {
-                    if (shelf.id !== shelfId) return shelf;
-
-                    const updatedRows = shelf.rows.map((row) => {
-                        if (row.id !== rowId) return row;
-                        return { ...row, [param]: realValue };
-                    });
-
-                    return { ...shelf, rows: updatedRows };
-                });
-
-                return { shelves };
+                let projects = state.projects[clientId];
+                let project = projects[projectId];
+                project[param] = realValue;
+                return {
+                    projects: { ...state.projects, [clientId]: projects },
+                };
             });
         }
+    },
+
+    initPrepacks: async (projectId) => {
+        const prepacks = await getAll(
+            `/poultice?project_id=${projectId}`,
+            "poultices",
+            prepackFields,
+        );
+
+        set((state) => {
+            return { prepacks: { ...state.prepacks, [projectId]: prepacks } };
+        });
+    },
+    createPrepack: async (projectId) => {
+        let prepack = {
+            ...initPrepack,
+            projectId: projectId,
+        };
+        let id = await createOne(
+            "/poultice",
+            "poultice_id",
+            prepack,
+            prepackFields,
+        );
+
+        set((state) => {
+            return {
+                prepacks: {
+                    ...state.prepacks,
+                    [projectId]: {
+                        ...state.prepacks[projectId],
+                        [id]: prepack,
+                    },
+                },
+            };
+        });
+    },
+    deletePrepack: async (projectId, prepackId) => {
+        await deleteOne(`/poultice_${prepackId}`);
+
+        set((state) => {
+            let prepacks = state.prepacks[projectId];
+            delete prepacks[prepackId];
+            return { prepacks: { ...state.prepacks, [projectId]: prepacks } };
+        });
+    },
+    changePrepack: async (projectId, prepackId, param, value, type, isReq) => {
+        let realValue = checkValueType(value, type);
+        if (realValue != null) {
+            if (isReq)
+                await changeOne(
+                    `/poultice_${prepackId}`,
+                    { [param]: realValue },
+                    prepackFields,
+                );
+
+            set((state) => {
+                let prepacks = state.prepacks[projectId];
+                let prepack = prepacks[prepackId];
+                prepack[param] = realValue;
+                return {
+                    prepacks: { ...state.prepacks, [projectId]: prepacks },
+                };
+            });
+        }
+    },
+
+    initShelves: async (prepackId) => {
+        const shelves = await getAll(
+            `/shelves?poultice_id=${prepackId}`,
+            "shelves",
+            shelfFields,
+        );
+
+        console.log(shelves);
+
+        set((state) => {
+            return { shelves: { ...state.shelves, [prepackId]: shelves } };
+        });
+    },
+    createShelf: async (prepackId) => {
+        let shelf = { ...initShelf, prepackId };
+        let id = await createOne("/shelf", "shelf_id", shelf, shelfFields);
+
+        set((state) => {
+            return {
+                shelves: {
+                    ...state.shelves,
+                    [prepackId]: { ...state.shelves[prepackId], [id]: shelf },
+                },
+            };
+        });
+    },
+    deleteShelf: async (prepackId, shelfId) => {
+        await deleteOne(`/shelf_${shelfId}`);
+
+        set((state) => {
+            let shelves = state.shelves[prepackId];
+            delete shelves[shelfId];
+            return { shelves: { ...state.shelves, [prepackId]: shelves } };
+        });
+    },
+    changeShelf: async (prepackId, shelfId, param, value, type, isReq) => {
+        let realValue = checkValueType(value, type);
+        if (realValue != null) {
+            if (isReq)
+                await changeOne(
+                    `/shelf_${shelfId}`,
+                    { [param]: realValue },
+                    shelfFields,
+                );
+
+            set((state) => {
+                let shelves = state.shelves[prepackId];
+                console.log(state.shelves, prepackId, shelves, shelfId);
+                let shelf = shelves[shelfId];
+                shelf[param] = realValue;
+                return { shelves: { ...state.shelves, [prepackId]: shelves } };
+            });
+        }
+    },
+
+    changeRow: async (prepackId, shelfId, rowId, param, value, type, isReq) => {
+        let realValue = checkValueType(value, type);
+        if (realValue != null) {
+            let shelves = get().shelves[prepackId];
+            let shelf = shelves[shelfId];
+            let row = shelf.rows[rowId];
+            row[param] = realValue;
+
+            if (isReq)
+                await changeOne(
+                    `/shelf_${shelfId}`,
+                    { rows: shelf.rows },
+                    shelfFields,
+                );
+
+            set((state) => {
+                return { shelves: { ...state.shelves, [prepackId]: shelves } };
+            });
+        }
+    },
+    createRow: async (prepackId, shelfId) => {
+        let shelves = get().shelves[prepackId];
+        let shelf = shelves[shelfId];
+        let rows = shelf.rows;
+        let rowId = Object.keys(rows).length;
+        let newRow = { ...initRow };
+        rows[rowId] = newRow;
+
+        await changeOne(`/shelf_${shelfId}`, { rows: rows }, shelfFields);
+
+        set((state) => {
+            return { shelves: { ...state.shelves, [prepackId]: shelves } };
+        });
+    },
+    deleteRow: async (prepackId, shelfId, rowId) => {
+        let shelves = get().shelves[prepackId];
+        let shelf = shelves[shelfId];
+        let rows = shelf.rows;
+
+        rows = Object.keys(rows)
+            .filter((objKey) => objKey !== rowId)
+            .reduce((newObj, key) => {
+                newObj[key] = rows[key];
+                return newObj;
+            }, {});
+
+        let newRowsArr = [];
+        for (let newRowId in rows) {
+            newRowsArr.push({ ...rows[newRowId], id: newRowId });
+        }
+
+        await changeOne(`/shelf_${shelfId}`, { rows: newRowsArr }, shelfFields);
+
+        set((state) => {
+            return { shelves: { ...state.shelves, [prepackId]: shelves } };
+        });
     },
 
     initPrepackTypes: async () => {

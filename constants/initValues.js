@@ -56,16 +56,24 @@ export const initPrepack = {
     width: 10,
     height: 20,
     depth: 30,
+    image: "",
+    number: 1,
+    prepackTypeId: 12,
 };
 
 export const initShelf = {
     id: 1,
     prepackId: 1,
+    width: 10,
+    height: 0,
+    length: 30,
+    marginTop: 0,
+    marginBottom: 0,
     rows: [],
 };
 
 export const initRow = {
     id: 1,
     left: 10,
-    productId: 1,
+    productId: 24,
 };
