@@ -491,19 +491,19 @@ export default function Home() {
         for (const productId in products) {
             const product = products[productId];
             productsDataSource.push({
+                ...product,
                 type: "product",
                 key: `product-${productId}`,
                 id: productId,
                 clientId: clientId,
-                ...product,
             });
         }
 
         clientsDataSource.push({
+            ...client,
             type: "client",
             key: `client-${clientId}`,
             id: clientId,
-            ...client,
             children: productsDataSource,
         });
     }

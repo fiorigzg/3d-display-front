@@ -12,6 +12,8 @@ export default function Home() {
     const standRef = useRef(null);
     const shelvesStore = useShelvesStore();
 
+    console.log(shelvesStore);
+
     useEffect(() => {
         shelvesStore.initAll();
     }, []);

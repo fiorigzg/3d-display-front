@@ -51,6 +51,10 @@ export const useProjectsStore = create((set, get) => ({
         );
 
         set((state) => {
+            console.log({
+                ...state.projects,
+                [clientId]: { ...state.projects[clientId], [id]: project },
+            });
             return {
                 projects: {
                     ...state.projects,
@@ -80,6 +84,7 @@ export const useProjectsStore = create((set, get) => ({
 
             set((state) => {
                 let projects = state.projects[clientId];
+                console.log(projects, projectId);
                 let project = projects[projectId];
                 project[param] = realValue;
                 return {

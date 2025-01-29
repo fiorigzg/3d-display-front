@@ -5,6 +5,7 @@ import { serverUrl } from "constants/main";
 export async function getAll(partWidths) {
     let productImageNames = {};
     async function getProductImageName(productId) {
+        console.log(productId);
         if (!(productId in productImageNames)) {
             let product = (await axios.get(`${serverUrl}/product_${productId}`))
                 .data.product;
@@ -34,6 +35,7 @@ export async function getAll(partWidths) {
         let shelfProducts = [];
         if ("elems" in shelf.json_shelf) {
             const serverShelfProducts = shelf.json_shelf.elems;
+            console.log(shelf.json_shelf);
 
             for (const serverProduct of serverShelfProducts) {
                 shelfProducts.push({

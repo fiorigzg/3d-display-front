@@ -412,11 +412,13 @@ export default function Home() {
                                 projectsStore.createPrepack(record.id);
                             else if (record.type == "prepack")
                                 projectsStore.createShelf(record.id);
-                            else if (record.type == "shelf")
+                            else if (record.type == "shelf") {
+                                console.log(record.id);
                                 projectsStore.createRow(
                                     record.prepackId,
                                     record.id,
                                 );
+                            }
                         }}
                     >
                         Добавить
@@ -544,30 +546,30 @@ export default function Home() {
                 }
 
                 prepacksDataSource.push({
+                    ...prepack,
                     type: "prepack",
                     key: `prepack-${prepackId}`,
                     id: prepackId,
                     projectId: projectId,
                     children: shelvesDataSource,
-                    ...prepack,
                 });
             }
 
             projectsDataSource.push({
+                ...project,
                 type: "project",
                 key: `project-${projectId}`,
                 id: projectId,
                 clientId: clientId,
                 children: prepacksDataSource,
-                ...project,
             });
         }
 
         clientsDataSource.push({
+            ...client,
             type: "client",
             key: `client-${clientId}`,
             id: clientId,
-            ...client,
             children: projectsDataSource,
         });
     }

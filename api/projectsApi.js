@@ -205,6 +205,7 @@ export async function makeShelf(shelf, prepack, products) {
     for (let rowId in shelf.children) {
         let row = shelf.children[rowId];
         let product = products[row.productId];
+        if (product.depth > 1) product.depth = 1;
         const count = Math.floor(prepack.depth / product.depth);
         let depth = 0;
         left += row.left;
