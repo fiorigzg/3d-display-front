@@ -240,7 +240,7 @@ export async function makeShelf(shelf, prepack, products) {
 
 export async function makePrepack(prepack) {
     window.open(
-        `http://localhost:3000/shelfHeight?poulticeId=${prepack.id}`,
+        `http://94.103.83.218:3001/shelfHeight?poulticeId=${prepack.id}`,
         "_blank",
     );
 }
