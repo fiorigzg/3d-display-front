@@ -26,8 +26,7 @@ export const useShelvesStore = create((set, get) => ({
         });
     },
     saveAll: async (standImageDataUrl) => {
-        let standImageName = `paultice_${get().standId}.png`;
-        await saveAll(standImageDataUrl, standImageName);
+        await saveAll(standImageDataUrl, get().standId);
     },
 
     setShelfSpacing: (shelfSpacingId, value) =>

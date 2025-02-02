@@ -86,7 +86,7 @@ export async function getAll(partWidths) {
     };
 }
 
-export async function saveAll(standImageDataUrl, standImageName) {
+export async function saveAll(standImageDataUrl, standId) {
     try {
         const standImageRes = await axios({
             method: "get",
@@ -94,9 +94,13 @@ export async function saveAll(standImageDataUrl, standImageName) {
             responseType: "blob",
         });
         const standImageBlob = standImageRes.data;
-        const standImageFile = new File([standImageBlob], standImageName, {
-            type: standImageBlob.type,
-        });
+        const standImageFile = new File(
+            [standImageBlob],
+            `paultice_${standId}.png`,
+            {
+                type: standImageBlob.type,
+            },
+        );
         const standImageFormData = new FormData();
         standImageFormData.append("file", standImageFile);
 
@@ -109,6 +113,10 @@ export async function saveAll(standImageDataUrl, standImageName) {
                 save_name: true,
             },
         });
+
+        window.location.replace(
+            `http://94.103.83.218:8080/prepack?id=${standId}`,
+        );
     } catch (error) {
         console.error("Error saving all data:", error);
     }
