@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { Table, Button, Select, Upload, message } from "antd";
+import { Table, Button, Input, Upload, message } from "antd";
 import {
     PlusOutlined,
     DeleteOutlined,
@@ -11,14 +11,6 @@ import {
 import { serverUrl } from "constants/main";
 import styles from "./page.module.scss";
 import { useProductsStore } from "store/productsStore";
-
-const packageTypeNames = [
-    "1: Овал/Blister",
-    "2: Короб",
-    "3: Спичечный",
-    "4: Подвесной",
-    "5: Накопочный короб",
-];
 
 export default function Home() {
     const productsStore = useProductsStore();
@@ -33,36 +25,34 @@ export default function Home() {
             dataIndex: "name",
             key: "name",
             fixed: "left",
-            width: 200,
-            render: (text, record) =>
-                text == null ? null : (
-                    <Select
+            width: 170,
+            render: (text, record) => {
+                const onEnter = (e) =>
+                    productsStore.changePackageType(
+                        record.id,
+                        "name",
+                        e.target.value,
+                        "text",
+                        true,
+                    );
+                return text == null ? null : (
+                    <Input
                         size="small"
                         value={text}
-                        placeholder="Название"
-                        style={{
-                            width: "200px",
-                        }}
-                        onChange={(value) =>
+                        onChange={(e) =>
                             productsStore.changePackageType(
                                 record.id,
                                 "name",
-                                value,
+                                e.target.value,
                                 "text",
-                                true,
+                                false,
                             )
                         }
-                    >
-                        {packageTypeNames.map((packageTypeName) => (
-                            <Select.Option
-                                key={packageTypeName}
-                                value={packageTypeName}
-                            >
-                                {packageTypeName}
-                            </Select.Option>
-                        ))}
-                    </Select>
-                ),
+                        onBlur={onEnter}
+                        onPressEnter={onEnter}
+                    />
+                );
+            },
         },
         {
             title: "Объект товара",
@@ -102,7 +92,7 @@ export default function Home() {
             },
         },
         {
-            title: "Действие",
+            title: "Добавление/удаление",
             dataIndex: "action",
             key: "action",
             width: 100,
@@ -130,6 +120,23 @@ export default function Home() {
                     </Button>
                 ),
         },
+        {
+            title: "Копирование",
+            dataIndex: "action",
+            key: "copy",
+            width: 100,
+            render: (text, record) =>
+                text == "other" ? (
+                    <Button
+                        size="small"
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={() => productsStore.copyPackageType(record.id)}
+                    >
+                        Копировать
+                    </Button>
+                ) : null,
+        },
     ];
 
     let dataSource = [];
@@ -138,7 +145,7 @@ export default function Home() {
         dataSource.push({
             ...packageType,
             id: packageTypeId,
-            action: "delete",
+            action: "other",
             key: packageTypeId,
         });
     }

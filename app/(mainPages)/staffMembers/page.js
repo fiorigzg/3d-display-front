@@ -76,6 +76,23 @@ export default function Home() {
                     </Button>
                 ),
         },
+        {
+            title: "Копирование",
+            dataIndex: "action",
+            key: "copy",
+            width: 100,
+            render: (text, record) =>
+                text == "other" ? (
+                    <Button
+                        size="small"
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={() => staffStore.copyMember(record.id)}
+                    >
+                        Копировать
+                    </Button>
+                ) : null,
+        },
     ];
 
     let dataSource = [];
@@ -84,7 +101,7 @@ export default function Home() {
         dataSource.push({
             ...member,
             id: memberId,
-            action: "delete",
+            action: "other",
             key: memberId,
         });
     }

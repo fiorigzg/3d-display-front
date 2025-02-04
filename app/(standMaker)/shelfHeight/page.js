@@ -7,18 +7,18 @@ import { serverUrl } from "constants/main";
 import { useShelvesStore } from "store/shelvesStore";
 import styles from "./page.module.scss";
 import Info from "components/Info";
+import VerticalSize from "components/VerticalSize";
 
 export default function Home() {
     const standRef = useRef(null);
     const shelvesStore = useShelvesStore();
-
-    console.log(shelvesStore);
 
     useEffect(() => {
         shelvesStore.initAll();
     }, []);
 
     let shelfBoxesArr = [];
+    let firstShelfTopPoint = 0;
     const { scale, standWidth, standHeight } = shelvesStore;
 
     let marginTop = shelvesStore.partWidths.top;
@@ -37,6 +37,13 @@ export default function Home() {
             productId++
         ) {
             let product = shelfProducts[productId - 1];
+
+            if (shelfSpacingId == 1)
+                firstShelfTopPoint = Math.max(
+                    firstShelfTopPoint,
+                    product.bottom + product.height,
+                );
+
             productsArr.push(
                 <img
                     src={`${serverUrl}/loadfile/${product.image}`}
@@ -84,17 +91,19 @@ export default function Home() {
                     left: `calc(50% - ${(standWidth / 2) * scale}px + ${shelvesStore.partWidths.side * scale}px)`,
                 }}
             >
-                <Info
-                    key={shelfSpacingId}
-                    value={shelfSpacing}
-                    style={{
-                        top: `calc(50% - 12px)`,
-                        left: `calc(100% + ${shelvesStore.partWidths.side * scale}px + 10px)`,
-                    }}
-                    onEnter={(value) => {
-                        shelvesStore.setShelfSpacing(shelfSpacingId, value);
-                    }}
-                />
+                {shelvesStore.step == "make" ? (
+                    <Info
+                        key={shelfSpacingId}
+                        value={shelfSpacing}
+                        style={{
+                            top: `calc(50% - 12px)`,
+                            left: `calc(100% + ${shelvesStore.partWidths.side * scale}px + 10px)`,
+                        }}
+                        onEnter={(value) => {
+                            shelvesStore.setShelfSpacing(shelfSpacingId, value);
+                        }}
+                    />
+                ) : null}
                 {productsArr}
                 {linersArr}
             </div>,
@@ -121,24 +130,45 @@ export default function Home() {
                         left: `calc(50% - ${(standWidth / 2) * scale}px)`,
                     }}
                 >
-                    <Info
-                        key={-1}
-                        value={standHeight}
-                        style={{
-                            top: `calc(50% - 12px)`,
-                            left: `calc(50% - ${(standWidth / 2) * scale}px - 65px)`,
-                        }}
-                        isActive={false}
-                    />
-                    <Info
-                        key={-2}
-                        value={standWidth}
-                        style={{
-                            top: `calc(50% - ${(standHeight / 2) * scale}px - 32px)`,
-                            left: `calc(50% - 27px)`,
-                        }}
-                        isActive={false}
-                    />
+                    {shelvesStore.step == "make" ? (
+                        <div>
+                            <Info
+                                key={-1}
+                                value={standHeight}
+                                style={{
+                                    top: `calc(50% - 12px)`,
+                                    left: `calc(50% - ${(standWidth / 2) * scale}px - 65px)`,
+                                }}
+                                isActive={false}
+                            />
+                            <Info
+                                key={-2}
+                                value={standWidth}
+                                style={{
+                                    top: `calc(50% - ${(standHeight / 2) * scale}px - 32px)`,
+                                    left: `calc(50% - 27px)`,
+                                }}
+                                isActive={false}
+                            />
+                        </div>
+                    ) : null}
+                    {shelvesStore.step == "send" ? (
+                        <div>
+                            <VerticalSize
+                                value={
+                                    shelvesStore.shelfSpacings -
+                                    firstShelfTopPoint
+                                }
+                                height={
+                                    (shelvesStore.shelfSpacings -
+                                        firstShelfTopPoint) *
+                                    scale
+                                }
+                                left={-40}
+                                top={0}
+                            />
+                        </div>
+                    ) : null}
                     {shelfBoxesArr}
                 </div>
             </div>
@@ -146,16 +176,20 @@ export default function Home() {
                 <button
                     className={styles.completeBtn}
                     onClick={() => {
-                        html2canvas(standRef.current, {
-                            useCORS: true,
-                            allowTaint: true,
-                        }).then((canvas) => {
-                            const dataUrl = canvas.toDataURL("image/png");
-                            shelvesStore.saveAll(dataUrl);
-                        });
+                        if (shelvesStore.step == "make")
+                            shelvesStore.nextStep();
+                        else {
+                            html2canvas(standRef.current, {
+                                useCORS: true,
+                                allowTaint: true,
+                            }).then((canvas) => {
+                                const dataUrl = canvas.toDataURL("image/png");
+                                shelvesStore.saveAll(dataUrl);
+                            });
+                        }
                     }}
                 >
-                    Закончить
+                    {shelvesStore.step == "make" ? "Закончить" : "Отправить"}
                 </button>
             </div>
         </main>

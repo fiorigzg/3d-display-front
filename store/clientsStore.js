@@ -5,6 +5,7 @@ import { clientFields } from "constants/fields";
 import {
     getAll,
     createOne,
+    copyOne,
     deleteOne,
     checkValueType,
     changeOne,
@@ -34,6 +35,18 @@ export const useClientsStore = create((set) => ({
         set((state) => {
             let clients = state.clients;
             clients[id] = client;
+            return {
+                clients: clients,
+            };
+        });
+    },
+    copyClient: async (id) => {
+        const copiedId = await copyOne(`/client_${id}`, clientFields);
+
+        set((state) => {
+            let clients = state.clients;
+            let client = { ...clients[id] };
+            clients[copiedId] = client;
             return {
                 clients: clients,
             };

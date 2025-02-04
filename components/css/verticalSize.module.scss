@@ -1,0 +1,20 @@
+.verticalSize {
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    div {
+        height: 100%;
+        width: 2px;
+        background-color: #8a86ce;
+    }
+
+    p {
+        width: 15px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #8a86ce;
+        transform: rotate(-90deg);
+    }
+}

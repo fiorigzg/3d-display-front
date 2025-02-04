@@ -4,6 +4,7 @@ import { create } from "zustand";
 import { getAll, saveAll } from "api/shelvesApi";
 
 export const useShelvesStore = create((set, get) => ({
+    step: "make",
     standId: 0,
     standHeight: 100,
     standWidth: 100,
@@ -16,6 +17,16 @@ export const useShelvesStore = create((set, get) => ({
         top: 10,
         bottom: 20,
         shelf: 30,
+    },
+
+    nextStep: async () => {
+        set((state) => {
+            let step;
+            if (state.step == "make") step = "send";
+            else if (state.step == "send") step = "done";
+
+            return { step: step };
+        });
     },
 
     initAll: async () => {

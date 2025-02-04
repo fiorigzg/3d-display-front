@@ -1,23 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
-import { Table, Button, Select } from "antd";
+import { Table, Button, Input } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 
 import styles from "./page.module.scss";
 import { useProjectsStore } from "store/projectsStore";
-
-const prepackTypeNames = [
-    "1/4 напольный патент",
-    "1/4 напольный эконом",
-    "1/4 напольный на держателях",
-    "1/4 напольный обейджик",
-    "1/8 напольный патент",
-    "1/8 напольный эконом",
-    "1/8 напольный на держателях",
-    "1/8 напольный обейджик",
-    "Подвесной",
-];
 
 export default function Home() {
     const projectsStore = useProjectsStore();
@@ -32,36 +20,34 @@ export default function Home() {
             dataIndex: "name",
             key: "name",
             fixed: "left",
-            width: 200,
-            render: (text, record) =>
-                text == null ? null : (
-                    <Select
+            width: 170,
+            render: (text, record) => {
+                const onEnter = (e) =>
+                    projectsStore.changePrepackType(
+                        record.id,
+                        "name",
+                        e.target.value,
+                        "text",
+                        true,
+                    );
+                return text == null ? null : (
+                    <Input
                         size="small"
                         value={text}
-                        placeholder="Название"
-                        style={{
-                            width: "250px",
-                        }}
-                        onChange={(value) =>
+                        onChange={(e) =>
                             projectsStore.changePrepackType(
                                 record.id,
                                 "name",
-                                value,
+                                e.target.value,
                                 "text",
-                                true,
+                                false,
                             )
                         }
-                    >
-                        {prepackTypeNames.map((prepackTypeName) => (
-                            <Select.Option
-                                key={prepackTypeName}
-                                value={prepackTypeName}
-                            >
-                                {prepackTypeName}
-                            </Select.Option>
-                        ))}
-                    </Select>
-                ),
+                        onBlur={onEnter}
+                        onPressEnter={onEnter}
+                    />
+                );
+            },
         },
         {
             title: "Действие",
@@ -92,6 +78,23 @@ export default function Home() {
                     </Button>
                 ),
         },
+        {
+            title: "Копирование",
+            dataIndex: "action",
+            key: "copy",
+            width: 100,
+            render: (text, record) =>
+                text == "other" ? (
+                    <Button
+                        size="small"
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={() => projectsStore.copyPrepackType(record.id)}
+                    >
+                        Копировать
+                    </Button>
+                ) : null,
+        },
     ];
 
     let dataSource = [];
@@ -99,7 +102,7 @@ export default function Home() {
         const prepackType = projectsStore.prepackTypes[prepackTypeId];
         dataSource.push({
             ...prepackType,
-            action: "delete",
+            action: "other",
             key: prepackTypeId,
             id: prepackTypeId,
         });

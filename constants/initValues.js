@@ -1,6 +1,6 @@
 export const initProduct = {
     id: 1,
-    name: "Product",
+    name: "Новый товар",
     width: 0,
     height: 0,
     depth: 0,
@@ -16,12 +16,12 @@ export const initProduct = {
 
 export const initCategory = {
     id: 1,
-    name: "Category",
+    name: "Новая категория",
 };
 
 export const initPackageType = {
     id: 1,
-    name: "1: Овал/Blister",
+    name: "Новый тип упаковки",
     object: "",
     frontSvg: "",
     sideSvg: "",
@@ -30,29 +30,29 @@ export const initPackageType = {
 
 export const initClient = {
     id: 1,
-    name: "Client",
+    name: "Новый клиент",
 };
 
 export const initPrepackType = {
     id: 1,
-    name: "1/8 напольный на держателях",
+    name: "Новый тип препака",
 };
 
 export const initMember = {
     id: 1,
-    name: "Staff member",
+    name: "Новый сотрудник",
 };
 
 export const initProject = {
     id: 1,
     clientId: 1,
-    name: "Project",
+    name: "Новый проект",
 };
 
 export const initPrepack = {
     id: 1,
     projectId: 1,
-    name: "Prepack",
+    name: "Новый препак",
     width: 10,
     height: 20,
     depth: 30,

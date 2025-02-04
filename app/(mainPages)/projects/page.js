@@ -24,6 +24,28 @@ export default function Home() {
         projectsStore.initPrepackTypes();
     }, []);
 
+    const rowParams = {
+        client: {
+            name: "клиента",
+            nextName: "препроект",
+        },
+        project: {
+            name: "препроект",
+            nextName: "препак",
+        },
+        prepack: {
+            name: "препак",
+            nextName: "полку",
+        },
+        shelf: {
+            name: "полку",
+            nextName: "ряд",
+        },
+        row: {
+            name: "ряд",
+        },
+    };
+
     const columns = [
         {
             title: "Клиент",
@@ -412,16 +434,14 @@ export default function Home() {
                                 projectsStore.createPrepack(record.id);
                             else if (record.type == "prepack")
                                 projectsStore.createShelf(record.id);
-                            else if (record.type == "shelf") {
-                                console.log(record.id);
+                            else if (record.type == "shelf")
                                 projectsStore.createRow(
                                     record.prepackId,
                                     record.id,
                                 );
-                            }
                         }}
                     >
-                        Добавить
+                        Добавить {rowParams[record.type].nextName}
                     </Button>
                 ) : null,
         },
@@ -437,22 +457,22 @@ export default function Home() {
                         danger
                         icon={<DeleteOutlined />}
                         onClick={() => {
-                            if (record.type === "project")
+                            if (record.type == "project")
                                 projectsStore.deleteProject(
                                     record.clientId,
                                     record.id,
                                 );
-                            else if (record.type === "prepack")
+                            else if (record.type == "prepack")
                                 projectsStore.deletePrepack(
                                     record.projectId,
                                     record.id,
                                 );
-                            else if (record.type === "shelf")
+                            else if (record.type == "shelf")
                                 projectsStore.deleteShelf(
                                     record.prepackId,
                                     record.id,
                                 );
-                            else if (record.type === "row")
+                            else if (record.type == "row")
                                 projectsStore.deleteRow(
                                     record.prepackId,
                                     record.shelfId,
@@ -460,7 +480,45 @@ export default function Home() {
                                 );
                         }}
                     >
-                        Удалить
+                        Удалить {rowParams[record.type].name}
+                    </Button>
+                ) : null,
+        },
+        {
+            title: "Копирование",
+            key: "action",
+            width: 100,
+            render: (text, record) =>
+                record.type !== "client" && record.type != "row" ? (
+                    <Button
+                        size="small"
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={() => {
+                            if (record.type == "project")
+                                projectsStore.copyProject(
+                                    record.clientId,
+                                    record.id,
+                                );
+                            else if (record.type == "prepack")
+                                projectsStore.copyPrepack(
+                                    record.projectId,
+                                    record.id,
+                                );
+                            else if (record.type == "shelf")
+                                projectsStore.copyShelf(
+                                    record.prepackId,
+                                    record.id,
+                                );
+                            else if (record.type == "row")
+                                projectsStore.copyRow(
+                                    record.prepackId,
+                                    record.shelfId,
+                                    record.id,
+                                );
+                        }}
+                    >
+                        Копировать {rowParams[record.type].name}
                     </Button>
                 ) : null,
         },
@@ -476,18 +534,22 @@ export default function Home() {
                         onClick={() => {
                             if (record.type == "shelf") {
                                 makeShelf(
-                                    record,
                                     projectsStore.prepacks[record.projectId][
                                         record.prepackId
                                     ],
+                                    record,
                                     productsStore.products[record.clientId],
                                 );
                             } else if (record.type == "prepack") {
-                                makePrepack(record);
+                                makePrepack(
+                                    record,
+                                    projectsStore.shelves[record.id],
+                                    productsStore.products[record.clientId],
+                                );
                             }
                         }}
                     >
-                        Спроектировать
+                        Спроектировать {rowParams[record.type].name}
                     </Button>
                 ) : null,
         },
@@ -551,6 +613,7 @@ export default function Home() {
                     key: `prepack-${prepackId}`,
                     id: prepackId,
                     projectId: projectId,
+                    clientId: clientId,
                     children: shelvesDataSource,
                 });
             }

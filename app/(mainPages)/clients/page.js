@@ -50,9 +50,9 @@ export default function Home() {
             },
         },
         {
-            title: "Действие",
+            title: "Добавление/удаление",
             dataIndex: "action",
-            key: "action",
+            key: "addOrDelete",
             width: 100,
             render: (text, record) =>
                 text == "add" ? (
@@ -76,6 +76,23 @@ export default function Home() {
                     </Button>
                 ),
         },
+        {
+            title: "Копирование",
+            dataIndex: "action",
+            key: "copy",
+            width: 100,
+            render: (text, record) =>
+                text == "other" ? (
+                    <Button
+                        size="small"
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={() => clientsStore.copyClient(record.id)}
+                    >
+                        Копировать
+                    </Button>
+                ) : null,
+        },
     ];
 
     let dataSource = [];
@@ -85,7 +102,7 @@ export default function Home() {
             ...client,
             key: clientId,
             id: clientId,
-            action: "delete",
+            action: "other",
         });
     }
     dataSource.push({ key: "add", id: null, name: null, action: "add" });

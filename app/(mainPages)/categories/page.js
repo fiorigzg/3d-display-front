@@ -50,7 +50,7 @@ export default function Home() {
             },
         },
         {
-            title: "Действие",
+            title: "Добавление/удаление",
             dataIndex: "action",
             key: "action",
             width: 100,
@@ -76,6 +76,23 @@ export default function Home() {
                     </Button>
                 ),
         },
+        {
+            title: "Копирование",
+            dataIndex: "action",
+            key: "copy",
+            width: 100,
+            render: (text, record) =>
+                text == "other" ? (
+                    <Button
+                        size="small"
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={() => productsStore.copyCategory(record.id)}
+                    >
+                        Копировать
+                    </Button>
+                ) : null,
+        },
     ];
 
     let dataSource = [];
@@ -84,7 +101,7 @@ export default function Home() {
         dataSource.push({
             ...category,
             id: categoryId,
-            action: "delete",
+            action: "other",
             key: categoryId,
         });
     }

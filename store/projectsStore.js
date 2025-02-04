@@ -1,5 +1,6 @@
-"use prepackType";
+"use client";
 
+import structuredClone from "@ungap/structured-clone";
 import { create } from "zustand";
 
 import {
@@ -15,10 +16,10 @@ import {
     prepackFields,
     shelfFields,
 } from "constants/fields";
-
 import {
     getAll,
     createOne,
+    copyOne,
     deleteOne,
     checkValueType,
     changeOne,
@@ -63,29 +64,42 @@ export const useProjectsStore = create((set, get) => ({
             };
         });
     },
-    deleteProject: async (clientId, projectId) => {
-        await deleteOne(`/project_${projectId}`);
+    copyProject: async (clientId, id) => {
+        const copiedId = await copyOne(`/project_${id}`, projectFields);
+
+        set((state) => {
+            let projects = state.projects;
+            const project = structuredClone(projects[clientId][id]);
+            projects[clientId][copiedId] = project;
+
+            return {
+                projects: projects,
+            };
+        });
+    },
+    deleteProject: async (clientId, id) => {
+        await deleteOne(`/project_${id}`);
 
         set((state) => {
             let projects = state.projects[clientId];
-            delete projects[projectId];
+            delete projects[id];
             return { projects: { ...state.projects, [clientId]: projects } };
         });
     },
-    changeProject: async (clientId, projectId, param, value, type, isReq) => {
+    changeProject: async (clientId, id, param, value, type, isReq) => {
         let realValue = checkValueType(value, type);
         if (realValue != null) {
             if (isReq)
                 await changeOne(
-                    `/project_${projectId}`,
+                    `/project_${id}`,
                     { [param]: realValue },
                     projectFields,
                 );
 
             set((state) => {
                 let projects = state.projects[clientId];
-                console.log(projects, projectId);
-                let project = projects[projectId];
+                console.log(projects, id);
+                let project = projects[id];
                 project[param] = realValue;
                 return {
                     projects: { ...state.projects, [clientId]: projects },
@@ -129,12 +143,24 @@ export const useProjectsStore = create((set, get) => ({
             };
         });
     },
-    deletePrepack: async (projectId, prepackId) => {
-        await deleteOne(`/poultice_${prepackId}`);
+    copyPrepack: async (projectId, id) => {
+        const copiedId = await copyOne(`/prepack_${id}`, prepackFields);
+
+        set((state) => {
+            let prepacks = state.prepacks;
+            let prepack = { ...prepacks[projectId][id] };
+            prepacks[projectId][copiedId] = prepack;
+            return {
+                prepacks: prepacks,
+            };
+        });
+    },
+    deletePrepack: async (projectId, id) => {
+        await deleteOne(`/poultice_${id}`);
 
         set((state) => {
             let prepacks = state.prepacks[projectId];
-            delete prepacks[prepackId];
+            delete prepacks[id];
             return { prepacks: { ...state.prepacks, [projectId]: prepacks } };
         });
     },
@@ -185,29 +211,41 @@ export const useProjectsStore = create((set, get) => ({
             };
         });
     },
-    deleteShelf: async (prepackId, shelfId) => {
-        await deleteOne(`/shelf_${shelfId}`);
+    copyShelf: async (prepackId, id) => {
+        const copiedId = await copyOne(`/shelf_${id}`, shelfFields);
+
+        set((state) => {
+            let shelves = state.shelves;
+            let shelf = { ...shelves[prepackId][id] };
+            shelves[prepackId][copiedId] = shelf;
+            return {
+                shelves: shelves,
+            };
+        });
+    },
+    deleteShelf: async (prepackId, id) => {
+        await deleteOne(`/shelf_${id}`);
 
         set((state) => {
             let shelves = state.shelves[prepackId];
-            delete shelves[shelfId];
+            delete shelves[id];
             return { shelves: { ...state.shelves, [prepackId]: shelves } };
         });
     },
-    changeShelf: async (prepackId, shelfId, param, value, type, isReq) => {
+    changeShelf: async (prepackId, id, param, value, type, isReq) => {
         let realValue = checkValueType(value, type);
         if (realValue != null) {
             if (isReq)
                 await changeOne(
-                    `/shelf_${shelfId}`,
+                    `/shelf_${id}`,
                     { [param]: realValue },
                     shelfFields,
                 );
 
             set((state) => {
                 let shelves = state.shelves[prepackId];
-                console.log(state.shelves, prepackId, shelves, shelfId);
-                let shelf = shelves[shelfId];
+                console.log(state.shelves, prepackId, shelves, id);
+                let shelf = shelves[id];
                 shelf[param] = realValue;
                 return { shelves: { ...state.shelves, [prepackId]: shelves } };
             });
@@ -248,13 +286,16 @@ export const useProjectsStore = create((set, get) => ({
             return { shelves: { ...state.shelves, [prepackId]: shelves } };
         });
     },
-    deleteRow: async (prepackId, shelfId, rowId) => {
+    copyRow: async (prepackId, shelfId, id) => {
+        console.log("Copy row");
+    },
+    deleteRow: async (prepackId, shelfId, id) => {
         let shelves = get().shelves[prepackId];
         let shelf = shelves[shelfId];
         let rows = shelf.rows;
 
         rows = Object.keys(rows)
-            .filter((objKey) => objKey !== rowId)
+            .filter((objKey) => objKey !== id)
             .reduce((newObj, key) => {
                 newObj[key] = rows[key];
                 return newObj;
@@ -295,6 +336,18 @@ export const useProjectsStore = create((set, get) => ({
         set((state) => {
             let prepackTypes = state.prepackTypes;
             prepackTypes[id] = prepackType;
+            return {
+                prepackTypes: prepackTypes,
+            };
+        });
+    },
+    copyPrepackType: async (id) => {
+        const copiedId = await copyOne(`/preptype_${id}`, prepackTypeFields);
+
+        set((state) => {
+            let prepackTypes = state.prepackTypes;
+            let prepackType = { ...prepackTypes[id] };
+            prepackTypes[copiedId] = prepackType;
             return {
                 prepackTypes: prepackTypes,
             };

@@ -445,8 +445,8 @@ export default function Home() {
             },
         },
         {
-            title: "Действие",
-            key: "action",
+            title: "Добавление/удаление",
+            key: "addOrDelete",
             width: 100,
             render: (text, record) =>
                 record.children ? (
@@ -458,7 +458,7 @@ export default function Home() {
                             productsStore.createProduct(Number(record.id))
                         }
                     >
-                        Добавить
+                        Добавить продукт
                     </Button>
                 ) : (
                     <Button
@@ -473,9 +473,30 @@ export default function Home() {
                             )
                         }
                     >
-                        Удалить
+                        Удалить продукт
                     </Button>
                 ),
+        },
+        {
+            title: "Копирование",
+            key: "copy",
+            width: 100,
+            render: (text, record) =>
+                !record.children ? (
+                    <Button
+                        size="small"
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={() =>
+                            productsStore.copyProduct(
+                                Number(record.clientId),
+                                Number(record.id),
+                            )
+                        }
+                    >
+                        Копировать продукт
+                    </Button>
+                ) : null,
         },
     ];
 

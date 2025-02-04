@@ -5,6 +5,7 @@ import { memberFields } from "constants/fields";
 import {
     getAll,
     createOne,
+    copyOne,
     deleteOne,
     checkValueType,
     changeOne,
@@ -35,6 +36,18 @@ export const useStaffStore = create((set) => ({
         set((state) => {
             let members = state.members;
             members[id] = member;
+            return {
+                members: members,
+            };
+        });
+    },
+    copyMember: async (id) => {
+        const copiedId = await copyOne(`/employee_${id}`, memberFields);
+
+        set((state) => {
+            let members = state.members;
+            let member = { ...members[id] };
+            members[copiedId] = member;
             return {
                 members: members,
             };

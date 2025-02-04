@@ -29,6 +29,16 @@ export async function createOne(endpoint, idFieldName, json, fields) {
     return res.data[idFieldName];
 }
 
+export async function copyOne(endpoint) {
+    console.log(`${endpoint} copied`);
+    const id = Math.round(Math.random() * 100 + 100);
+    return id;
+}
+
+export async function copyMultiple(endpoint, idsFieldName) {
+    console.log(`${endpoint} copied`);
+}
+
 export async function deleteOne(endpoint) {
     const res = await axios.delete(`${serverUrl}${endpoint}`);
 }
