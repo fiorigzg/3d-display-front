@@ -156,11 +156,11 @@ export default function Home() {
                         <div>
                             <VerticalSize
                                 value={
-                                    shelvesStore.shelfSpacings -
+                                    shelvesStore.shelfSpacings[0] -
                                     firstShelfTopPoint
                                 }
                                 height={
-                                    (shelvesStore.shelfSpacings -
+                                    (shelvesStore.shelfSpacings[0] -
                                         firstShelfTopPoint) *
                                     scale
                                 }

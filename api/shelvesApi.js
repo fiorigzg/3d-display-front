@@ -21,6 +21,7 @@ export async function getAll(partWidths) {
     const shelves = (
         await axios.get(`${serverUrl}/shelves?poultice_id=${standId}`)
     ).data.shelves;
+    console.log("shelves get");
 
     let standWidth = stand.size_x;
     let standHeight = stand.size_y;
