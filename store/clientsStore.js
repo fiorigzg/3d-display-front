@@ -41,12 +41,13 @@ export const useClientsStore = create((set) => ({
         });
     },
     copyClient: async (id) => {
-        const copiedId = await copyOne(`/client_${id}`, clientFields);
+        const newIds = await copyOne("client", id);
+        const newId = newIds.find((el) => el.type == "client").id;
 
         set((state) => {
             let clients = state.clients;
             let client = { ...clients[id] };
-            clients[copiedId] = client;
+            clients[newId] = client;
             return {
                 clients: clients,
             };

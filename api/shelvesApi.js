@@ -5,7 +5,6 @@ import { serverUrl } from "constants/main";
 export async function getAll(partWidths) {
     let productImageNames = {};
     async function getProductImageName(productId) {
-        console.log(productId);
         if (!(productId in productImageNames)) {
             let product = (await axios.get(`${serverUrl}/product_${productId}`))
                 .data.product;
@@ -21,7 +20,6 @@ export async function getAll(partWidths) {
     const shelves = (
         await axios.get(`${serverUrl}/shelves?poultice_id=${standId}`)
     ).data.shelves;
-    console.log("shelves get");
 
     let standWidth = stand.size_x;
     let standHeight = stand.size_y;

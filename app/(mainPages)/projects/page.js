@@ -297,7 +297,6 @@ export default function Home() {
             key: "shelfHeight",
             width: 110,
             render: (text, record) => {
-                if (record.type == "shelf") console.log(text, record);
                 const onEnter = (e) =>
                     projectsStore.changeShelf(
                         record.prepackId,

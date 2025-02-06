@@ -1,6 +1,7 @@
 import axios from "axios";
 
 import { serverUrl } from "constants/main";
+import { newIdFields } from "constants/fields";
 
 export async function getAll(endpoint, resFieldName, fields) {
     const res = await axios.get(`${serverUrl}${endpoint}`);
@@ -29,14 +30,32 @@ export async function createOne(endpoint, idFieldName, json, fields) {
     return res.data[idFieldName];
 }
 
-export async function copyOne(endpoint) {
-    console.log(`${endpoint} copied`);
-    const id = Math.round(Math.random() * 100 + 100);
-    return id;
-}
+export async function copyOne(model, id) {
+    const typeChange = {
+        poultice: "prepack",
+        prepack: "poultice",
+    };
+    if (model in typeChange) model = typeChange[model];
 
-export async function copyMultiple(endpoint, idsFieldName) {
-    console.log(`${endpoint} copied`);
+    let res = await axios.post(`${serverUrl}/clone_${model}_${id}`);
+    let newIds = [];
+
+    for (let newInstance of res.data.new_instances) {
+        let newId = {};
+
+        for (const field in newIdFields) {
+            if (newIdFields[field] in newInstance)
+                newId[field] = newInstance[newIdFields[field]];
+        }
+
+        if (newId.type in typeChange) newId.type = typeChange[newId.type];
+        if (newId.parentType in typeChange)
+            newId.parentType = typeChange[newId.parentType];
+
+        newIds.push(newId);
+    }
+
+    return newIds;
 }
 
 export async function deleteOne(endpoint) {

@@ -3,7 +3,6 @@ import axios from "axios";
 import { serverUrl } from "constants/main";
 
 export async function makeShelf(prepack, shelf, products, openPage = true) {
-    console.log(prepack, shelf, products);
     let elems = [];
     let left = 0;
     for (let rowId in shelf.rows) {
@@ -31,7 +30,6 @@ export async function makeShelf(prepack, shelf, products, openPage = true) {
         }
         left += product.width;
     }
-    console.log(elems);
     let res = await axios.put(`${serverUrl}/shelf_${shelf.id}`, {
         json_shelf: { elems: elems },
     });

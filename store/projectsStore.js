@@ -65,13 +65,13 @@ export const useProjectsStore = create((set, get) => ({
         });
     },
     copyProject: async (clientId, id) => {
-        const copiedId = await copyOne(`/project_${id}`, projectFields);
+        const newIds = await copyOne("project", id);
+        const newId = newIds.find((el) => el.type == "project").id;
 
         set((state) => {
             let projects = state.projects;
-            const project = structuredClone(projects[clientId][id]);
-            projects[clientId][copiedId] = project;
-
+            let project = { ...projects[clientId][id] };
+            projects[clientId][newId] = project;
             return {
                 projects: projects,
             };
@@ -144,12 +144,13 @@ export const useProjectsStore = create((set, get) => ({
         });
     },
     copyPrepack: async (projectId, id) => {
-        const copiedId = await copyOne(`/prepack_${id}`, prepackFields);
+        const newIds = await copyOne("prepack", id);
+        const newId = newIds.find((el) => el.type == "prepack").id;
 
         set((state) => {
             let prepacks = state.prepacks;
             let prepack = { ...prepacks[projectId][id] };
-            prepacks[projectId][copiedId] = prepack;
+            prepacks[projectId][newId] = prepack;
             return {
                 prepacks: prepacks,
             };
@@ -192,8 +193,6 @@ export const useProjectsStore = create((set, get) => ({
             shelfFields,
         );
 
-        console.log(shelves);
-
         set((state) => {
             return { shelves: { ...state.shelves, [prepackId]: shelves } };
         });
@@ -212,12 +211,13 @@ export const useProjectsStore = create((set, get) => ({
         });
     },
     copyShelf: async (prepackId, id) => {
-        const copiedId = await copyOne(`/shelf_${id}`, shelfFields);
+        const newIds = await copyOne("shelf", id);
+        const newId = newIds.find((el) => el.type == "shelf").id;
 
         set((state) => {
             let shelves = state.shelves;
             let shelf = { ...shelves[prepackId][id] };
-            shelves[prepackId][copiedId] = shelf;
+            shelves[prepackId][newId] = shelf;
             return {
                 shelves: shelves,
             };

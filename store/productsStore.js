@@ -62,7 +62,19 @@ export const useProductsStore = create((set) => ({
             };
         });
     },
+    copyProduct: async (clientId, id) => {
+        const newIds = await copyOne("product", id);
+        const newId = newIds.find((el) => el.type == "product").id;
 
+        set((state) => {
+            let products = state.products;
+            let product = { ...products[clientId][id] };
+            products[clientId][newId] = product;
+            return {
+                products: products,
+            };
+        });
+    },
     deleteProduct: async (clientId, id) => {
         await deleteOne(`/product_${id}`);
 
@@ -100,18 +112,6 @@ export const useProductsStore = create((set) => ({
             });
         }
     },
-    copyProduct: async (clientId, id) => {
-        const copiedId = await copyOne(`/product_${id}`, productFields);
-
-        set((state) => {
-            let products = state.products;
-            let product = { ...products[clientId][id] };
-            products[clientId][copiedId] = product;
-            return {
-                products: products,
-            };
-        });
-    },
     initCategories: async () => {
         const categories = await getAll(
             "/product_categories",
@@ -141,15 +141,13 @@ export const useProductsStore = create((set) => ({
         });
     },
     copyCategory: async (id) => {
-        const copiedId = await copyOne(
-            `/productcategory_${id}`,
-            categoryFields,
-        );
+        const newIds = await copyOne("product_category", id);
+        const newId = newIds.find((el) => el.type == "product_category").id;
 
         set((state) => {
             let categories = state.categories;
             let category = { ...categories[id] };
-            categories[copiedId] = category;
+            categories[newId] = category;
             return {
                 categories: categories,
             };
@@ -195,7 +193,8 @@ export const useProductsStore = create((set) => ({
         );
 
         for (let packageTypeId in packageTypes) {
-            packageTypes[packageTypeId].object = "";
+            if (packageTypes[packageTypeId].object == null)
+                packageTypes[packageTypeId].object = "";
         }
 
         set((state) => {
@@ -220,15 +219,13 @@ export const useProductsStore = create((set) => ({
         });
     },
     copyPackageType: async (id) => {
-        const copiedId = await copyOne(
-            `/packagingtype_${id}`,
-            packageTypeFields,
-        );
+        const newIds = await copyOne("packaging_type", id);
+        const newId = newIds.find((el) => el.type == "packaging_type").id;
 
         set((state) => {
             let packageTypes = state.packageTypes;
             let packageType = { ...packageTypes[id] };
-            packageTypes[copiedId] = packageType;
+            packageTypes[newId] = packageType;
             return {
                 packageTypes: packageTypes,
             };

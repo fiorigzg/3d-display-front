@@ -11,6 +11,7 @@ export const packageTypeFields = {
     frontSvg: "front_svg",
     sideSvg: "side_svg",
     topSvg: "top_svg",
+    object: "object",
 };
 
 export const categoryFields = {
@@ -66,4 +67,9 @@ export const shelfFields = {
     length: "length",
     marginTop: "margin_top",
     marginBottom: "margin_bottom",
+};
+
+export const newIdFields = {
+    type: "type",
+    id: "id",
 };

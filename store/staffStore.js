@@ -42,12 +42,13 @@ export const useStaffStore = create((set) => ({
         });
     },
     copyMember: async (id) => {
-        const copiedId = await copyOne(`/employee_${id}`, memberFields);
+        const newIds = await copyOne("employee", id);
+        const newId = newIds.find((el) => el.type == "employee").id;
 
         set((state) => {
             let members = state.members;
             let member = { ...members[id] };
-            members[copiedId] = member;
+            members[newId] = member;
             return {
                 members: members,
             };
