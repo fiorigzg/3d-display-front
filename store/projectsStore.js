@@ -198,7 +198,7 @@ export const useProjectsStore = create((set, get) => ({
         });
     },
     createShelf: async (prepackId) => {
-        let shelf = { ...initShelf, prepackId };
+        let shelf = structuredClone({ ...initShelf, prepackId });
         let id = await createOne("/shelf", "shelf_id", shelf, shelfFields);
 
         set((state) => {

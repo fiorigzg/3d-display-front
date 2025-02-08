@@ -60,6 +60,7 @@ export const prepackFields = {
 
 export const shelfFields = {
     rows: "json_rows",
+    json: "json_shelf",
     productId: "product_id",
     prepackId: "poulticle_id",
     width: "width",

@@ -5,6 +5,7 @@ import { serverUrl } from "constants/main";
 export async function makeShelf(prepack, shelf, products, openPage = true) {
     let elems = [];
     let left = 0;
+    shelf.isMade = true;
     for (let rowId in shelf.rows) {
         let row = shelf.rows[rowId];
         let product = products[row.productId];
@@ -45,7 +46,15 @@ export async function makeShelf(prepack, shelf, products, openPage = true) {
 export async function makePrepack(prepack, shelves, products, openPage = true) {
     for (let shelfId in shelves) {
         let shelf = shelves[shelfId];
-        await makeShelf(prepack, { ...shelf, id: shelfId }, products, false);
+        if (!("elems" in shelf?.json)) {
+            console.log(products);
+            await makeShelf(
+                prepack,
+                { ...shelf, id: shelfId },
+                products,
+                false,
+            );
+        }
     }
 
     if (openPage)
