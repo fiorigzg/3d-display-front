@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import cx from "classnames";
 
 import styles from "./css/verticalTable.module.scss";
@@ -11,12 +12,15 @@ export default function VerticalTable({
     style = {},
     className = null,
 }) {
+    const realHeader = useMemo(() => header, [header]);
+    const realData = useMemo(() => data, [data]);
+
     let rowsArr = [];
-    for (const element of header) {
+    for (const element of realHeader) {
         const thisOnEnter =
             element.param != null
-                ? (e) => onEnter(element.param, e.target.value)
-                : (e) => element.onEnter(e.target.value);
+                ? (e) => onEnter(element.param, Number(e.target.value))
+                : (e) => element.onEnter(Number(e.target.value));
 
         rowsArr.push(
             <tr key={rowsArr.length}>
@@ -25,7 +29,7 @@ export default function VerticalTable({
                     <input
                         defaultValue={
                             element.param != null
-                                ? data[element.param]
+                                ? realData[element.param]
                                 : element.value
                         }
                         onKeyDown={(e) => {

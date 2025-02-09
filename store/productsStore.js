@@ -19,10 +19,11 @@ import {
     deleteOne,
     checkValueType,
     changeOne,
-} from "api/common";
+} from "api/commonApi";
 
 export const useProductsStore = create((set) => ({
     products: {},
+    productImages: {},
     categories: {},
     packageTypes: {},
 
@@ -112,6 +113,8 @@ export const useProductsStore = create((set) => ({
             });
         }
     },
+    getProductImage: async (id) => {},
+
     initCategories: async () => {
         const categories = await getAll(
             "/product_categories",

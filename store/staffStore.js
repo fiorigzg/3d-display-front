@@ -9,7 +9,7 @@ import {
     deleteOne,
     checkValueType,
     changeOne,
-} from "api/common";
+} from "api/commonApi";
 
 import { create } from "zustand";
 

@@ -28,9 +28,11 @@ export default function HorizontalTable({
         useTable({ columns: realColumns, data: realData });
 
     let rowsArr = [];
+    let ids = {};
     for (const element of realData) {
         let cellsArr = [];
-        console.log(element);
+        let thisIds = { ...ids };
+
         for (const column of realColumns) {
             const value = element[column.accessor];
             let button = null;
@@ -46,39 +48,84 @@ export default function HorizontalTable({
             }
 
             if (value != undefined) {
-                if (column.type == "const")
+                if (column.type == "id") {
+                    thisIds[column.accessor] = Number(value);
                     cellsArr.push(
                         <td key={cellsArr.length}>
                             {button}
                             {value}
                         </td>,
                     );
-                else if (column.type == "input")
+                } else if (column.type == "const") {
                     cellsArr.push(
                         <td key={cellsArr.length}>
-                            <input defaultValue={value} />
+                            {button}
+                            {value}
                         </td>,
                     );
-                else if (column.type == "select")
+                } else if (column.type == "input") {
+                    const thisOnEnter = (e) => {
+                        let newValue = e.target.value;
+                        if (column.isNumber) newValue = Number(newValue);
+                        column.onEnter(thisIds, newValue);
+                    };
                     cellsArr.push(
                         <td key={cellsArr.length}>
-                            <select>
-                                {column.options.map((option) => (
-                                    <option
-                                        key={option}
-                                        selected={option == value}
-                                    >
-                                        {option}
-                                    </option>
-                                ))}
+                            <input
+                                defaultValue={value}
+                                onKeyDown={(e) => {
+                                    if (e.key == "Enter") thisOnEnter(e);
+                                }}
+                                onBlur={thisOnEnter}
+                            />
+                        </td>,
+                    );
+                } else if (column.type == "select") {
+                    let optionsArr = [];
+                    for (const optionId in column.options) {
+                        const option = column.options[optionId];
+                        optionsArr.push(
+                            <option
+                                key={option}
+                                selected={optionId == value}
+                                value={optionId}
+                            >
+                                {option}
+                            </option>,
+                        );
+                    }
+
+                    cellsArr.push(
+                        <td key={cellsArr.length}>
+                            <select
+                                onChange={(e) =>
+                                    column.onSelect(
+                                        thisIds,
+                                        Number(e.target.value),
+                                    )
+                                }
+                            >
+                                {optionsArr}
                             </select>
                         </td>,
                     );
+                } else if (column.type == "button") {
+                    if (value)
+                        cellsArr.push(
+                            <td key={cellsArr.length}>
+                                <button onClick={() => column.onClick(thisIds)}>
+                                    {column.name}
+                                </button>
+                            </td>,
+                        );
+                    else cellsArr.push(<td key={cellsArr.length}></td>);
+                }
             } else {
                 cellsArr.push(<td key={cellsArr.length}></td>);
             }
         }
 
+        ids = { ...thisIds };
         rowsArr.push(<tr key={rowsArr.length}>{cellsArr}</tr>);
     }
 

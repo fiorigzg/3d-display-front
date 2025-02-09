@@ -9,13 +9,13 @@ export async function getAll(endpoint, resFieldName, fields) {
     let allData = {};
 
     for (const oneServerData of allServerData) {
-        if (!("active" in oneServerData) || oneServerData.active) {
-            let oneData = {};
-            for (const field in fields) {
-                oneData[field] = oneServerData[fields[field]];
-            }
-            allData[oneServerData.id] = oneData;
+        // if (!("active" in oneServerData) || oneServerData.active) {
+        let oneData = {};
+        for (const field in fields) {
+            oneData[field] = oneServerData[fields[field]];
         }
+        allData[oneServerData.id] = oneData;
+        // }
     }
 
     return allData;

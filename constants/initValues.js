@@ -67,9 +67,11 @@ export const initShelf = {
     width: 10,
     height: 0,
     length: 30,
-    marginTop: 0,
-    marginBottom: 0,
-    rows: [],
+    margin: 0,
+    padding: 0,
+    rows: {},
+    json: {},
+    isRows: true,
 };
 
 export const initRow = {

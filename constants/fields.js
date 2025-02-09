@@ -52,6 +52,13 @@ export const prepackFields = {
     width: "size_x",
     depth: "size_z",
     height: "size_y",
+    sideHeight: "sides_height_mm",
+    sideThickness: "sides_width_mm",
+    backThickness: "back_width_mm",
+    frontThickness: "front_width_mm",
+    shelfThickness: "shelf_width_mm",
+    frontonHeight: "fronton_height_mm",
+    topperHeight: "topper_height_mm",
     prepackTypeId: "type_id",
     projectId: "project_id",
     image: "image",
@@ -66,8 +73,14 @@ export const shelfFields = {
     width: "width",
     height: "heigth",
     length: "length",
-    marginTop: "margin_top",
-    marginBottom: "margin_bottom",
+    margin: "margin_top",
+    padding: "margin_bottom",
+    isRows: "active",
+};
+
+export const rowFields = {
+    left: "left",
+    productId: "product_id",
 };
 
 export const newIdFields = {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { Table, Button, Input, Select } from "antd";
+import { Table, Button, Input, Select, Typography } from "antd";
 import {
     UploadOutlined,
     PlusOutlined,
@@ -12,7 +12,8 @@ import styles from "./page.module.scss";
 import { useProjectsStore } from "store/projectsStore";
 import { useClientsStore } from "store/clientsStore";
 import { useProductsStore } from "store/productsStore";
-import { makeShelf, makePrepack } from "api/projectsApi";
+
+const { Text } = Typography;
 
 export default function Home() {
     const projectsStore = useProjectsStore();
@@ -35,14 +36,6 @@ export default function Home() {
         },
         prepack: {
             name: "препак",
-            nextName: "полку",
-        },
-        shelf: {
-            name: "полку",
-            nextName: "ряд",
-        },
-        row: {
-            name: "ряд",
         },
     };
 
@@ -129,112 +122,14 @@ export default function Home() {
             },
         },
         {
-            title: "Ширина препака",
-            dataIndex: "width",
-            key: "width",
-            width: 110,
-            render: (text, record) => {
-                const onEnter = (e) =>
-                    projectsStore.changePrepack(
-                        record.projectId,
-                        record.id,
-                        "width",
-                        e.target.value,
-                        "text",
-                        true,
-                    );
-                return record.type == "prepack" ? (
-                    <Input
-                        size="small"
-                        value={text}
-                        addonAfter="мм"
-                        onChange={(e) =>
-                            projectsStore.changePrepack(
-                                record.projectId,
-                                record.id,
-                                "width",
-                                e.target.value,
-                                "number",
-                                false,
-                            )
-                        }
-                        onBlur={onEnter}
-                        onPressEnter={onEnter}
-                    />
-                ) : null;
-            },
-        },
-        {
-            title: "Высота препака",
-            dataIndex: "height",
-            key: "prepackHeight",
-            width: 110,
-            render: (text, record) => {
-                const onEnter = (e) =>
-                    projectsStore.changePrepack(
-                        record.projectId,
-                        record.id,
-                        "height",
-                        e.target.value,
-                        "text",
-                        true,
-                    );
-                return record.type == "prepack" ? (
-                    <Input
-                        size="small"
-                        value={text}
-                        addonAfter="мм"
-                        onChange={(e) =>
-                            projectsStore.changePrepack(
-                                record.projectId,
-                                record.id,
-                                "height",
-                                e.target.value,
-                                "number",
-                                false,
-                            )
-                        }
-                        onBlur={onEnter}
-                        onPressEnter={onEnter}
-                    />
-                ) : null;
-            },
-        },
-        {
-            title: "Глубина препака",
-            dataIndex: "depth",
-            key: "depth",
-            width: 110,
-            render: (text, record) => {
-                const onEnter = (e) =>
-                    projectsStore.changePrepack(
-                        record.projectId,
-                        record.id,
-                        "depth",
-                        e.target.value,
-                        "text",
-                        true,
-                    );
-                return record.type == "prepack" ? (
-                    <Input
-                        size="small"
-                        value={text}
-                        addonAfter="мм"
-                        onChange={(e) =>
-                            projectsStore.changePrepack(
-                                record.projectId,
-                                record.id,
-                                "depth",
-                                e.target.value,
-                                "number",
-                                false,
-                            )
-                        }
-                        onBlur={onEnter}
-                        onPressEnter={onEnter}
-                    />
-                ) : null;
-            },
+            title: "Номер препака",
+            dataIndex: "prepackNumber",
+            key: "number",
+            width: 150,
+            render: (text, record) =>
+                record.type == "prepack" ? (
+                    <Text size="small">123{text}</Text>
+                ) : null,
         },
         {
             title: "Тип препака",
@@ -283,145 +178,11 @@ export default function Home() {
             },
         },
         {
-            title: "Полка",
-            dataIndex: "name",
-            key: "shelfName",
-            fixed: "left",
-            width: 80,
-            render: (text, record) =>
-                record.type == "shelf" ? <span>{text}</span> : null,
-        },
-        {
-            title: "Высота полки",
-            dataIndex: "height",
-            key: "shelfHeight",
-            width: 110,
-            render: (text, record) => {
-                const onEnter = (e) =>
-                    projectsStore.changeShelf(
-                        record.prepackId,
-                        record.id,
-                        "height",
-                        e.target.value,
-                        "text",
-                        true,
-                    );
-                return record.type == "shelf" ? (
-                    <Input
-                        size="small"
-                        value={text}
-                        addonAfter="мм"
-                        onChange={(e) =>
-                            projectsStore.changeShelf(
-                                record.prepackId,
-                                record.id,
-                                "height",
-                                e.target.value,
-                                "number",
-                                false,
-                            )
-                        }
-                        onBlur={onEnter}
-                        onPressEnter={onEnter}
-                    />
-                ) : null;
-            },
-        },
-        {
-            title: "Отступ слева",
-            dataIndex: "left",
-            key: "left",
-            width: 110,
-            render: (text, record) => {
-                const onEnter = (e) =>
-                    projectsStore.changeRow(
-                        record.prepackId,
-                        record.shelfId,
-                        record.id,
-                        "left",
-                        e.target.value,
-                        "number",
-                        true,
-                    );
-                return record.type == "row" ? (
-                    <Input
-                        size="small"
-                        value={text}
-                        addonAfter="мм"
-                        onChange={(e) =>
-                            projectsStore.changeRow(
-                                record.prepackId,
-                                record.shelfId,
-                                record.id,
-                                "left",
-                                e.target.value,
-                                "number",
-                                false,
-                            )
-                        }
-                        onBlur={onEnter}
-                        onPressEnter={onEnter}
-                    />
-                ) : null;
-            },
-        },
-        {
-            title: "Продукт",
-            dataIndex: "productId",
-            key: "productId",
-            width: 150,
-            render: (id, record) => {
-                if (record.type == "row") {
-                    let productsArr = [];
-                    for (const productId in productsStore.products[
-                        record.clientId
-                    ]) {
-                        let product =
-                            productsStore.products[record.clientId][productId];
-                        product.id = productId;
-                        productsArr.push(product);
-                    }
-                    return (
-                        <Select
-                            size="small"
-                            value={
-                                productsStore.products[record.clientId][id]
-                                    ?.name
-                            }
-                            placeholder="Продукта"
-                            onChange={(value) =>
-                                projectsStore.changeRow(
-                                    record.prepackId,
-                                    record.shelfId,
-                                    record.id,
-                                    "productId",
-                                    value,
-                                    "number",
-                                    true,
-                                )
-                            }
-                        >
-                            {productsArr.map((product) => (
-                                <Select.Option
-                                    key={product.id}
-                                    value={product.id}
-                                >
-                                    {product.name}
-                                </Select.Option>
-                            ))}
-                        </Select>
-                    );
-                } else {
-                    return null;
-                }
-            },
-        },
-        {
             title: "Добавление",
             key: "action",
             width: 100,
             render: (text, record) =>
-                record.type != "row" ? (
+                record.type != "prepack" ? (
                     <Button
                         size="small"
                         type="primary"
@@ -431,13 +192,6 @@ export default function Home() {
                                 projectsStore.createProject(record.id);
                             else if (record.type == "project")
                                 projectsStore.createPrepack(record.id);
-                            else if (record.type == "prepack")
-                                projectsStore.createShelf(record.id);
-                            else if (record.type == "shelf")
-                                projectsStore.createRow(
-                                    record.prepackId,
-                                    record.id,
-                                );
                         }}
                     >
                         Добавить {rowParams[record.type].nextName}
@@ -464,17 +218,6 @@ export default function Home() {
                             else if (record.type == "prepack")
                                 projectsStore.deletePrepack(
                                     record.projectId,
-                                    record.id,
-                                );
-                            else if (record.type == "shelf")
-                                projectsStore.deleteShelf(
-                                    record.prepackId,
-                                    record.id,
-                                );
-                            else if (record.type == "row")
-                                projectsStore.deleteRow(
-                                    record.prepackId,
-                                    record.shelfId,
                                     record.id,
                                 );
                         }}
@@ -504,17 +247,6 @@ export default function Home() {
                                     record.projectId,
                                     record.id,
                                 );
-                            else if (record.type == "shelf")
-                                projectsStore.copyShelf(
-                                    record.prepackId,
-                                    record.id,
-                                );
-                            else if (record.type == "row")
-                                projectsStore.copyRow(
-                                    record.prepackId,
-                                    record.shelfId,
-                                    record.id,
-                                );
                         }}
                     >
                         Копировать {rowParams[record.type].name}
@@ -531,21 +263,12 @@ export default function Home() {
                         size="small"
                         type="primary"
                         onClick={() => {
-                            if (record.type == "shelf") {
-                                makeShelf(
-                                    projectsStore.prepacks[record.projectId][
-                                        record.prepackId
-                                    ],
-                                    record,
-                                    productsStore.products[record.clientId],
+                            if (record.type == "prepack")
+                                window.open(
+                                    `/prepack?id=${record.id}&clientId=${record.clientId}`,
+                                    // "mywin",
+                                    // `width=${window.screen.availWidth / 2},height=${window.screen.availHeight}`,
                                 );
-                            } else if (record.type == "prepack") {
-                                makePrepack(
-                                    record,
-                                    projectsStore.shelves[record.id],
-                                    productsStore.products[record.clientId],
-                                );
-                            }
                         }}
                     >
                         Спроектировать {rowParams[record.type].name}
@@ -572,40 +295,6 @@ export default function Home() {
                 prepacks = projectsStore.prepacks[projectId];
             for (const prepackId in prepacks) {
                 const prepack = prepacks[prepackId];
-
-                let shelvesDataSource = [];
-                let shelves = {};
-                if (prepackId in projectsStore.shelves)
-                    shelves = projectsStore.shelves[prepackId];
-                let shelfName = 1;
-                for (const shelfId in shelves) {
-                    const shelf = shelves[shelfId];
-
-                    for (const rowId in shelf.rows) {
-                        let row = shelf.rows[rowId];
-                        row.key = `row-${rowId}`;
-                        row.id = Number(rowId);
-                        row.shelfId = Number(shelfId);
-                        row.prepackId = Number(prepackId);
-                        row.projectId = Number(projectId);
-                        row.clientId = Number(clientId);
-                        row.type = "row";
-                    }
-
-                    shelvesDataSource.push({
-                        ...shelf,
-                        type: "shelf",
-                        key: `shelf-${shelfId}`,
-                        name: shelfName,
-                        id: shelfId,
-                        prepackId: prepackId,
-                        projectId: projectId,
-                        clientId: clientId,
-                        children: shelf.rows,
-                    });
-                    shelfName++;
-                }
-
                 prepacksDataSource.push({
                     ...prepack,
                     type: "prepack",
@@ -613,7 +302,6 @@ export default function Home() {
                     id: prepackId,
                     projectId: projectId,
                     clientId: clientId,
-                    children: shelvesDataSource,
                 });
             }
 
