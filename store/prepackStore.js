@@ -1,5 +1,6 @@
 "use client";
 
+import structuredClone from "@ungap/structured-clone";
 import { create } from "zustand";
 import {
     getAll,
@@ -49,14 +50,7 @@ export const usePrepackStore = create((set, get) => ({
         sendPrepackImage(dataUrl, id);
     },
 
-    shelves: {
-        1: {
-            isExtended: false,
-            margin: 10,
-            padding: 0,
-            rows: { 1: { productId: 2, left: 0 } },
-        },
-    },
+    shelves: {},
     changeShelvesCount: async (value) => {
         let shelves = get().shelves;
         let prepackId = get().id;
@@ -115,11 +109,14 @@ export const usePrepackStore = create((set, get) => ({
 
     changeRowsCount: async (ids, value, defaultProductId) => {
         let shelves = get().shelves;
-        let rows = shelves[ids.shelfId].rows;
+        let rows = structuredClone(shelves[ids.shelfId].rows);
         let count = Object.keys(rows).length;
         if (count < value) {
             for (let i = count + 1; i <= value; i++) {
-                rows[i] = { ...initRow, productId: defaultProductId };
+                rows[i] = {
+                    ...initRow,
+                    productId: defaultProductId,
+                };
             }
         } else {
             for (let i = count; i > value; i--) {
@@ -128,6 +125,7 @@ export const usePrepackStore = create((set, get) => ({
         }
         changeOne(`/shelf_${ids.shelfId}`, { rows: rows }, shelfFields);
 
+        shelves[ids.shelfId].rows = rows;
         set({ shelves: shelves });
     },
     changeRow: (ids, param, value) => {

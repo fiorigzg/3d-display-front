@@ -75,7 +75,7 @@ export const shelfFields = {
     length: "length",
     margin: "margin_top",
     padding: "margin_bottom",
-    isRows: "active",
+    isRows: "isRows",
 };
 
 export const rowFields = {

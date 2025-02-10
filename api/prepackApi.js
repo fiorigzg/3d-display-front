@@ -20,6 +20,7 @@ export async function getAll(id) {
         for (const field in shelfFields) {
             newShelves[shelf.id][field] = shelf[shelfFields[field]];
         }
+        console.log(newShelves[shelf.id]);
     }
 
     return {

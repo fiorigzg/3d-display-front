@@ -1,6 +1,5 @@
 "use client";
 
-import structuredClone from "@ungap/structured-clone";
 import { create } from "zustand";
 
 import {
