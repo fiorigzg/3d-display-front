@@ -153,6 +153,13 @@ export default function Home() {
             width: "90px",
             onClick: (ids) => prepackStore.updateShelfJson(ids),
         },
+        {
+            name: "Сброс к рядам",
+            type: "button",
+            param: "toRows",
+            width: "120px",
+            onClick: (ids) => prepackStore.changeShelf(ids, "isRows", true),
+        },
     ];
     let shelvesData = [];
     for (const shelfId in prepackStore.shelves) {
@@ -175,6 +182,7 @@ export default function Home() {
             rowsCount: Object.keys(shelf.rows).length,
             makeShelf: true,
             updateShelf: !shelf.isRows,
+            toRows: !shelf.isRows,
         });
 
         if (shelf.isExtended) {

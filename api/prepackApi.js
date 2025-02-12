@@ -38,41 +38,43 @@ export async function openShelfEditor(products, prepack, id) {
     let shelf = prepack.shelves[id];
     let shelfChanges = {};
 
-    let elems = [];
-    let left = 0;
-    for (let rowId in shelf.rows) {
-        const row = shelf.rows[rowId];
-        const product = products[row.productId];
+    if (shelf.isRows) {
+        let elems = [];
+        let left = shelf.padding;
+        for (let rowId in shelf.rows) {
+            const row = shelf.rows[rowId];
+            const product = products[row.productId];
 
-        left += row.left;
-        let count = Math.floor(prepack.depth / product.depth);
-        let depth = 0;
-        for (let i = 0; i < count; i++) {
-            elems.push({
-                x: left,
-                y: depth,
-                z: 0,
-                type: "goods",
-                depth: product.depth,
-                width: product.width,
-                height: product.height,
-                topSvg: product.packagingType.top_svg,
-                sideSvg: product.packagingType.side_svg,
-                productId: row.productId,
-                shelfIndex: id,
-            });
-            depth += product.depth;
+            left += row.left;
+            let count = Math.floor(prepack.depth / product.depth);
+            let depth = 0;
+            for (let i = 0; i < count; i++) {
+                elems.push({
+                    x: left,
+                    y: depth,
+                    z: 0,
+                    type: "goods",
+                    depth: product.depth,
+                    width: product.width,
+                    height: product.height,
+                    topSvg: product.packagingType.top_svg,
+                    sideSvg: product.packagingType.side_svg,
+                    productId: row.productId,
+                    shelfIndex: id,
+                });
+                depth += product.depth;
+            }
+            left += product.width;
         }
-        left += product.width;
-    }
-    shelfChanges.json = { elems: elems, inserts: [], partitions: [] };
-    shelfChanges.isRows = false;
+        shelfChanges.json = { elems: elems, inserts: [], partitions: [] };
+        shelfChanges.isRows = false;
 
-    let req = {};
-    for (const field in shelfFields) {
-        req[shelfFields[field]] = shelfChanges[field];
+        let req = {};
+        for (const field in shelfFields) {
+            req[shelfFields[field]] = shelfChanges[field];
+        }
+        let res = await axios.put(`${serverUrl}/shelf_${id}`, req);
     }
-    let res = await axios.put(`${serverUrl}/shelf_${id}`, req);
 
     window.open(
         `http://94.103.83.218:8080/?width=${prepack.width}&&height=${prepack.shelfThickness}&&length=${prepack.depth}&&shelf_id=${id}`,
