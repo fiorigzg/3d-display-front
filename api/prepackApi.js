@@ -46,7 +46,9 @@ export async function openShelfEditor(products, prepack, id) {
             const product = products[row.productId];
 
             left += row.left;
-            let count = Math.floor(prepack.depth / product.depth);
+            let count = Math.floor(
+                (prepack.depth - shelf.padding * 2) / product.depth,
+            );
             let depth = 0;
             for (let i = 0; i < count; i++) {
                 elems.push({
@@ -77,7 +79,12 @@ export async function openShelfEditor(products, prepack, id) {
     }
 
     window.open(
-        `http://94.103.83.218:8080/?width=${prepack.width}&&height=${prepack.shelfThickness}&&length=${prepack.depth}&&shelf_id=${id}`,
+        `http://94.103.83.218:8080/?width=${prepack.width - prepack.sideThickness * 2 - shelf.padding * 2}&&height=${prepack.shelfThickness}&&length=${
+            prepack.depth -
+            prepack.backThickness -
+            prepack.frontThickness -
+            shelf.padding * 2
+        }&&shelf_id=${id}`,
         "mywin",
         `width=${window.screen.availWidth / 2},height=${window.screen.availHeight}`,
     );

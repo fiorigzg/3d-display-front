@@ -251,7 +251,7 @@ export default function Home() {
                             style={{
                                 width: `${product.width * scale}px`,
                                 height: `${product.height * scale}px`,
-                                left: `${elem.x * scale}px`,
+                                left: `${(elem.x + shelf.padding) * scale}px`,
                                 bottom: `${(elem.z + prepackStore.shelfThickness) * scale + 1}px`,
                             }}
                         />,
@@ -265,32 +265,36 @@ export default function Home() {
                 }
             }
 
-            for (const stand of shelf.json.inserts) {
-                standsArr.push(
-                    <div
-                        className={styles.stand}
-                        style={{
-                            width: `${stand.width * scale}px`,
-                            height: `${stand.height * scale}px`,
-                            left: `${stand.x * scale}px`,
-                            bottom: `${(stand.z + prepackStore.shelfThickness) * scale + 1}px`,
-                        }}
-                    />,
-                );
+            if ("inserts" in shelf.json) {
+                for (const stand of shelf.json.inserts) {
+                    standsArr.push(
+                        <div
+                            className={styles.stand}
+                            style={{
+                                width: `${stand.width * scale}px`,
+                                height: `${stand.height * scale}px`,
+                                left: `${(stand.x + shelf.padding) * scale}px`,
+                                bottom: `${(stand.z + prepackStore.shelfThickness) * scale + 1}px`,
+                            }}
+                        />,
+                    );
+                }
             }
 
-            for (const partition of shelf.json.partitions) {
-                standsArr.push(
-                    <div
-                        className={styles.partition}
-                        style={{
-                            width: `${partition.width * scale}px`,
-                            height: `${partition.height * scale}px`,
-                            left: `${partition.x * scale}px`,
-                            bottom: `${(partition.z + prepackStore.shelfThickness) * scale + 1}px`,
-                        }}
-                    />,
-                );
+            if ("partition" in shelf.json) {
+                for (const partition of shelf.json.partitions) {
+                    standsArr.push(
+                        <div
+                            className={styles.partition}
+                            style={{
+                                width: `${partition.width * scale}px`,
+                                height: `${partition.height * scale}px`,
+                                left: `${(partition.x + shelf.padding) * scale}px`,
+                                bottom: `${(partition.z + prepackStore.shelfThickness) * scale + 1}px`,
+                            }}
+                        />,
+                    );
+                }
             }
         }
 
