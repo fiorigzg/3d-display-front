@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import html2canvas from "html2canvas";
 
 import { serverUrl } from "constants/main";
@@ -16,15 +16,24 @@ export default function Home() {
     const prepackStore = usePrepackStore();
     const productsStore = useProductsStore();
     const prepackContainerRef = useRef(null);
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const id = Number(urlParams.get("id"));
-    const clientId = Number(urlParams.get("clientId"));
+    const [queryParams, setQueryParams] = useState({
+        id: null,
+        clientId: null,
+    });
 
     useEffect(() => {
-        productsStore.initProducts(clientId);
-        prepackStore.initAll(id);
+        const urlParams = new URLSearchParams(window.location.search);
+
+        setQueryParams({
+            id: Number(urlParams.get("id")),
+            clientId: Number(urlParams.get("clientId")),
+        });
     }, []);
+    useEffect(() => {
+        if (queryParams.clientId != null)
+            productsStore.initProducts(queryParams.clientId);
+        if (queryParams.id != null) prepackStore.initAll(queryParams.id);
+    }, [queryParams]);
 
     if (prepackStore.step == "load")
         return (
@@ -34,8 +43,11 @@ export default function Home() {
         );
 
     let products = [];
-    if (clientId in productsStore.products)
-        products = productsStore.products[clientId];
+    if (
+        queryParams.clientId != null &&
+        queryParams.clientId in productsStore.products
+    )
+        products = productsStore.products[queryParams.clientId];
 
     let productOptions = {};
     for (const productId in products) {

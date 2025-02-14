@@ -1,28 +1,29 @@
 {
-  "name": "3d-display-next",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "ant-design": "^1.0.0",
-    "antd": "^5.20.1",
-    "axios": "^1.7.3",
-    "classnames": "^2.5.1",
-    "html2canvas": "^1.4.1",
-    "next": "14.2.5",
-    "react": "^18",
-    "react-dom": "^18",
-    "react-table": "^7.8.0",
-    "sass": "^1.77.8",
-    "zustand": "^4.5.4"
-  },
-  "devDependencies": {
-    "eslint": "^8",
-    "eslint-config-next": "14.2.5"
-  }
+    "name": "3d-display-next",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "node server.js",
+        "lint": "next lint"
+    },
+    "dependencies": {
+        "ant-design": "^1.0.0",
+        "antd": "^5.20.1",
+        "axios": "^1.7.3",
+        "classnames": "^2.5.1",
+        "html2canvas": "^1.4.1",
+        "next": "14.2.5",
+        "react": "^18",
+        "react-dom": "^18",
+        "react-table": "^7.8.0",
+        "sass": "^1.77.8",
+        "sharp": "^0.33.5",
+        "zustand": "^4.5.4"
+    },
+    "devDependencies": {
+        "eslint": "^8",
+        "eslint-config-next": "14.2.5"
+    }
 }
