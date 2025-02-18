@@ -256,18 +256,19 @@ export default function Home() {
                 for (const elem of shelf.json.elems) {
                     const product = products[elem.productId];
 
-                    productsArr.push(
-                        <img
-                            className={styles.image}
-                            src={`${serverUrl}/loadfile/${product.frontProjection}`}
-                            style={{
-                                width: `${product.width * scale}px`,
-                                height: `${product.height * scale}px`,
-                                left: `${(elem.x + shelf.padding) * scale}px`,
-                                bottom: `${(elem.z + prepackStore.shelfThickness) * scale + 1}px`,
-                            }}
-                        />,
-                    );
+                    if (product != undefined)
+                        productsArr.push(
+                            <img
+                                className={styles.image}
+                                src={`${serverUrl}/loadfile/${product.frontProjection}`}
+                                style={{
+                                    width: `${product.width * scale}px`,
+                                    height: `${product.height * scale}px`,
+                                    left: `${(elem.x + shelf.padding) * scale}px`,
+                                    bottom: `${(elem.z + prepackStore.shelfThickness) * scale + 1}px`,
+                                }}
+                            />,
+                        );
 
                     if (isFirstShelf)
                         forSizes.firstShelfMaxProduct = Math.max(
