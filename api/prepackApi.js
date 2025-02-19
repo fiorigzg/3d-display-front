@@ -40,14 +40,18 @@ export async function openShelfEditor(products, prepack, id) {
 
     if (shelf.isRows) {
         let elems = [];
-        let left = shelf.padding;
+        let left = 0;
         for (let rowId in shelf.rows) {
             const row = shelf.rows[rowId];
             const product = products[row.productId];
 
             left += row.left;
             let count = Math.floor(
-                (prepack.depth - shelf.padding * 2) / product.depth,
+                (prepack.depth -
+                    prepack.backThickness -
+                    prepack.frontThickness -
+                    shelf.padding * 2) /
+                    product.depth,
             );
             let depth = 0;
             for (let i = 0; i < count; i++) {
