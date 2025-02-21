@@ -124,9 +124,7 @@ export async function sendPrepackImage(prepackImageDataUrl, prepackId) {
             },
         });
 
-        window.location.replace(
-            `http://94.103.83.218:8080/prepack?id=${prepackId}`,
-        );
+        window.open(`http://94.103.83.218:8080/prepack?id=${prepackId}`);
     } catch (error) {
         console.error("Error saving all data:", error);
     }

@@ -404,8 +404,10 @@ export default function Home() {
                     className={styles.stepBtn}
                     onClick={() => {
                         html2canvas(prepackContainerRef.current, {
+                            logging: true,
+                            letterRendering: 1,
+                            allowTaint: false,
                             useCORS: true,
-                            allowTaint: true,
                         }).then((canvas) => {
                             const dataUrl = canvas.toDataURL("image/png");
                             prepackStore.sendPrepackImage(dataUrl);
