@@ -6,6 +6,7 @@ import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 
 import styles from "./page.module.scss";
 import { useClientsStore } from "store/clientsStore";
+import HorizontalTable from "components/HorizontalTable";
 
 export default function Home() {
     const clientsStore = useClientsStore();
@@ -95,29 +96,65 @@ export default function Home() {
         },
     ];
 
-    let dataSource = [];
+    const header = [
+        {
+            name: "Клиент",
+            param: "id",
+            type: "id",
+            width: "50px",
+        },
+        {
+            name: "Название",
+            param: "name",
+            type: "input",
+            isNumber: false,
+            width: "200px",
+            onEnter: (ids, value) =>
+                clientsStore.changeClient(ids.id, "name", value, "text", true),
+        },
+        {
+            name: "Добавление",
+            type: "button",
+            param: "add",
+            width: "140px",
+            onClick: (ids) => clientsStore.createClient(),
+        },
+        {
+            name: "Удаление",
+            type: "button",
+            param: "delete",
+            width: "140px",
+            onClick: (ids) => clientsStore.deleteClient(ids.id),
+        },
+        {
+            name: "Копирование",
+            type: "button",
+            param: "copy",
+            width: "140px",
+            onClick: (ids) => clientsStore.copyClient(ids.id),
+        },
+    ];
+
+    let data = [];
+    console.log(clientsStore.clients);
+    data.push({
+        add: true,
+    });
     for (const clientId in clientsStore.clients) {
         const client = clientsStore.clients[clientId];
-        dataSource.push({
-            ...client,
-            key: clientId,
+        data.push({
             id: clientId,
-            action: "other",
+            name: client.name,
+            add: false,
+            delete: true,
+            copy: true,
         });
     }
-    dataSource.push({ key: "add", id: null, name: null, action: "add" });
 
     return (
         <main>
             <div className={styles.workingSpace}>
-                <Table
-                    className={styles.table}
-                    size="small"
-                    columns={columns}
-                    dataSource={dataSource}
-                    pagination={false}
-                    scroll={{ x: "max-content", y: "100%" }}
-                />
+                <HorizontalTable data={data} header={header} />
             </div>
         </main>
     );

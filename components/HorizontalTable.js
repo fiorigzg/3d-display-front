@@ -53,14 +53,14 @@ export default function HorizontalTable({
                     cellsArr.push(
                         <td key={cellsArr.length}>
                             {button}
-                            {value}
+                            <p>{value}</p>
                         </td>,
                     );
                 } else if (column.type == "const") {
                     cellsArr.push(
                         <td key={cellsArr.length}>
                             {button}
-                            {value}
+                            <p>{value}</p>
                         </td>,
                     );
                 } else if (column.type == "input") {
