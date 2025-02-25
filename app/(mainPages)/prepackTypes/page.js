@@ -1,125 +1,78 @@
 "use client";
 
 import { useEffect } from "react";
-import { Table, Button, Input } from "antd";
-import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 
 import styles from "./page.module.scss";
 import { useProjectsStore } from "store/projectsStore";
+import HorizontalTable from "components/HorizontalTable";
 
 export default function Home() {
     const projectsStore = useProjectsStore();
 
     useEffect(() => {
         projectsStore.initPrepackTypes();
-    }, []);
+    });
 
-    const columns = [
+    const header = [
         {
-            title: "Название",
-            dataIndex: "name",
-            key: "name",
-            fixed: "left",
-            width: 170,
-            render: (text, record) => {
-                const onEnter = (e) =>
-                    projectsStore.changePrepackType(
-                        record.id,
-                        "name",
-                        e.target.value,
-                        "text",
-                        true,
-                    );
-                return text == null ? null : (
-                    <Input
-                        size="small"
-                        value={text}
-                        onChange={(e) =>
-                            projectsStore.changePrepackType(
-                                record.id,
-                                "name",
-                                e.target.value,
-                                "text",
-                                false,
-                            )
-                        }
-                        onBlur={onEnter}
-                        onPressEnter={onEnter}
-                    />
-                );
-            },
+            name: "Сотрудник",
+            param: "id",
+            type: "id",
+            width: "100px",
+            onAdd: (ids) => projectsStore.createPrepackType(),
         },
         {
-            title: "Действие",
-            dataIndex: "action",
-            key: "action",
-            width: 100,
-            render: (text, record) =>
-                text == "add" ? (
-                    <Button
-                        size="small"
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        onClick={() => projectsStore.createPrepackType()}
-                    >
-                        Добавить
-                    </Button>
-                ) : (
-                    <Button
-                        size="small"
-                        type="primary"
-                        danger
-                        icon={<DeleteOutlined />}
-                        onClick={() =>
-                            projectsStore.deletePrepackType(record.id)
-                        }
-                    >
-                        Удалить
-                    </Button>
+            name: "Удаление",
+            type: "button",
+            icon: "delete",
+            param: "delete",
+            width: "50px",
+            onClick: (ids) => projectsStore.deletePrepackType(ids.id),
+        },
+        {
+            name: "Копирование",
+            type: "button",
+            icon: "copy",
+            param: "copy",
+            width: "50px",
+            onClick: (ids) => projectsStore.copyPrepackType(ids.id),
+        },
+        {
+            name: "Название",
+            param: "name",
+            type: "input",
+            isNumber: false,
+            width: "calc(100% - 200px)",
+            minWidth: "300px",
+            onEnter: (ids, value) =>
+                projectsStore.changePrepackType(
+                    ids.id,
+                    "name",
+                    value,
+                    "text",
+                    true,
                 ),
-        },
-        {
-            title: "Копирование",
-            dataIndex: "action",
-            key: "copy",
-            width: 100,
-            render: (text, record) =>
-                text == "other" ? (
-                    <Button
-                        size="small"
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        onClick={() => projectsStore.copyPrepackType(record.id)}
-                    >
-                        Копировать
-                    </Button>
-                ) : null,
         },
     ];
 
-    let dataSource = [];
+    let data = [];
     for (const prepackTypeId in projectsStore.prepackTypes) {
         const prepackType = projectsStore.prepackTypes[prepackTypeId];
-        dataSource.push({
-            ...prepackType,
-            action: "other",
-            key: prepackTypeId,
+        data.push({
             id: prepackTypeId,
+            name: prepackType.name,
+            delete: true,
+            copy: true,
         });
     }
-    dataSource.push({ id: null, name: null, action: "add", key: "add" });
+    data.push({
+        id: "add",
+    });
 
     return (
         <main>
             <div className={styles.workingSpace}>
-                <Table
-                    className={styles.table}
-                    size="small"
-                    columns={columns}
-                    dataSource={dataSource}
-                    pagination={false}
-                    scroll={{ x: "max-content", y: "calc(100%)" }}
-                />
+                <HorizontalTable data={data} header={header} />
             </div>
         </main>
     );

@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import { Table, Button, Input } from "antd";
-import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 
 import styles from "./page.module.scss";
 import { useStaffStore } from "store/staffStore";
+import HorizontalTable from "components/HorizontalTable";
 
 export default function Home() {
     const staffStore = useStaffStore();
@@ -14,110 +13,60 @@ export default function Home() {
         staffStore.initMembers();
     }, []);
 
-    const columns = [
+    const header = [
         {
-            title: "Название",
-            dataIndex: "name",
-            key: "name",
-            fixed: "left",
-            width: 170,
-            render: (text, record) => {
-                const onEnter = (e) =>
-                    staffStore.changeMember(
-                        record.id,
-                        "name",
-                        e.target.value,
-                        "text",
-                        true,
-                    );
-                return text == null ? null : (
-                    <Input
-                        size="small"
-                        value={text}
-                        onChange={(e) =>
-                            staffStore.changeMember(
-                                record.id,
-                                "name",
-                                e.target.value,
-                                "text",
-                                false,
-                            )
-                        }
-                        onBlur={onEnter}
-                        onPressEnter={onEnter}
-                    />
-                );
-            },
+            name: "Сотрудник",
+            param: "id",
+            type: "id",
+            width: "100px",
+            onAdd: (ids) => staffStore.createMember(),
         },
         {
-            title: "Действие",
-            dataIndex: "action",
-            key: "action",
-            width: 100,
-            render: (text, record) =>
-                text == "add" ? (
-                    <Button
-                        size="small"
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        onClick={() => staffStore.createMember()}
-                    >
-                        Добавить
-                    </Button>
-                ) : (
-                    <Button
-                        size="small"
-                        type="primary"
-                        danger
-                        icon={<DeleteOutlined />}
-                        onClick={() => staffStore.deleteMember(record.id)}
-                    >
-                        Удалить
-                    </Button>
-                ),
+            name: "Удаление",
+            type: "button",
+            icon: "delete",
+            param: "delete",
+            width: "50px",
+            onClick: (ids) => staffStore.deleteMember(ids.id),
         },
         {
-            title: "Копирование",
-            dataIndex: "action",
-            key: "copy",
-            width: 100,
-            render: (text, record) =>
-                text == "other" ? (
-                    <Button
-                        size="small"
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        onClick={() => staffStore.copyMember(record.id)}
-                    >
-                        Копировать
-                    </Button>
-                ) : null,
+            name: "Копирование",
+            type: "button",
+            icon: "copy",
+            param: "copy",
+            width: "50px",
+            onClick: (ids) => staffStore.copyMember(ids.id),
+        },
+        {
+            name: "Название",
+            param: "name",
+            type: "input",
+            isNumber: false,
+            width: "calc(100% - 200px)",
+            minWidth: "300px",
+            onEnter: (ids, value) =>
+                staffStore.changeMember(ids.id, "name", value, "text", true),
         },
     ];
 
-    let dataSource = [];
+    let data = [];
     for (const memberId in staffStore.members) {
         const member = staffStore.members[memberId];
-        dataSource.push({
-            ...member,
+        data.push({
             id: memberId,
-            action: "other",
-            key: memberId,
+            name: member.name,
+            delete: true,
+            copy: true,
         });
     }
-    dataSource.push({ id: null, name: null, action: "add", key: "add" });
+    data.push({
+        id: "add",
+    });
 
     return (
         <main>
             <div className={styles.workingSpace}>
-                <Table
-                    className={styles.table}
-                    size="small"
-                    columns={columns}
-                    dataSource={dataSource}
-                    pagination={false}
-                    scroll={{ x: "max-content", y: "calc(100%)" }}
-                />
+                <HorizontalTable data={data} header={header} />
             </div>
         </main>
     );

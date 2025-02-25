@@ -3,5 +3,5 @@
 <svg width="800px" height="800px" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g id="SVGRepo_bgCarrier" stroke-width="0"/>
 <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
-<g id="SVGRepo_iconCarrier"> <path d="M8.1716 8.00003L3.58582 3.41424L6.41424 0.585815L13.8285 8.00003L6.41424 15.4142L3.58582 12.5858L8.1716 8.00003Z" fill="#ffffff"/> </g>
+<g id="SVGRepo_iconCarrier"> <path d="M10 1H6V6L1 6V10H6V15H10V10H15V6L10 6V1Z" fill="#ffffff" style="--darkreader-inline-fill: #ffffff;" data-darkreader-inline-fill=""/> </g>
 </svg>

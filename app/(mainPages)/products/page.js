@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
-import { Table, Upload, Button, Input, Select } from "antd";
+import { useEffect, useState } from "react";
+import { Button } from "antd";
 import {
     UploadOutlined,
     PlusOutlined,
@@ -12,10 +12,12 @@ import styles from "./page.module.scss";
 import { serverUrl } from "constants/main";
 import { useProductsStore } from "store/productsStore";
 import { useClientsStore } from "store/clientsStore";
+import HorizontalTable from "components/HorizontalTable";
 
 export default function Home() {
     const productsStore = useProductsStore();
     const clientsStore = useClientsStore();
+    const [extendedClients, setExtendedClients] = useState({});
 
     useEffect(() => {
         clientsStore.initClients();
@@ -23,526 +25,290 @@ export default function Home() {
         productsStore.initPackageTypes();
     }, []);
 
-    const columns = [
+    // TODO: change options making maybe
+    let categoryOptions = {};
+    for (const categoryId in productsStore.categories) {
+        const category = productsStore.categories[categoryId];
+        categoryOptions[categoryId] = category.name;
+    }
+    let packageTypeOptions = {};
+    for (const packageTypeId in productsStore.packageTypes) {
+        const packageType = productsStore.packageTypes[packageTypeId];
+        packageTypeOptions[packageTypeId] = packageType.name;
+    }
+
+    const header = [
         {
-            title: "Клиент",
-            dataIndex: "name",
-            key: "name",
-            fixed: "left",
-            width: 170,
-            render: (text, record) =>
-                record.type == "client" ? <span>{text}</span> : null,
-        },
-        {
-            title: "Название",
-            dataIndex: "name",
-            key: "name",
-            fixed: "left",
-            width: 170,
-            render: (text, record) => {
-                const onEnter = (e) =>
-                    productsStore.changeProduct(
-                        record.clientId,
-                        record.id,
-                        "name",
-                        e.target.value,
-                        "text",
-                        true,
-                    );
-                return record.type == "product" ? (
-                    <Input
-                        size="small"
-                        value={text}
-                        onChange={(e) =>
-                            productsStore.changeProduct(
-                                record.clientId,
-                                record.id,
-                                "name",
-                                e.target.value,
-                                "text",
-                                false,
-                            )
-                        }
-                        onBlur={onEnter}
-                        onPressEnter={onEnter}
-                    />
-                ) : null;
-            },
-        },
-        {
-            title: "Ширина",
-            dataIndex: "width",
-            key: "width",
-            width: 110,
-            render: (text, record) => {
-                const onEnter = (e) =>
-                    productsStore.changeProduct(
-                        record.clientId,
-                        record.id,
-                        "width",
-                        e.target.value,
-                        "number",
-                        true,
-                    );
-                return record.type == "product" ? (
-                    <Input
-                        size="small"
-                        addonAfter="мм"
-                        value={text}
-                        onChange={(e) =>
-                            productsStore.changeProduct(
-                                record.clientId,
-                                record.id,
-                                "width",
-                                e.target.value,
-                                "number",
-                                false,
-                            )
-                        }
-                        onBlur={onEnter}
-                        onPressEnter={onEnter}
-                    />
-                ) : null;
-            },
-        },
-        {
-            title: "Высота",
-            dataIndex: "height",
-            key: "height",
-            width: 110,
-            render: (text, record) => {
-                const onEnter = (e) =>
-                    productsStore.changeProduct(
-                        record.clientId,
-                        record.id,
-                        "height",
-                        e.target.value,
-                        "number",
-                        true,
-                    );
-                return record.type == "product" ? (
-                    <Input
-                        size="small"
-                        addonAfter="мм"
-                        value={text}
-                        onChange={(e) =>
-                            productsStore.changeProduct(
-                                record.clientId,
-                                record.id,
-                                "height",
-                                e.target.value,
-                                "number",
-                                false,
-                            )
-                        }
-                        onBlur={onEnter}
-                        onPressEnter={onEnter}
-                    />
-                ) : null;
-            },
-        },
-        {
-            title: "Глубина",
-            dataIndex: "depth",
-            key: "depth",
-            width: 110,
-            render: (text, record) => {
-                const onEnter = (e) =>
-                    productsStore.changeProduct(
-                        record.clientId,
-                        record.id,
-                        "depth",
-                        e.target.value,
-                        "number",
-                        true,
-                    );
-                return record.type == "product" ? (
-                    <Input
-                        size="small"
-                        addonAfter="мм"
-                        value={text}
-                        onChange={(e) =>
-                            productsStore.changeProduct(
-                                record.clientId,
-                                record.id,
-                                "depth",
-                                e.target.value,
-                                "number",
-                                false,
-                            )
-                        }
-                        onBlur={onEnter}
-                        onPressEnter={onEnter}
-                    />
-                ) : null;
-            },
-        },
-        {
-            title: "Вес",
-            dataIndex: "weight",
-            key: "weight",
-            width: 110,
-            render: (text, record) => {
-                const onEnter = (e) =>
-                    productsStore.changeProduct(
-                        record.clientId,
-                        record.id,
-                        "weight",
-                        e.target.value,
-                        "number",
-                        true,
-                    );
-                return record.type == "product" ? (
-                    <Input
-                        size="small"
-                        addonAfter="гр"
-                        value={text}
-                        onChange={(e) =>
-                            productsStore.changeProduct(
-                                record.clientId,
-                                record.id,
-                                "weight",
-                                e.target.value,
-                                "number",
-                                false,
-                            )
-                        }
-                        onBlur={onEnter}
-                        onPressEnter={onEnter}
-                    />
-                ) : null;
-            },
-        },
-        {
-            title: "Кол-во в упаковке",
-            dataIndex: "count",
-            key: "count",
-            width: 110,
-            render: (text, record) => {
-                const onEnter = (e) =>
-                    productsStore.changeProduct(
-                        record.clientId,
-                        record.id,
-                        "count",
-                        e.target.value,
-                        "number",
-                        true,
-                    );
-                return record.type == "product" ? (
-                    <Input
-                        size="small"
-                        addonAfter="ед"
-                        value={text}
-                        onChange={(e) =>
-                            productsStore.changeProduct(
-                                record.clientId,
-                                record.id,
-                                "count",
-                                e.target.value,
-                                "number",
-                                false,
-                            )
-                        }
-                        onBlur={onEnter}
-                        onPressEnter={onEnter}
-                    />
-                ) : null;
-            },
-        },
-        {
-            title: "Объем",
-            dataIndex: "volume",
-            key: "volume",
-            width: 120,
-            render: (text, record) => {
-                const onEnter = (e) =>
-                    productsStore.changeProduct(
-                        record.clientId,
-                        record.id,
-                        "volume",
-                        e.target.value,
-                        "number",
-                        true,
-                    );
-                return record.type == "product" ? (
-                    <Input
-                        size="small"
-                        addonAfter="мм3"
-                        value={text}
-                        onChange={(e) =>
-                            productsStore.changeProduct(
-                                record.clientId,
-                                record.id,
-                                "volume",
-                                e.target.value,
-                                "number",
-                                false,
-                            )
-                        }
-                        onBlur={onEnter}
-                        onPressEnter={onEnter}
-                    />
-                ) : null;
-            },
-        },
-        {
-            title: "Штрих-код",
-            dataIndex: "qrcode",
-            key: "qrcode",
-            width: 200,
-            render: (text, record) => {
-                const onEnter = (e) =>
-                    productsStore.changeProduct(
-                        record.clientId,
-                        record.id,
-                        "qrcode",
-                        e.target.value,
-                        "text",
-                        true,
-                    );
-                return record.type == "product" ? (
-                    <Input
-                        size="small"
-                        value={text}
-                        onChange={(e) =>
-                            productsStore.changeProduct(
-                                record.clientId,
-                                record.id,
-                                "qrcode",
-                                e.target.value,
-                                "text",
-                                false,
-                            )
-                        }
-                        onBlur={onEnter}
-                        onPressEnter={onEnter}
-                    />
-                ) : null;
-            },
-        },
-        {
-            title: "Категория продукта",
-            dataIndex: "categoryId",
-            key: "categoryId",
-            width: 120,
-            render: (id, record) => {
-                if (record.type == "product") {
-                    let categoriesArr = [];
-                    for (const categoryId in productsStore.categories) {
-                        let category = productsStore.categories[categoryId];
-                        category.id = categoryId;
-                        categoriesArr.push(category);
-                    }
-                    return (
-                        <Select
-                            size="small"
-                            value={productsStore.categories[id]?.name}
-                            placeholder="Категория продукта"
-                            onChange={(value) =>
-                                productsStore.changeProduct(
-                                    record.clientId,
-                                    record.id,
-                                    "categoryId",
-                                    value,
-                                    "select",
-                                    true,
-                                )
-                            }
-                        >
-                            {categoriesArr.map((category) => (
-                                <Select.Option
-                                    key={category.id}
-                                    value={category.id}
-                                >
-                                    {category.name}
-                                </Select.Option>
-                            ))}
-                        </Select>
-                    );
+            name: "Клиент",
+            param: "clientId",
+            type: "id",
+            width: "100px",
+            onSwitchExtend: (id) => {
+                if (!(id in extendedClients)) {
+                    productsStore.initProducts(id);
+                    setExtendedClients({ ...extendedClients, [id]: true });
                 } else {
-                    return null;
+                    setExtendedClients({
+                        ...extendedClients,
+                        [id]: !extendedClients[id],
+                    });
                 }
             },
         },
         {
-            title: "Вид упаковки",
-            dataIndex: "packageTypeId",
-            key: "packageTypeId",
-            width: 120,
-            render: (id, record) => {
-                if (record.type == "product") {
-                    let packageTypesArr = [];
-                    for (const packageTypeId in productsStore.packageTypes) {
-                        let packageType =
-                            productsStore.packageTypes[packageTypeId];
-                        packageType.id = packageTypeId;
-                        packageTypesArr.push(packageType);
-                    }
-                    return (
-                        <Select
-                            size="small"
-                            value={productsStore.packageTypes[id]?.name}
-                            placeholder="Вид упаковки"
-                            onChange={(value) =>
-                                productsStore.changeProduct(
-                                    record.clientId,
-                                    record.id,
-                                    "packageTypeId",
-                                    value,
-                                    "select",
-                                    true,
-                                )
-                            }
-                        >
-                            {packageTypesArr.map((packageType) => (
-                                <Select.Option
-                                    key={packageType.id}
-                                    value={packageType.id}
-                                >
-                                    {packageType.name}
-                                </Select.Option>
-                            ))}
-                        </Select>
-                    );
-                } else {
-                    return null;
-                }
-            },
+            name: "Имя клиента",
+            param: "clientName",
+            type: "const",
+            width: "200px",
         },
         {
-            title: "Передняя проекция",
-            dataIndex: "frontProjection",
-            key: "frontProjection",
-            width: 150,
-            render: (text, record) => {
-                return record.type == "product" ? (
-                    <Upload
-                        maxCount={1}
-                        accept=".png"
-                        action={`${serverUrl}/uploadfile?save_name="${text}"`}
-                        onChange={async ({ file }) => {
-                            if (
-                                file.status == "done" &&
-                                file.response.status == "ok"
-                            ) {
-                                await productsStore.changeProduct(
-                                    record.clientId,
-                                    record.id,
-                                    "frontProjection",
-                                    file.name,
-                                    "file",
-                                    true,
-                                );
-                            }
-                        }}
-                        defaultFileList={text == "" ? [] : [{ name: text }]}
-                    >
-                        <Button size="small" icon={<UploadOutlined />}>
-                            Файл (.png)
-                        </Button>
-                    </Upload>
-                ) : null;
-            },
+            name: "Продукт",
+            accessor: "productId",
+            type: "id",
+            width: "100px",
+            onAdd: (ids) => productsStore.createProduct(ids.clientId),
         },
         {
-            title: "Добавление/удаление",
-            key: "addOrDelete",
-            width: 100,
-            render: (text, record) =>
-                record.children ? (
-                    <Button
-                        size="small"
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        onClick={() =>
-                            productsStore.createProduct(Number(record.id))
-                        }
-                    >
-                        Добавить продукт
-                    </Button>
-                ) : (
-                    <Button
-                        size="small"
-                        type="primary"
-                        danger
-                        icon={<DeleteOutlined />}
-                        onClick={() =>
-                            productsStore.deleteProduct(
-                                record.clientId,
-                                record.id,
-                            )
-                        }
-                    >
-                        Удалить продукт
-                    </Button>
+            name: "Удаление",
+            param: "delete",
+            icon: "delete",
+            type: "button",
+            width: "50px",
+            onClick: (ids) =>
+                productsStore.deleteProduct(ids.clientId, ids.productId),
+        },
+        {
+            name: "Копирование",
+            param: "copy",
+            icon: "copy",
+            type: "button",
+            width: "50px",
+            onClick: (ids) =>
+                productsStore.copyProduct(ids.clientId, ids.productId),
+        },
+        {
+            name: "Название",
+            param: "name",
+            type: "input",
+            isNumber: false,
+            width: "200px",
+            onEnter: (ids, value) =>
+                productsStore.changeProduct(
+                    ids.clientId,
+                    ids.productId,
+                    "name",
+                    value,
+                    "text",
+                    true,
                 ),
         },
         {
-            title: "Копирование",
-            key: "copy",
-            width: 100,
-            render: (text, record) =>
-                !record.children ? (
-                    <Button
-                        size="small"
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        onClick={() =>
-                            productsStore.copyProduct(
-                                Number(record.clientId),
-                                Number(record.id),
-                            )
-                        }
-                    >
-                        Копировать продукт
-                    </Button>
-                ) : null,
+            name: "Ширина",
+            param: "width",
+            type: "input",
+            isNumber: true,
+            width: "100px",
+            onEnter: (ids, value) =>
+                productsStore.changeProduct(
+                    ids.clientId,
+                    ids.productId,
+                    "width",
+                    value,
+                    "number",
+                    true,
+                ),
+        },
+        {
+            name: "Высота",
+            param: "height",
+            type: "input",
+            isNumber: true,
+            width: "100px",
+            onEnter: (ids, value) =>
+                productsStore.changeProduct(
+                    ids.clientId,
+                    ids.productId,
+                    "height",
+                    value,
+                    "number",
+                    true,
+                ),
+        },
+        {
+            name: "Глубина",
+            param: "depth",
+            type: "input",
+            isNumber: true,
+            width: "100px",
+            onEnter: (ids, value) =>
+                productsStore.changeProduct(
+                    ids.clientId,
+                    ids.productId,
+                    "depth",
+                    value,
+                    "number",
+                    true,
+                ),
+        },
+        {
+            name: "Вес",
+            param: "weight",
+            type: "input",
+            isNumber: true,
+            width: "100px",
+            onEnter: (ids, value) =>
+                productsStore.changeProduct(
+                    ids.clientId,
+                    ids.productId,
+                    "weight",
+                    value,
+                    "number",
+                    true,
+                ),
+        },
+        {
+            name: "Кол-во в упаковке",
+            param: "count",
+            type: "input",
+            isNumber: true,
+            width: "250px",
+            onEnter: (ids, value) =>
+                productsStore.changeProduct(
+                    ids.clientId,
+                    ids.productId,
+                    "count",
+                    value,
+                    "number",
+                    true,
+                ),
+        },
+        {
+            name: "Объем",
+            param: "volume",
+            type: "input",
+            isNumber: true,
+            width: "100px",
+            onEnter: (ids, value) =>
+                productsStore.changeProduct(
+                    ids.clientId,
+                    ids.productId,
+                    "volume",
+                    value,
+                    "number",
+                    true,
+                ),
+        },
+        {
+            name: "Штрих-код",
+            param: "qrcode",
+            type: "input",
+            isNumber: false,
+            width: "150px",
+            onEnter: (ids, value) =>
+                productsStore.changeProduct(
+                    ids.clientId,
+                    ids.productId,
+                    "qrcode",
+                    value,
+                    "text",
+                    true,
+                ),
+        },
+        {
+            name: "Категория продукта",
+            param: "categoryId",
+            type: "select",
+            options: categoryOptions,
+            width: "200px",
+            onSelect: (ids, value) =>
+                productsStore.changeProduct(
+                    ids.clientId,
+                    ids.productId,
+                    "categoryId",
+                    value,
+                    "select",
+                    true,
+                ),
+        },
+        {
+            name: "Вид упаковки",
+            param: "packageTypeId",
+            type: "select",
+            options: packageTypeOptions,
+            width: "200px",
+            onSelect: (ids, value) =>
+                productsStore.changeProduct(
+                    ids.clientId,
+                    ids.productId,
+                    "packageTypeId",
+                    value,
+                    "select",
+                    true,
+                ),
+        },
+        {
+            name: "Передняя проекция",
+            param: "frontProjection",
+            type: "upload",
+            accept: ".png",
+            width: "200px",
+            onUpload: async (ids, data) => {
+                await productsStore.changeProduct(
+                    ids.clientId,
+                    ids.productId,
+                    "frontProjection",
+                    data.original_file,
+                    "text",
+                    true,
+                );
+            },
         },
     ];
 
-    let clientsDataSource = [];
+    let data = [];
     let clients = clientsStore.clients;
     for (const clientId in clients) {
-        const client = clientsStore.clients[clientId];
+        const client = clients[clientId];
 
-        let productsDataSource = [];
+        data.push({
+            clientId: clientId,
+            clientName: client.name,
+        });
+
         let products = {};
-        if (clientId in productsStore.products)
+        if (clientId in extendedClients && extendedClients[clientId])
             products = productsStore.products[clientId];
         for (const productId in products) {
             const product = products[productId];
-            productsDataSource.push({
-                ...product,
-                type: "product",
-                key: `product-${productId}`,
-                id: productId,
-                clientId: clientId,
+            data.push({
+                productId: productId,
+                name: product.name,
+                width: product.width,
+                height: product.height,
+                depth: product.depth,
+                weight: product.weight,
+                count: product.count,
+                volume: product.volume,
+                qrcode: product.qrcode,
+                categoryId: product.categoryId,
+                packageTypeId: product.packageTypeId,
+                frontProjection: product.frontProjection,
+                delete: true,
+                copy: true,
             });
         }
-
-        clientsDataSource.push({
-            ...client,
-            type: "client",
-            key: `client-${clientId}`,
-            id: clientId,
-            children: productsDataSource,
-        });
+        if (clientId in extendedClients && extendedClients[clientId])
+            data.push({
+                productId: "add",
+            });
     }
+
+    console.log(data);
 
     return (
         <main>
             <div className={styles.workingSpace}>
-                <Table
-                    className={styles.table}
-                    size="small"
-                    columns={columns}
-                    onExpand={(expanded, record) => {
-                        if (expanded) productsStore.initProducts(record.id);
-                    }}
-                    dataSource={clientsDataSource}
-                    pagination={false}
-                    scroll={{ x: "max-content", y: "calc(100%)" }}
-                />
+                <HorizontalTable data={data} header={header} />
             </div>
         </main>
     );

@@ -1,16 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
-import { Table, Button, Input, Upload, message } from "antd";
-import {
-    PlusOutlined,
-    DeleteOutlined,
-    UploadOutlined,
-} from "@ant-design/icons";
 
 import { serverUrl } from "constants/main";
 import styles from "./page.module.scss";
 import { useProductsStore } from "store/productsStore";
+import HorizontalTable from "components/HorizontalTable";
 
 export default function Home() {
     const productsStore = useProductsStore();
@@ -139,35 +134,87 @@ export default function Home() {
         },
     ];
 
-    let dataSource = [];
+    const header = [
+        {
+            name: "Тип упаковки",
+            param: "id",
+            type: "id",
+            width: "100px",
+            onAdd: (ids) => productsStore.createPackageType(),
+        },
+        {
+            name: "Удаление",
+            type: "button",
+            icon: "delete",
+            param: "delete",
+            width: "50px",
+            onClick: (ids) => productsStore.deletePackageType(ids.id),
+        },
+        {
+            name: "Копирование",
+            type: "button",
+            icon: "copy",
+            param: "copy",
+            width: "50px",
+            onClick: (ids) => productsStore.copyPackageType(ids.id),
+        },
+        {
+            name: "Объект товара",
+            type: "upload",
+            param: "object",
+            width: "calc(50% - 100px)",
+            minWidth: "300px",
+            accept: ".obj",
+            onUpload: async (ids, data) => {
+                await productsStore.putPackageType(
+                    ids.id,
+                    {
+                        frontSvg: data.front_svg_file,
+                        sideSvg: data.side_svg_file,
+                        topSvg: data.top_svg_file,
+                        object: data.original_file,
+                    },
+                    true,
+                );
+            },
+        },
+        {
+            name: "Название",
+            param: "name",
+            type: "input",
+            isNumber: false,
+            width: "calc(50% - 100px)",
+            minWidth: "300px",
+            onEnter: (ids, value) =>
+                productsStore.changePackageType(
+                    ids.id,
+                    "name",
+                    value,
+                    "text",
+                    true,
+                ),
+        },
+    ];
+
+    let data = [];
     for (const packageTypeId in productsStore.packageTypes) {
-        let packageType = productsStore.packageTypes[packageTypeId];
-        dataSource.push({
-            ...packageType,
+        const packageType = productsStore.packageTypes[packageTypeId];
+        data.push({
             id: packageTypeId,
-            action: "other",
-            key: packageTypeId,
+            name: packageType.name,
+            object: packageType.object,
+            delete: true,
+            copy: true,
         });
     }
-    dataSource.push({
-        id: null,
-        name: null,
-        object: null,
-        action: "add",
-        key: "add",
+    data.push({
+        id: "add",
     });
 
     return (
         <main>
             <div className={styles.workingSpace}>
-                <Table
-                    className={styles.table}
-                    size="small"
-                    columns={columns}
-                    dataSource={dataSource}
-                    pagination={false}
-                    scroll={{ x: "max-content", y: "calc(100%)" }}
-                />
+                <HorizontalTable data={data} header={header} />
             </div>
         </main>
     );

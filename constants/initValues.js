@@ -46,7 +46,7 @@ export const initMember = {
 export const initProject = {
     id: 1,
     clientId: 1,
-    name: "Новый проект",
+    name: "Новый предпроект",
 };
 
 export const initPrepack = {
