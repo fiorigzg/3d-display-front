@@ -7,6 +7,7 @@ import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import styles from "./page.module.scss";
 import { useProjectsStore } from "store/projectsStore";
 import { useClientsStore } from "store/clientsStore";
+import { useFilterStore } from "store/filterStore";
 import HorizontalTable from "components/HorizontalTable";
 
 const { Text } = Typography;
@@ -14,14 +15,10 @@ const { Text } = Typography;
 export default function Home() {
     const projectsStore = useProjectsStore();
     const clientsStore = useClientsStore();
+    const filterStore = useFilterStore();
 
     const [extendedClients, setExtendedClients] = useState({});
     const [extendedProjects, setExtendedProjects] = useState({});
-
-    useEffect(() => {
-        clientsStore.initClients();
-        projectsStore.initPrepackTypes();
-    }, []);
 
     let prepackTypeOptions = {};
     for (const prepackTypeId in projectsStore.prepackTypes) {
@@ -189,47 +186,95 @@ export default function Home() {
 
     for (const clientId in clients) {
         const client = clients[clientId];
-        data.push({
+        const clientEl = {
             clientId: clientId,
             clientName: client.name,
-        });
+        };
 
-        if (extendedClients[clientId]) {
-            let projects = projectsStore.projects[clientId] || {};
+        if (
+            !(filterStore.param in clientEl) ||
+            String(clientEl[filterStore.param]).includes(filterStore.value)
+        ) {
+            data.push(clientEl);
+
+            let projects = {};
+            if (clientId in extendedClients && extendedClients[clientId])
+                projects = projectsStore.projects[clientId] || {};
             for (const projectId in projects) {
                 const project = projects[projectId];
-                data.push({
+                const projectEl = {
                     projectId: projectId,
                     projectName: project.name,
                     projectNumber: 0,
                     delete: true,
                     copy: true,
-                });
+                };
 
-                if (extendedProjects[projectId]) {
-                    let prepacks = projectsStore.prepacks[projectId] || {};
-                    for (const prepackId in prepacks) {
-                        const prepack = prepacks[prepackId];
-                        data.push({
-                            prepackId: prepackId,
-                            prepackName: prepack.name,
-                            prepackTypeId: prepack.prepackTypeId,
-                            prepackNumber: prepack.number,
-                            delete: true,
-                            copy: true,
-                            design: true,
-                        });
+                if (
+                    !(filterStore.param in projectEl) ||
+                    String(projectEl[filterStore.param]).includes(
+                        filterStore.value,
+                    )
+                ) {
+                    data.push(projectEl);
+
+                    if (extendedProjects[projectId]) {
+                        let prepacks = projectsStore.prepacks[projectId] || {};
+                        for (const prepackId in prepacks) {
+                            const prepack = prepacks[prepackId];
+                            const prepackEl = {
+                                prepackId: prepackId,
+                                prepackName: prepack.name,
+                                prepackTypeId: prepack.prepackTypeId,
+                                prepackNumber: prepack.number,
+                                delete: true,
+                                copy: true,
+                                design: true,
+                            };
+
+                            if (
+                                !(filterStore.param in prepackEl) ||
+                                String(prepackEl[filterStore.param]).includes(
+                                    filterStore.value,
+                                )
+                            ) {
+                                data.push(prepackEl);
+                            }
+                        }
+                        if (
+                            !(filterStore.param in projectEl) &&
+                            "projectId" in data.at(-1) &&
+                            filterStore.value != ""
+                        )
+                            data.pop();
+                        else if (
+                            projectId in extendedProjects &&
+                            extendedProjects[projectId]
+                        )
+                            data.push({ prepackId: "add" });
                     }
-                    data.push({ prepackId: "add" });
                 }
             }
-            data.push({ projectId: "add" });
+            if (
+                !(filterStore.param in clientEl) &&
+                "clientId" in data.at(-1) &&
+                filterStore.value != ""
+            )
+                data.pop();
+            else if (clientId in extendedClients && extendedClients[clientId])
+                data.push({ projectId: "add" });
         }
     }
 
+    useEffect(() => {
+        clientsStore.initClients();
+        projectsStore.initPrepackTypes();
+        filterStore.setFields(header);
+    }, []);
+
     return (
         <main>
-            <div className={styles.workingSpace}>
+            <div className={styles.table}>
                 <HorizontalTable data={data} header={header} />
             </div>
         </main>

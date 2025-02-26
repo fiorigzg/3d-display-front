@@ -3,23 +3,21 @@
 import { useEffect } from "react";
 
 import styles from "./page.module.scss";
-import { useStaffStore } from "store/staffStore";
+import { useProjectsStore } from "store/projectsStore";
+import { useFilterStore } from "store/filterStore";
 import HorizontalTable from "components/HorizontalTable";
 
 export default function Home() {
-    const staffStore = useStaffStore();
-
-    useEffect(() => {
-        staffStore.initMembers();
-    }, []);
+    const projectsStore = useProjectsStore();
+    const filterStore = useFilterStore();
 
     const header = [
         {
-            name: "Сотрудник",
+            name: "Тип препака",
             param: "id",
             type: "id",
             width: "100px",
-            onAdd: (ids) => staffStore.createMember(),
+            onAdd: (ids) => projectsStore.createPrepackType(),
         },
         {
             name: "Удаление",
@@ -27,7 +25,7 @@ export default function Home() {
             icon: "delete",
             param: "delete",
             width: "50px",
-            onClick: (ids) => staffStore.deleteMember(ids.id),
+            onClick: (ids) => projectsStore.deletePrepackType(ids.id),
         },
         {
             name: "Копирование",
@@ -35,7 +33,7 @@ export default function Home() {
             icon: "copy",
             param: "copy",
             width: "50px",
-            onClick: (ids) => staffStore.copyMember(ids.id),
+            onClick: (ids) => projectsStore.copyPrepackType(ids.id),
         },
         {
             name: "Название",
@@ -45,27 +43,41 @@ export default function Home() {
             width: "calc(100% - 200px)",
             minWidth: "300px",
             onEnter: (ids, value) =>
-                staffStore.changeMember(ids.id, "name", value, "text", true),
+                projectsStore.changePrepackType(
+                    ids.id,
+                    "name",
+                    value,
+                    "text",
+                    true,
+                ),
         },
     ];
 
     let data = [];
-    for (const memberId in staffStore.members) {
-        const member = staffStore.members[memberId];
-        data.push({
-            id: memberId,
-            name: member.name,
+    for (const prepackTypeId in projectsStore.prepackTypes) {
+        const prepackType = projectsStore.prepackTypes[prepackTypeId];
+        let dataEl = {
+            id: prepackTypeId,
+            name: prepackType.name,
             delete: true,
             copy: true,
-        });
+        };
+
+        if (String(dataEl[filterStore.param]).includes(filterStore.value))
+            data.push(dataEl);
     }
     data.push({
         id: "add",
     });
 
+    useEffect(() => {
+        projectsStore.initPrepackTypes();
+        filterStore.setFields(header);
+    }, []);
+
     return (
         <main>
-            <div className={styles.workingSpace}>
+            <div className={styles.table}>
                 <HorizontalTable data={data} header={header} />
             </div>
         </main>

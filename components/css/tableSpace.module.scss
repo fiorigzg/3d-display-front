@@ -1,9 +1,9 @@
-.workingSpace {
+.tableSpace {
     position: absolute;
     align-items: center;
-    margin-top: 50px;
+    margin-top: 99px;
     width: 100%;
-    height: calc(100% - 50px);
+    height: calc(100% - 99px);
 
     display: flex;
     flex-direction: column;
@@ -11,9 +11,4 @@
 
     background-color: #ffffff;
     overflow-y: scroll;
-
-    .table {
-        width: 100%;
-        margin-bottom: 25px;
-    }
 }

@@ -1,0 +1,36 @@
+.topMenu {
+    position: fixed;
+    top: 50px;
+    height: calc(10px - 1px);
+    width: calc(100% - 50px);
+    padding: 20px 30px;
+    border-bottom: 1px solid #bebebe;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1;
+
+    background-color: #ffffff;
+
+    .fieldFilter {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+
+        select,
+        input {
+            width: 200px;
+            height: 25px;
+            padding: 0;
+            border: 1px solid #bebebe;
+            border-radius: 5px;
+            outline: none;
+            text-align: center;
+            font-size: 16px;
+            background-color: #ffffff;
+        }
+    }
+}

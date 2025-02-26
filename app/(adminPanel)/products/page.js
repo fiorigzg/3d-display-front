@@ -12,18 +12,14 @@ import styles from "./page.module.scss";
 import { serverUrl } from "constants/main";
 import { useProductsStore } from "store/productsStore";
 import { useClientsStore } from "store/clientsStore";
+import { useFilterStore } from "store/filterStore";
 import HorizontalTable from "components/HorizontalTable";
 
 export default function Home() {
     const productsStore = useProductsStore();
     const clientsStore = useClientsStore();
+    const filterStore = useFilterStore();
     const [extendedClients, setExtendedClients] = useState({});
-
-    useEffect(() => {
-        clientsStore.initClients();
-        productsStore.initCategories();
-        productsStore.initPackageTypes();
-    }, []);
 
     // TODO: change options making maybe
     let categoryOptions = {};
@@ -63,6 +59,7 @@ export default function Home() {
         },
         {
             name: "Продукт",
+            param: "productId",
             accessor: "productId",
             type: "id",
             width: "100px",
@@ -257,7 +254,7 @@ export default function Home() {
                     ids.clientId,
                     ids.productId,
                     "frontProjection",
-                    data.original_file,
+                    data.original_file.slice(10),
                     "text",
                     true,
                 );
@@ -269,45 +266,70 @@ export default function Home() {
     let clients = clientsStore.clients;
     for (const clientId in clients) {
         const client = clients[clientId];
-
-        data.push({
+        const clientEl = {
             clientId: clientId,
             clientName: client.name,
-        });
+        };
 
-        let products = {};
-        if (clientId in extendedClients && extendedClients[clientId])
-            products = productsStore.products[clientId];
-        for (const productId in products) {
-            const product = products[productId];
-            data.push({
-                productId: productId,
-                name: product.name,
-                width: product.width,
-                height: product.height,
-                depth: product.depth,
-                weight: product.weight,
-                count: product.count,
-                volume: product.volume,
-                qrcode: product.qrcode,
-                categoryId: product.categoryId,
-                packageTypeId: product.packageTypeId,
-                frontProjection: product.frontProjection,
-                delete: true,
-                copy: true,
-            });
+        if (
+            !(filterStore.param in clientEl) ||
+            clientEl[filterStore.param].includes(filterStore.value)
+        ) {
+            data.push(clientEl);
+
+            let products = {};
+            if (clientId in extendedClients && extendedClients[clientId])
+                products = productsStore.products[clientId];
+            for (const productId in products) {
+                const product = products[productId];
+                const productEl = {
+                    productId: productId,
+                    name: product.name,
+                    width: product.width,
+                    height: product.height,
+                    depth: product.depth,
+                    weight: product.weight,
+                    count: product.count,
+                    volume: product.volume,
+                    qrcode: product.qrcode,
+                    categoryId: product.categoryId,
+                    packageTypeId: product.packageTypeId,
+                    frontProjection: product.frontProjection,
+                    delete: true,
+                    copy: true,
+                };
+
+                if (
+                    !(filterStore.param in productEl) ||
+                    String(productEl[filterStore.param]).includes(
+                        filterStore.value,
+                    )
+                )
+                    data.push(productEl);
+            }
+            if (
+                !(filterStore.param in clientEl) &&
+                "clientId" in data.at(-1) &&
+                filterStore.value != ""
+            )
+                data.pop();
+            else if (clientId in extendedClients && extendedClients[clientId])
+                data.push({
+                    productId: "add",
+                });
         }
-        if (clientId in extendedClients && extendedClients[clientId])
-            data.push({
-                productId: "add",
-            });
     }
 
-    console.log(data);
+    useEffect(() => {
+        clientsStore.initClients();
+        productsStore.initCategories();
+        productsStore.initPackageTypes();
+        filterStore.setFields(header);
+    }, []);
 
     return (
         <main>
-            <div className={styles.workingSpace}>
+            <div className={styles.table}>
                 <HorizontalTable data={data} header={header} />
             </div>
         </main>

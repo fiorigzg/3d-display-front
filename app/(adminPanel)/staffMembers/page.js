@@ -3,23 +3,21 @@
 import { useEffect } from "react";
 
 import styles from "./page.module.scss";
-import { useClientsStore } from "store/clientsStore";
+import { useStaffStore } from "store/staffStore";
+import { useFilterStore } from "store/filterStore";
 import HorizontalTable from "components/HorizontalTable";
 
 export default function Home() {
-    const clientsStore = useClientsStore();
-
-    useEffect(() => {
-        clientsStore.initClients();
-    }, []);
+    const staffStore = useStaffStore();
+    const filterStore = useFilterStore();
 
     const header = [
         {
-            name: "Клиент",
+            name: "Сотрудник",
             param: "id",
             type: "id",
             width: "100px",
-            onAdd: (ids) => clientsStore.createClient(),
+            onAdd: (ids) => staffStore.createMember(),
         },
         {
             name: "Удаление",
@@ -27,7 +25,7 @@ export default function Home() {
             icon: "delete",
             param: "delete",
             width: "50px",
-            onClick: (ids) => clientsStore.deleteClient(ids.id),
+            onClick: (ids) => staffStore.deleteMember(ids.id),
         },
         {
             name: "Копирование",
@@ -35,7 +33,7 @@ export default function Home() {
             icon: "copy",
             param: "copy",
             width: "50px",
-            onClick: (ids) => clientsStore.copyClient(ids.id),
+            onClick: (ids) => staffStore.copyMember(ids.id),
         },
         {
             name: "Название",
@@ -45,27 +43,35 @@ export default function Home() {
             width: "calc(100% - 200px)",
             minWidth: "300px",
             onEnter: (ids, value) =>
-                clientsStore.changeClient(ids.id, "name", value, "text", true),
+                staffStore.changeMember(ids.id, "name", value, "text", true),
         },
     ];
 
     let data = [];
-    for (const clientId in clientsStore.clients) {
-        const client = clientsStore.clients[clientId];
-        data.push({
-            id: clientId,
-            name: client.name,
+    for (const memberId in staffStore.members) {
+        const member = staffStore.members[memberId];
+        const dataEl = {
+            id: memberId,
+            name: member.name,
             delete: true,
             copy: true,
-        });
+        };
+
+        if (String(dataEl[filterStore.param]).includes(filterStore.value))
+            data.push(dataEl);
     }
     data.push({
         id: "add",
     });
 
+    useEffect(() => {
+        staffStore.initMembers();
+        filterStore.setFields(header);
+    }, []);
+
     return (
         <main>
-            <div className={styles.workingSpace}>
+            <div className={styles.table}>
                 <HorizontalTable data={data} header={header} />
             </div>
         </main>

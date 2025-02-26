@@ -1,25 +1,25 @@
 "use client";
 
 import { useEffect } from "react";
-import HorizontalTable from "components/HorizontalTable";
 
 import styles from "./page.module.scss";
-import { useProductsStore } from "store/productsStore";
+import { useClientsStore } from "store/clientsStore";
+import HorizontalTable from "components/HorizontalTable";
 
 export default function Home() {
-    const productsStore = useProductsStore();
+    const clientsStore = useClientsStore();
 
     useEffect(() => {
-        productsStore.initCategories();
+        clientsStore.initClients();
     }, []);
 
     const header = [
         {
-            name: "Категория",
+            name: "Клиент",
             param: "id",
             type: "id",
             width: "100px",
-            onAdd: (ids) => productsStore.createCategory(),
+            onAdd: (ids) => clientsStore.createClient(),
         },
         {
             name: "Удаление",
@@ -27,7 +27,7 @@ export default function Home() {
             icon: "delete",
             param: "delete",
             width: "50px",
-            onClick: (ids) => productsStore.deleteCategory(ids.id),
+            onClick: (ids) => clientsStore.deleteClient(ids.id),
         },
         {
             name: "Копирование",
@@ -35,7 +35,7 @@ export default function Home() {
             icon: "copy",
             param: "copy",
             width: "50px",
-            onClick: (ids) => productsStore.copyCategory(ids.id),
+            onClick: (ids) => clientsStore.copyClient(ids.id),
         },
         {
             name: "Название",
@@ -45,22 +45,16 @@ export default function Home() {
             width: "calc(100% - 200px)",
             minWidth: "300px",
             onEnter: (ids, value) =>
-                productsStore.changeCategory(
-                    ids.id,
-                    "name",
-                    value,
-                    "text",
-                    true,
-                ),
+                clientsStore.changeClient(ids.id, "name", value, "text", true),
         },
     ];
 
     let data = [];
-    for (const categoryId in productsStore.categories) {
-        const category = productsStore.categories[categoryId];
+    for (const clientId in clientsStore.clients) {
+        const client = clientsStore.clients[clientId];
         data.push({
-            id: categoryId,
-            name: category.name,
+            id: clientId,
+            name: client.name,
             delete: true,
             copy: true,
         });
@@ -71,7 +65,7 @@ export default function Home() {
 
     return (
         <main>
-            <div className={styles.workingSpace}>
+            <div className={styles.table}>
                 <HorizontalTable data={data} header={header} />
             </div>
         </main>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { useTable } from "react-table";
 import cx from "classnames";
@@ -9,7 +9,7 @@ import axios from "axios";
 import styles from "./css/horizontalTable.module.scss";
 import { serverUrl } from "constants/main";
 
-const FileUpload = ({ value, ids, onUpload, accept }) => {
+const TableUpload = ({ value, ids, onUpload, accept }) => {
     const onDrop = useCallback(
         async (acceptedFiles) => {
             const file = acceptedFiles[0];
@@ -53,6 +53,25 @@ const FileUpload = ({ value, ids, onUpload, accept }) => {
             <input {...getInputProps()} />
             <button type="button">{value ? value : `Файл ${accept}`}</button>
         </div>
+    );
+};
+
+const TableInput = ({ value, onEnter, column, thisIds }) => {
+    const [inputValue, setInputValue] = useState(value);
+
+    useEffect(() => {
+        setInputValue(value);
+    }, [value]);
+
+    return (
+        <input
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={(e) => {
+                if (e.key == "Enter") onEnter(e);
+            }}
+            onBlur={onEnter}
+        />
     );
 };
 
@@ -132,12 +151,11 @@ export default function HorizontalTable({
                     };
                     cellsArr.push(
                         <td key={cellsArr.length}>
-                            <input
-                                defaultValue={value}
-                                onKeyDown={(e) => {
-                                    if (e.key == "Enter") thisOnEnter(e);
-                                }}
-                                onBlur={thisOnEnter}
+                            <TableInput
+                                value={value}
+                                onEnter={thisOnEnter}
+                                column={column}
+                                thisIds={thisIds}
                             />
                         </td>,
                     );
@@ -183,7 +201,7 @@ export default function HorizontalTable({
                 } else if (column.type == "upload") {
                     cellsArr.push(
                         <td key={cellsArr.length}>
-                            <FileUpload
+                            <TableUpload
                                 value={value}
                                 ids={thisIds}
                                 accept={column.accept}

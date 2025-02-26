@@ -9,6 +9,7 @@ import { useProductsStore } from "store/productsStore";
 import styles from "./page.module.scss";
 import Info from "components/Info";
 import VerticalSize from "components/VerticalSize";
+import HorizontalSize from "components/HorizontalSize";
 import VerticalTable from "components/VerticalTable";
 import HorizontalTable from "components/HorizontalTable";
 
@@ -20,6 +21,8 @@ export default function Home() {
         id: null,
         clientId: null,
     });
+    const [dividerLeft, setDividerLeft] = useState(50);
+    const [isDividerDragging, setIsDividerDragging] = useState(false);
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -34,6 +37,34 @@ export default function Home() {
             productsStore.initProducts(queryParams.clientId);
         if (queryParams.id != null) prepackStore.initAll(queryParams.id);
     }, [queryParams]);
+    useEffect(() => {
+        const handleMouseMove = (e) => {
+            if (isDividerDragging) {
+                const newPos = (e.clientX / window.innerWidth) * 100;
+                setDividerLeft(Math.min(Math.max(newPos, 10), 90));
+            }
+        };
+
+        const handleMouseUp = () => {
+            setIsDividerDragging(false);
+        };
+
+        if (isDividerDragging) {
+            window.addEventListener("mousemove", handleMouseMove);
+            window.addEventListener("mouseup", handleMouseUp);
+        } else {
+            window.removeEventListener("mousemove", handleMouseMove);
+            window.removeEventListener("mouseup", handleMouseUp);
+        }
+
+        return () => {
+            window.removeEventListener("mousemove", handleMouseMove);
+            window.removeEventListener("mouseup", handleMouseUp);
+        };
+    }, [isDividerDragging]);
+    const handleMouseDown = () => {
+        setIsDividerDragging(true);
+    };
 
     if (prepackStore.step == "load")
         return (
@@ -154,22 +185,25 @@ export default function Home() {
         {
             name: "Проектировать",
             type: "button",
+            icon: "next",
             param: "makeShelf",
-            width: "130px",
+            width: "50px",
             onClick: (ids) => prepackStore.makeShelf(ids, products),
         },
         {
             name: "Обновить",
             type: "button",
+            icon: "update",
             param: "updateShelf",
-            width: "90px",
+            width: "50px",
             onClick: (ids) => prepackStore.updateShelfJson(ids),
         },
         {
             name: "Сброс к рядам",
             type: "button",
+            icon: "clear",
             param: "toRows",
-            width: "120px",
+            width: "50px",
             onClick: (ids) => prepackStore.changeShelf(ids, "isRows", true),
         },
     ];
@@ -230,16 +264,28 @@ export default function Home() {
                     productLeft += row.left;
 
                     productsArr.push(
-                        <img
-                            className={styles.image}
-                            src={`${serverUrl}/loadfile/${product.frontProjection}`}
-                            style={{
-                                width: `${product.width * scale}px`,
-                                height: `${product.height * scale}px`,
-                                left: `${productLeft * scale}px`,
-                                bottom: `${prepackStore.shelfThickness * scale + 1}px`,
-                            }}
-                        />,
+                        product.frontProjection == "" ? (
+                            <div
+                                className={styles.product}
+                                style={{
+                                    width: `${product.width * scale}px`,
+                                    height: `${product.height * scale}px`,
+                                    left: `${productLeft * scale}px`,
+                                    bottom: `${prepackStore.shelfThickness * scale + 1}px`,
+                                }}
+                            />
+                        ) : (
+                            <img
+                                className={styles.image}
+                                src={`${serverUrl}/loadfile/${product.frontProjection}`}
+                                style={{
+                                    width: `${product.width * scale}px`,
+                                    height: `${product.height * scale}px`,
+                                    left: `${productLeft * scale}px`,
+                                    bottom: `${prepackStore.shelfThickness * scale + 1}px`,
+                                }}
+                            />
+                        ),
                     );
 
                     if (isFirstShelf)
@@ -346,6 +392,8 @@ export default function Home() {
         forSizes.frontonHeight +
         forSizes.firstShelfTop -
         forSizes.firstShelfMaxProduct;
+    forSizes.shelfWidth = prepackStore.width - prepackStore.sideThickness * 2;
+    forSizes.prepackWidth = prepackStore.width;
 
     sizesArr.push(
         <VerticalSize
@@ -380,9 +428,24 @@ export default function Home() {
         />,
     );
 
+    sizesArr.push(
+        <HorizontalSize
+            value={forSizes.shelfWidth}
+            width={forSizes.shelfWidth * scale}
+            bottom={-25}
+            left={prepackStore.sideThickness * scale}
+        />,
+        <HorizontalSize
+            value={forSizes.prepackWidth}
+            width={forSizes.prepackWidth * scale}
+            bottom={-45}
+            left={0}
+        />,
+    );
+
     return (
         <main className={styles.main}>
-            <div className={styles.tables} style={{ width: "50%" }}>
+            <div className={styles.tables} style={{ width: `${dividerLeft}%` }}>
                 <h1>Параметры препака</h1>
                 <div className={styles.prepackTableContainer}>
                     <VerticalTable
@@ -394,12 +457,13 @@ export default function Home() {
                 <h1>Параметры полок</h1>
                 <div className={styles.shelvesTableContainer}>
                     <HorizontalTable
+                        className={styles.shelvesTable}
                         header={shelvesHeader}
                         data={shelvesData}
                     />
                 </div>
             </div>
-            <div className={styles.divider}>
+            <div className={styles.divider} onMouseDown={handleMouseDown}>
                 <button
                     className={styles.stepBtn}
                     onClick={() => {
@@ -419,7 +483,7 @@ export default function Home() {
             </div>
             <div
                 className={styles.ws}
-                style={{ width: "calc(50% - 1px)" }}
+                style={{ width: `calc(${100 - dividerLeft}% - 1px)` }}
                 onWheel={(e) => {
                     prepackStore.addScale(e.deltaY < 0);
                 }}
