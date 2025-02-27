@@ -31,22 +31,28 @@ export const initPackageType = {
 export const initClient = {
     id: 1,
     name: "Новый клиент",
+    created: new Date(Date.now()).toISOString().split("T")[0],
+    updated: new Date(Date.now()).toISOString().split("T")[0],
 };
 
 export const initPrepackType = {
     id: 1,
     name: "Новый тип препака",
+    created: new Date(Date.now()).toISOString().split("T")[0],
 };
 
 export const initMember = {
     id: 1,
     name: "Новый сотрудник",
+    created: new Date(Date.now()).toISOString().split("T")[0],
 };
 
 export const initProject = {
     id: 1,
     clientId: 1,
     name: "Новый предпроект",
+    created: new Date(Date.now()).toISOString().split("T")[0],
+    updated: new Date(Date.now()).toISOString().split("T")[0],
 };
 
 export const initPrepack = {
@@ -59,6 +65,7 @@ export const initPrepack = {
     image: "",
     number: 1,
     prepackTypeId: 12,
+    created: new Date(Date.now()).toISOString().split("T")[0],
 };
 
 export const initShelf = {
