@@ -63,8 +63,16 @@ export default function Home() {
             copy: true,
         };
 
-        if (String(dataEl[filterStore.param]).includes(filterStore.value))
-            data.push(dataEl);
+        let isCategoryFilter = String(dataEl[filterStore.param]).includes(
+            filterStore.value,
+        );
+        let isCategoryDate =
+            !(filterStore.dateFilter.param in category) ||
+            (Date.parse(category[filterStore.dateFilter.param]) >=
+                Date.parse(filterStore.dateFilter.from) &&
+                Date.parse(category[filterStore.dateFilter.param]) <=
+                    Date.parse(filterStore.dateFilter.to));
+        if (isCategoryFilter && isCategoryDate) data.push(dataEl);
     }
     data.push({
         id: "add",

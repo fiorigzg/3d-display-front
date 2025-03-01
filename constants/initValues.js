@@ -12,11 +12,15 @@ export const initProduct = {
     packageTypeId: 7,
     clientId: 0,
     frontProjection: "",
+    created: new Date(Date.now()).toISOString().split("T")[0],
+    updated: new Date(Date.now()).toISOString().split("T")[0],
 };
 
 export const initCategory = {
     id: 1,
     name: "Новая категория",
+    created: new Date(Date.now()).toISOString().split("T")[0],
+    updated: new Date(Date.now()).toISOString().split("T")[0],
 };
 
 export const initPackageType = {
@@ -26,6 +30,8 @@ export const initPackageType = {
     frontSvg: "",
     sideSvg: "",
     topSvg: "",
+    created: new Date(Date.now()).toISOString().split("T")[0],
+    updated: new Date(Date.now()).toISOString().split("T")[0],
 };
 
 export const initClient = {
@@ -39,12 +45,14 @@ export const initPrepackType = {
     id: 1,
     name: "Новый тип препака",
     created: new Date(Date.now()).toISOString().split("T")[0],
+    updated: new Date(Date.now()).toISOString().split("T")[0],
 };
 
 export const initMember = {
     id: 1,
     name: "Новый сотрудник",
     created: new Date(Date.now()).toISOString().split("T")[0],
+    updated: new Date(Date.now()).toISOString().split("T")[0],
 };
 
 export const initProject = {
@@ -66,6 +74,7 @@ export const initPrepack = {
     number: 1,
     prepackTypeId: 12,
     created: new Date(Date.now()).toISOString().split("T")[0],
+    updated: new Date(Date.now()).toISOString().split("T")[0],
 };
 
 export const initShelf = {

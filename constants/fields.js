@@ -7,6 +7,7 @@ export const clientFields = {
 export const memberFields = {
     name: "full_name",
     created: "created",
+    updated: "last_updated",
 };
 
 export const packageTypeFields = {
@@ -23,7 +24,6 @@ export const categoryFields = {
     name: "name",
     created: "created",
     updated: "last_updated",
-    created: "created",
 };
 
 export const productFields = {
@@ -51,6 +51,7 @@ export const productFields = {
 export const prepackTypeFields = {
     name: "name",
     created: "created",
+    updated: "last_updated",
 };
 
 export const projectFields = {

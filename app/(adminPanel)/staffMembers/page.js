@@ -57,8 +57,16 @@ export default function Home() {
             copy: true,
         };
 
-        if (String(dataEl[filterStore.param]).includes(filterStore.value))
-            data.push(dataEl);
+        let isMemberFilter = String(dataEl[filterStore.param]).includes(
+            filterStore.value,
+        );
+        let isMemberDate =
+            !(filterStore.dateFilter.param in member) ||
+            (Date.parse(member[filterStore.dateFilter.param]) >=
+                Date.parse(filterStore.dateFilter.from) &&
+                Date.parse(member[filterStore.dateFilter.param]) <=
+                    Date.parse(filterStore.dateFilter.to));
+        if (isMemberFilter && isMemberDate) data.push(dataEl);
     }
     data.push({
         id: "add",

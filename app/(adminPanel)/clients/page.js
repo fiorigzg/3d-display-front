@@ -4,14 +4,12 @@ import { useEffect } from "react";
 
 import styles from "./page.module.scss";
 import { useClientsStore } from "store/clientsStore";
+import { useFilterStore } from "store/filterStore";
 import HorizontalTable from "components/HorizontalTable";
 
 export default function Home() {
     const clientsStore = useClientsStore();
-
-    useEffect(() => {
-        clientsStore.initClients();
-    }, []);
+    const filterStore = useFilterStore();
 
     const header = [
         {
@@ -52,16 +50,32 @@ export default function Home() {
     let data = [];
     for (const clientId in clientsStore.clients) {
         const client = clientsStore.clients[clientId];
-        data.push({
+        const dataEl = {
             id: clientId,
             name: client.name,
             delete: true,
             copy: true,
-        });
+        };
+
+        let isClientFilter =
+            !(filterStore.param in dataEl) ||
+            String(dataEl[filterStore.param]).includes(filterStore.value);
+        let isClientDate =
+            !(filterStore.dateFilter.param in client) ||
+            (Date.parse(client[filterStore.dateFilter.param]) >=
+                Date.parse(filterStore.dateFilter.from) &&
+                Date.parse(client[filterStore.dateFilter.param]) <=
+                    Date.parse(filterStore.dateFilter.to));
+        if (isClientFilter && isClientDate) data.push(dataEl);
     }
     data.push({
         id: "add",
     });
+
+    useEffect(() => {
+        clientsStore.initClients();
+        filterStore.setFields(header);
+    }, []);
 
     return (
         <main>

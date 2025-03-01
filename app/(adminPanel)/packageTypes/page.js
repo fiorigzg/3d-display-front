@@ -85,8 +85,16 @@ export default function Home() {
             copy: true,
         };
 
-        if (String(dataEl[filterStore.param]).includes(filterStore.value))
-            data.push(dataEl);
+        let isPackageTypeFilter = String(dataEl[filterStore.param]).includes(
+            filterStore.value,
+        );
+        let isPrepackTypeDate =
+            !(filterStore.dateFilter.param in packageType) ||
+            (Date.parse(packageType[filterStore.dateFilter.param]) >=
+                Date.parse(filterStore.dateFilter.from) &&
+                Date.parse(packageType[filterStore.dateFilter.param]) <=
+                    Date.parse(filterStore.dateFilter.to));
+        if (isPackageTypeFilter && isPrepackTypeDate) data.push(dataEl);
     }
     data.push({
         id: "add",
