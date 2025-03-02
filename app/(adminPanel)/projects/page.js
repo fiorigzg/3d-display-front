@@ -9,6 +9,7 @@ import { useProjectsStore } from "store/projectsStore";
 import { useClientsStore } from "store/clientsStore";
 import { useFilterStore } from "store/filterStore";
 import HorizontalTable from "components/HorizontalTable";
+import getOptions from "components/getOptions";
 
 const { Text } = Typography;
 
@@ -19,12 +20,6 @@ export default function Home() {
 
     const [extendedClients, setExtendedClients] = useState({});
     const [extendedProjects, setExtendedProjects] = useState({});
-
-    let prepackTypeOptions = {};
-    for (const prepackTypeId in projectsStore.prepackTypes) {
-        const prepackType = projectsStore.prepackTypes[prepackTypeId];
-        prepackTypeOptions[prepackTypeId] = prepackType.name;
-    }
 
     const header = [
         {
@@ -77,8 +72,17 @@ export default function Home() {
         {
             name: "Номер предпроекта",
             param: "projectNumber",
-            type: "const",
+            type: "input",
             width: "170px",
+            onEnter: (ids, value) =>
+                projectsStore.changePrepack(
+                    ids.clientId,
+                    ids.projectId,
+                    "number",
+                    value,
+                    "text",
+                    true,
+                ),
         },
         {
             name: "Название предпроекта",
@@ -105,8 +109,17 @@ export default function Home() {
         {
             name: "Номер препака",
             param: "prepackNumber",
-            type: "const",
+            type: "input",
             width: "170px",
+            onEnter: (ids, value) =>
+                projectsStore.changePrepack(
+                    ids.projectId,
+                    ids.prepackId,
+                    "number",
+                    value,
+                    "text",
+                    true,
+                ),
         },
         {
             name: "Название препака",
@@ -127,7 +140,7 @@ export default function Home() {
             name: "Тип препака",
             param: "prepackTypeId",
             type: "select",
-            options: prepackTypeOptions,
+            options: getOptions(projectsStore.prepackTypes),
             width: "250px",
             onSelect: (ids, value) =>
                 projectsStore.changePrepack(
@@ -236,6 +249,9 @@ export default function Home() {
                                 !(filterStore.param in prepackEl) ||
                                 String(prepackEl[filterStore.param]).includes(
                                     filterStore.value,
+                                ) ||
+                                filterStore.options.includes(
+                                    prepackEl[filterStore.param],
                                 )
                             ) {
                                 data.push(prepackEl);
@@ -271,6 +287,11 @@ export default function Home() {
         projectsStore.initPrepackTypes();
         filterStore.setFields(header);
     }, []);
+    useEffect(() => {
+        filterStore.setSelectOptions({
+            prepackTypeId: getOptions(projectsStore.prepackTypes),
+        });
+    }, [projectsStore.prepackTypes]);
 
     return (
         <main>

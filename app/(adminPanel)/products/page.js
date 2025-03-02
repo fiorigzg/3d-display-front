@@ -14,24 +14,13 @@ import { useProductsStore } from "store/productsStore";
 import { useClientsStore } from "store/clientsStore";
 import { useFilterStore } from "store/filterStore";
 import HorizontalTable from "components/HorizontalTable";
+import getOptions from "components/getOptions";
 
 export default function Home() {
     const productsStore = useProductsStore();
     const clientsStore = useClientsStore();
     const filterStore = useFilterStore();
     const [extendedClients, setExtendedClients] = useState({});
-
-    // TODO: change options making maybe
-    let categoryOptions = {};
-    for (const categoryId in productsStore.categories) {
-        const category = productsStore.categories[categoryId];
-        categoryOptions[categoryId] = category.name;
-    }
-    let packageTypeOptions = {};
-    for (const packageTypeId in productsStore.packageTypes) {
-        const packageType = productsStore.packageTypes[packageTypeId];
-        packageTypeOptions[packageTypeId] = packageType.name;
-    }
 
     const header = [
         {
@@ -215,7 +204,7 @@ export default function Home() {
             name: "Категория продукта",
             param: "categoryId",
             type: "select",
-            options: categoryOptions,
+            options: getOptions(productsStore.categories),
             width: "200px",
             onSelect: (ids, value) =>
                 productsStore.changeProduct(
@@ -231,7 +220,7 @@ export default function Home() {
             name: "Вид упаковки",
             param: "packageTypeId",
             type: "select",
-            options: packageTypeOptions,
+            options: getOptions(productsStore.packageTypes),
             width: "200px",
             onSelect: (ids, value) =>
                 productsStore.changeProduct(
@@ -299,11 +288,13 @@ export default function Home() {
                     copy: true,
                 };
 
+                console.log(productEl[filterStore.param], filterStore.options);
                 if (
                     !(filterStore.param in productEl) ||
                     String(productEl[filterStore.param]).includes(
                         filterStore.value,
-                    )
+                    ) ||
+                    filterStore.options.includes(productEl[filterStore.param])
                 )
                     data.push(productEl);
             }
@@ -326,6 +317,13 @@ export default function Home() {
         productsStore.initPackageTypes();
         filterStore.setFields(header);
     }, []);
+
+    useEffect(() => {
+        filterStore.setSelectOptions({
+            packageTypeId: getOptions(productsStore.packageTypes),
+            categoryId: getOptions(productsStore.categories),
+        });
+    }, [productsStore.packageTypes, productsStore.categories]);
 
     return (
         <main>
