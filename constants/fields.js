@@ -1,9 +1,13 @@
 export const clientFields = {
     name: "name",
+    created: "created",
+    updated: "last_updated",
 };
 
 export const memberFields = {
     name: "full_name",
+    created: "created",
+    updated: "last_updated",
 };
 
 export const packageTypeFields = {
@@ -12,10 +16,14 @@ export const packageTypeFields = {
     sideSvg: "side_svg",
     topSvg: "top_svg",
     object: "object",
+    created: "created",
+    updated: "last_updated",
 };
 
 export const categoryFields = {
     name: "name",
+    created: "created",
+    updated: "last_updated",
 };
 
 export const productFields = {
@@ -36,15 +44,21 @@ export const productFields = {
     packagingZ: "packaging_z",
     packagingObj: "packaging_obj",
     packagingType: "packaging_type",
+    created: "created",
+    updated: "last_updated",
 };
 
 export const prepackTypeFields = {
     name: "name",
+    created: "created",
+    updated: "last_updated",
 };
 
 export const projectFields = {
     name: "name",
     clientId: "client_id",
+    created: "created",
+    updated: "last_updated",
 };
 
 export const prepackFields = {
@@ -63,6 +77,8 @@ export const prepackFields = {
     projectId: "project_id",
     image: "image",
     number: "number",
+    created: "created",
+    updated: "last_updated",
 };
 
 export const shelfFields = {

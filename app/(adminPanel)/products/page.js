@@ -259,11 +259,17 @@ export default function Home() {
             clientId: clientId,
             clientName: client.name,
         };
-
-        if (
+        let isClientFilter =
             !(filterStore.param in clientEl) ||
-            clientEl[filterStore.param].includes(filterStore.value)
-        ) {
+            String(clientEl[filterStore.param]).includes(filterStore.value);
+        let isClientDate =
+            !(filterStore.dateFilter.param in client) ||
+            (Date.parse(client[filterStore.dateFilter.param]) >=
+                Date.parse(filterStore.dateFilter.from) &&
+                Date.parse(client[filterStore.dateFilter.param]) <=
+                    Date.parse(filterStore.dateFilter.to));
+
+        if (isClientDate && isClientFilter) {
             data.push(clientEl);
 
             let products = {};
@@ -287,16 +293,19 @@ export default function Home() {
                     delete: true,
                     copy: true,
                 };
-
-                console.log(productEl[filterStore.param], filterStore.options);
-                if (
+                let isProductFilter =
                     !(filterStore.param in productEl) ||
                     String(productEl[filterStore.param]).includes(
                         filterStore.value,
-                    ) ||
-                    filterStore.options.includes(productEl[filterStore.param])
-                )
-                    data.push(productEl);
+                    ) || filterStore.options.includes(productEl[filterStore.param]);
+                let isProductDate =
+                    !(filterStore.dateFilter.param in product) ||
+                    (Date.parse(product[filterStore.dateFilter.param]) >=
+                        Date.parse(filterStore.dateFilter.from) &&
+                        Date.parse(product[filterStore.dateFilter.param]) <=
+                            Date.parse(filterStore.dateFilter.to));
+
+                if (isProductFilter && isProductDate) data.push(productEl);
             }
             if (
                 !(filterStore.param in clientEl) &&

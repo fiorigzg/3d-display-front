@@ -70,6 +70,12 @@ export default function Home() {
             },
         },
         {
+            name: "Создание предпроекта",
+            param: "projectCreated",
+            type: "const",
+            width: "200px",
+        },
+        {
             name: "Номер предпроекта",
             param: "projectNumber",
             type: "input",
@@ -98,6 +104,12 @@ export default function Home() {
                     "text",
                     true,
                 ),
+        },
+        {
+            name: "Создание препака",
+            param: "prepackCreated",
+            type: "const",
+            width: "170px",
         },
         {
             name: "Препак",
@@ -203,11 +215,17 @@ export default function Home() {
             clientId: clientId,
             clientName: client.name,
         };
-
-        if (
+        let isClientFilter =
             !(filterStore.param in clientEl) ||
-            String(clientEl[filterStore.param]).includes(filterStore.value)
-        ) {
+            String(clientEl[filterStore.param]).includes(filterStore.value);
+        let isClientDate =
+            !(filterStore.dateFilter.param in client) ||
+            (Date.parse(client[filterStore.dateFilter.param]) >=
+                Date.parse(filterStore.dateFilter.from) &&
+                Date.parse(client[filterStore.dateFilter.param]) <=
+                    Date.parse(filterStore.dateFilter.to));
+
+        if (isClientFilter && isClientDate) {
             data.push(clientEl);
 
             let projects = {};
@@ -217,18 +235,25 @@ export default function Home() {
                 const project = projects[projectId];
                 const projectEl = {
                     projectId: projectId,
+                    projectCreated: project.created.slice(0, 10),
                     projectName: project.name,
                     projectNumber: 0,
                     delete: true,
                     copy: true,
                 };
-
-                if (
+                let isProjectFilter =
                     !(filterStore.param in projectEl) ||
                     String(projectEl[filterStore.param]).includes(
                         filterStore.value,
-                    )
-                ) {
+                    );
+                let isProjectDate =
+                    !(filterStore.dateFilter.param in project) ||
+                    (Date.parse(project[filterStore.dateFilter.param]) >=
+                        Date.parse(filterStore.dateFilter.from) &&
+                        Date.parse(project[filterStore.dateFilter.param]) <=
+                            Date.parse(filterStore.dateFilter.to));
+
+                if (isProjectFilter && isProjectDate) {
                     data.push(projectEl);
 
                     if (extendedProjects[projectId]) {
@@ -237,6 +262,7 @@ export default function Home() {
                             const prepack = prepacks[prepackId];
                             const prepackEl = {
                                 prepackId: prepackId,
+                                prepackCreated: prepack.created.slice(0, 10),
                                 prepackName: prepack.name,
                                 prepackTypeId: prepack.prepackTypeId,
                                 prepackNumber: prepack.number,
@@ -245,17 +271,24 @@ export default function Home() {
                                 design: true,
                             };
 
-                            if (
+                            let isPrepackFilter =
                                 !(filterStore.param in prepackEl) ||
                                 String(prepackEl[filterStore.param]).includes(
                                     filterStore.value,
-                                ) ||
-                                filterStore.options.includes(
+                                ) || filterStore.options.includes(
                                     prepackEl[filterStore.param],
-                                )
-                            ) {
+                                );
+                            let isPrepackDate =
+                                !(filterStore.dateFilter.param in prepack) ||
+                                (Date.parse(
+                                    prepack[filterStore.dateFilter.param],
+                                ) >= Date.parse(filterStore.dateFilter.from) &&
+                                    Date.parse(
+                                        prepack[filterStore.dateFilter.param],
+                                    ) <= Date.parse(filterStore.dateFilter.to));
+
+                            if (isPrepackFilter && isPrepackDate)
                                 data.push(prepackEl);
-                            }
                         }
                         if (
                             !(filterStore.param in projectEl) &&

@@ -3,14 +3,16 @@
 import { create } from "zustand";
 
 export const useFilterStore = create((set) => ({
-    fields: [
-        { name: "Название", param: "name" },
-        { name: "ID", param: "id" },
-    ],
+    fields: [],
+    param: "off",
     selectOptions: {},
-    param: "name",
     value: "",
     options: [],
+    dateFilter: {
+        param: "off",
+        from: "",
+        to: "",
+    },
 
     setFields: (fields) => {
         fields = fields
@@ -21,7 +23,7 @@ export const useFilterStore = create((set) => ({
         set((state) => {
             return {
                 fields: fields,
-                param: fields[0].param,
+                param: "off",
                 value: "",
                 options: [],
             };
@@ -49,6 +51,10 @@ export const useFilterStore = create((set) => ({
             } else return { value: value, options: [] };
         });
     },
+    setDateFilter: (dateFilter) =>
+        set((state) => ({
+            dateFilter: { ...state.dateFilter, ...dateFilter },
+        })),
     setSelectOptions: (selectOptions) => {
         set((state) => {
             return {
