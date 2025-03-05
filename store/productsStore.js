@@ -27,6 +27,22 @@ export const useProductsStore = create((set) => ({
     categories: {},
     packageTypes: {},
 
+    getAllProducts: async () => {
+        const products = await getAll("/products", "products", productFields);
+        let realProducts = {};
+
+        for (const productId in products) {
+            const product = products[productId];
+
+            if (!(product.clientId in realProducts))
+                realProducts[product.clientId] = {};
+            realProducts[product.clientId][productId] = product;
+        }
+
+        set((state) => {
+            return { products: realProducts };
+        });
+    },
     initProducts: async (clientId) => {
         const products = await getAll(
             `/productsbyclient?client_id=${clientId}`,

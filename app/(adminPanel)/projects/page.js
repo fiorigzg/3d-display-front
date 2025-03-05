@@ -28,7 +28,7 @@ export default function Home() {
             type: "id",
             width: "100px",
             onSwitchExtend: (clientId) => {
-                if (!(clientId in extendedClients)) {
+                if (!(clientId in projectsStore.projects)) {
                     projectsStore.initProjects(clientId);
                     setExtendedClients({
                         ...extendedClients,
@@ -54,8 +54,8 @@ export default function Home() {
             type: "id",
             width: "100px",
             onAdd: (ids) => projectsStore.createProject(ids.clientId),
-            onSwitchExtend: (projectId, ids) => {
-                if (!(projectId in extendedProjects)) {
+            onSwitchExtend: (projectId) => {
+                if (!(projectId in projectsStore.prepacks)) {
                     projectsStore.initPrepacks(projectId);
                     setExtendedProjects({
                         ...extendedProjects,
@@ -275,7 +275,8 @@ export default function Home() {
                                 !(filterStore.param in prepackEl) ||
                                 String(prepackEl[filterStore.param]).includes(
                                     filterStore.value,
-                                ) || filterStore.options.includes(
+                                ) ||
+                                filterStore.options.includes(
                                     prepackEl[filterStore.param],
                                 );
                             let isPrepackDate =
@@ -318,6 +319,8 @@ export default function Home() {
     useEffect(() => {
         clientsStore.initClients();
         projectsStore.initPrepackTypes();
+        projectsStore.getAllProjects();
+        projectsStore.getAllPrepacks();
         filterStore.setFields(header);
     }, []);
     useEffect(() => {

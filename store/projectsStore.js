@@ -26,6 +26,22 @@ export const useProjectsStore = create((set, get) => ({
     prepacks: {},
     prepackTypes: {},
 
+    getAllProjects: async () => {
+        const projects = await getAll("/projects", "projects", projectFields);
+        let realProjects = {};
+
+        for (const projectId in projects) {
+            const project = projects[projectId];
+            if (!(project.clientId in realProjects)) {
+                realProjects[project.clientId] = {};
+            }
+            realProjects[project.clientId][projectId] = project;
+        }
+
+        set((state) => ({
+            projects: realProjects,
+        }));
+    },
     initProjects: async (clientId) => {
         let projects = await getAll("/projects", "projects", projectFields);
         for (const projectId in projects) {
@@ -98,6 +114,22 @@ export const useProjectsStore = create((set, get) => ({
         }
     },
 
+    getAllPrepacks: async () => {
+        const prepacks = await getAll("/poultices", "poultices", prepackFields);
+        let realPrepacks = {};
+
+        for (const prepackId in prepacks) {
+            const prepack = prepacks[prepackId];
+            if (!(prepack.projectId in realPrepacks)) {
+                realPrepacks[prepack.projectId] = {};
+            }
+            realPrepacks[prepack.projectId][prepackId] = prepack;
+        }
+
+        set((state) => ({
+            prepacks: realPrepacks,
+        }));
+    },
     initPrepacks: async (projectId) => {
         const prepacks = await getAll(
             `/poultice?project_id=${projectId}`,

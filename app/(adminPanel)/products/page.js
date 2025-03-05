@@ -29,7 +29,7 @@ export default function Home() {
             type: "id",
             width: "100px",
             onSwitchExtend: (id) => {
-                if (!(id in extendedClients)) {
+                if (!(id in productsStore.products)) {
                     productsStore.initProducts(id);
                     setExtendedClients({ ...extendedClients, [id]: true });
                 } else {
@@ -297,7 +297,8 @@ export default function Home() {
                     !(filterStore.param in productEl) ||
                     String(productEl[filterStore.param]).includes(
                         filterStore.value,
-                    ) || filterStore.options.includes(productEl[filterStore.param]);
+                    ) ||
+                    filterStore.options.includes(productEl[filterStore.param]);
                 let isProductDate =
                     !(filterStore.dateFilter.param in product) ||
                     (Date.parse(product[filterStore.dateFilter.param]) >=
@@ -324,6 +325,7 @@ export default function Home() {
         clientsStore.initClients();
         productsStore.initCategories();
         productsStore.initPackageTypes();
+        productsStore.getAllProducts();
         filterStore.setFields(header);
     }, []);
 
