@@ -34,7 +34,7 @@ export async function getJsonShelf(id) {
         .json_shelf;
 }
 
-export async function openShelfEditor(products, prepack, id) {
+export async function openShelfEditor(products, prepack, id, clientId) {
     let shelf = prepack.shelves[id];
     let shelfChanges = {};
 
@@ -88,7 +88,7 @@ export async function openShelfEditor(products, prepack, id) {
             prepack.backThickness -
             prepack.frontThickness -
             shelf.padding * 2
-        }&&shelf_id=${id}`,
+        }&&shelf_id=${id}&&client_id=${clientId}`,
         "mywin",
         `width=${window.screen.availWidth / 2},height=${window.screen.availHeight}`,
     );

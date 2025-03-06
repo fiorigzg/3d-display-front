@@ -90,11 +90,16 @@ export const usePrepackStore = create((set, get) => ({
 
         set({ shelves: shelves });
     },
-    makeShelf: async (ids, products) => {
+    makeShelf: async (ids, products, clientId) => {
         let state = get();
         let shelves = state.shelves;
 
-        let shelfChanges = await openShelfEditor(products, state, ids.shelfId);
+        let shelfChanges = await openShelfEditor(
+            products,
+            state,
+            ids.shelfId,
+            clientId,
+        );
 
         shelves[ids.shelfId] = { ...shelves[ids.shelfId], ...shelfChanges };
         set({ shelves: shelves });

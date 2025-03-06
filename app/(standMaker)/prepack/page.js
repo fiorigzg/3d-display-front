@@ -188,7 +188,8 @@ export default function Home() {
             icon: "next",
             param: "makeShelf",
             width: "50px",
-            onClick: (ids) => prepackStore.makeShelf(ids, products),
+            onClick: (ids) =>
+                prepackStore.makeShelf(ids, products, queryParams.clientId),
         },
         {
             name: "Обновить",
