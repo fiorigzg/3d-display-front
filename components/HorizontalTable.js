@@ -9,6 +9,19 @@ import axios from "axios";
 import styles from "./css/horizontalTable.module.scss";
 import { serverUrl } from "constants/main";
 
+const TableDate = ({ value }) => {
+    const date = new Date(value);
+
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+    return <p>{`${day}.${month}.${year} ${hours}:${minutes}`}</p>;
+};
+
 const TableUpload = ({ value, ids, onUpload, accept }) => {
     const onDrop = useCallback(
         async (acceptedFiles) => {
@@ -141,6 +154,12 @@ export default function HorizontalTable({
                         <td key={cellsArr.length}>
                             {button}
                             <p>{value}</p>
+                        </td>,
+                    );
+                } else if (column.type == "date") {
+                    cellsArr.push(
+                        <td key={cellsArr.length}>
+                            <TableDate value={value} />
                         </td>,
                     );
                 } else if (column.type == "input") {

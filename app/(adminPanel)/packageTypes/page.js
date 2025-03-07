@@ -37,6 +37,18 @@ export default function Home() {
             onClick: (ids) => productsStore.copyPackageType(ids.id),
         },
         {
+            name: "Создание",
+            param: "created",
+            type: "date",
+            width: "150px",
+        },
+        {
+            name: "Обновление",
+            param: "updated",
+            type: "date",
+            width: "150px",
+        },
+        {
             name: "Объект товара",
             type: "upload",
             param: "object",
@@ -83,6 +95,8 @@ export default function Home() {
             object: packageType.object,
             delete: true,
             copy: true,
+            created: packageType.created,
+            updated: packageType.updated,
         };
 
         let isPackageTypeFilter = String(dataEl[filterStore.param]).includes(

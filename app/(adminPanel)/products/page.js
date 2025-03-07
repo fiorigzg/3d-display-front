@@ -9,12 +9,12 @@ import {
 } from "@ant-design/icons";
 
 import styles from "./page.module.scss";
-import { serverUrl } from "constants/main";
 import { useProductsStore } from "store/productsStore";
 import { useClientsStore } from "store/clientsStore";
 import { useFilterStore } from "store/filterStore";
 import HorizontalTable from "components/HorizontalTable";
 import getOptions from "components/getOptions";
+import isFiltred from "components/isFiltred";
 
 export default function Home() {
     const productsStore = useProductsStore();
@@ -41,6 +41,18 @@ export default function Home() {
             },
         },
         {
+            name: "Создание клиента",
+            param: "clientCreated",
+            type: "date",
+            width: "200px",
+        },
+        {
+            name: "Обновление клиента",
+            param: "clientUpdated",
+            type: "date",
+            width: "200px",
+        },
+        {
             name: "Имя клиента",
             param: "clientName",
             type: "const",
@@ -53,6 +65,18 @@ export default function Home() {
             type: "id",
             width: "100px",
             onAdd: (ids) => productsStore.createProduct(ids.clientId),
+        },
+        {
+            name: "Создание продукта",
+            param: "productCreated",
+            type: "date",
+            width: "200px",
+        },
+        {
+            name: "Обновление продукта",
+            param: "productUpdated",
+            type: "date",
+            width: "200px",
         },
         {
             name: "Удаление",
@@ -258,23 +282,17 @@ export default function Home() {
         const clientEl = {
             clientId: clientId,
             clientName: client.name,
+            clientCreated: client.created,
+            clientUpdated: client.updated,
         };
-        let isClientFilter =
-            !(filterStore.param in clientEl) ||
-            String(clientEl[filterStore.param]).includes(filterStore.value);
-        let isClientDate =
-            !(filterStore.dateFilter.param in client) ||
-            (Date.parse(client[filterStore.dateFilter.param]) >=
-                Date.parse(filterStore.dateFilter.from) &&
-                Date.parse(client[filterStore.dateFilter.param]) <=
-                    Date.parse(filterStore.dateFilter.to));
 
-        if (isClientDate && isClientFilter) {
+        if (isFiltred(filterStore, clientEl, client)) {
             data.push(clientEl);
+            const isClientExtended =
+                clientId in extendedClients && extendedClients[clientId];
 
-            let products = {};
-            if (clientId in extendedClients && extendedClients[clientId])
-                products = productsStore.products[clientId];
+            const products = productsStore.products[clientId];
+            let isSomeProduct = false;
             for (const productId in products) {
                 const product = products[productId];
                 const productEl = {
@@ -292,29 +310,23 @@ export default function Home() {
                     frontProjection: product.frontProjection,
                     delete: true,
                     copy: true,
+                    productCreated: product.created,
+                    productUpdated: product.updated,
                 };
-                let isProductFilter =
-                    !(filterStore.param in productEl) ||
-                    String(productEl[filterStore.param]).includes(
-                        filterStore.value,
-                    ) ||
-                    filterStore.options.includes(productEl[filterStore.param]);
-                let isProductDate =
-                    !(filterStore.dateFilter.param in product) ||
-                    (Date.parse(product[filterStore.dateFilter.param]) >=
-                        Date.parse(filterStore.dateFilter.from) &&
-                        Date.parse(product[filterStore.dateFilter.param]) <=
-                            Date.parse(filterStore.dateFilter.to));
 
-                if (isProductFilter && isProductDate) data.push(productEl);
+                if (isFiltred(filterStore, productEl, product)) {
+                    if (isClientExtended) data.push(productEl);
+                    isSomeProduct = true;
+                }
             }
             if (
                 !(filterStore.param in clientEl) &&
                 "clientId" in data.at(-1) &&
-                filterStore.value != ""
+                filterStore.value != "" &&
+                !isSomeProduct
             )
                 data.pop();
-            else if (clientId in extendedClients && extendedClients[clientId])
+            else if (isClientExtended)
                 data.push({
                     productId: "add",
                 });

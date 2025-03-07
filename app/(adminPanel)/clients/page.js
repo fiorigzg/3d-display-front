@@ -36,6 +36,18 @@ export default function Home() {
             onClick: (ids) => clientsStore.copyClient(ids.id),
         },
         {
+            name: "Создание",
+            param: "created",
+            type: "date",
+            width: "150px",
+        },
+        {
+            name: "Обновление",
+            param: "updated",
+            type: "date",
+            width: "150px",
+        },
+        {
             name: "Название",
             param: "name",
             type: "input",
@@ -55,6 +67,8 @@ export default function Home() {
             name: client.name,
             delete: true,
             copy: true,
+            created: client.created,
+            updated: client.updated,
         };
 
         let isClientFilter =

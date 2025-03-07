@@ -10,6 +10,7 @@ import { useClientsStore } from "store/clientsStore";
 import { useFilterStore } from "store/filterStore";
 import HorizontalTable from "components/HorizontalTable";
 import getOptions from "components/getOptions";
+import isFiltred from "components/isFiltred";
 
 const { Text } = Typography;
 
@@ -43,6 +44,18 @@ export default function Home() {
             },
         },
         {
+            name: "Создание клиента",
+            param: "clientCreated",
+            type: "date",
+            width: "200px",
+        },
+        {
+            name: "Обновление клиента",
+            param: "clientUpdated",
+            type: "date",
+            width: "200px",
+        },
+        {
             name: "Имя клиента",
             param: "clientName",
             type: "const",
@@ -52,7 +65,7 @@ export default function Home() {
             name: "Предпроект",
             param: "projectId",
             type: "id",
-            width: "100px",
+            width: "120px",
             onAdd: (ids) => projectsStore.createProject(ids.clientId),
             onSwitchExtend: (projectId) => {
                 if (!(projectId in projectsStore.prepacks)) {
@@ -72,8 +85,14 @@ export default function Home() {
         {
             name: "Создание предпроекта",
             param: "projectCreated",
-            type: "const",
+            type: "date",
             width: "200px",
+        },
+        {
+            name: "Обновление предпроекта",
+            param: "projectUpdated",
+            type: "date",
+            width: "220px",
         },
         {
             name: "Номер предпроекта",
@@ -106,17 +125,23 @@ export default function Home() {
                 ),
         },
         {
-            name: "Создание препака",
-            param: "prepackCreated",
-            type: "const",
-            width: "170px",
-        },
-        {
             name: "Препак",
             param: "prepackId",
             type: "id",
             width: "100px",
             onAdd: (ids) => projectsStore.createPrepack(ids.projectId),
+        },
+        {
+            name: "Создание препака",
+            param: "prepackCreated",
+            type: "date",
+            width: "200px",
+        },
+        {
+            name: "Обновление препака",
+            param: "prepackUpdated",
+            type: "date",
+            width: "200px",
         },
         {
             name: "Номер препака",
@@ -214,105 +239,91 @@ export default function Home() {
         const clientEl = {
             clientId: clientId,
             clientName: client.name,
+            clientCreated: client.created,
+            clientUpdated: client.updated,
         };
-        let isClientFilter =
-            !(filterStore.param in clientEl) ||
-            String(clientEl[filterStore.param]).includes(filterStore.value);
-        let isClientDate =
-            !(filterStore.dateFilter.param in client) ||
-            (Date.parse(client[filterStore.dateFilter.param]) >=
-                Date.parse(filterStore.dateFilter.from) &&
-                Date.parse(client[filterStore.dateFilter.param]) <=
-                    Date.parse(filterStore.dateFilter.to));
 
-        if (isClientFilter && isClientDate) {
+        if (isFiltred(filterStore, clientEl, client)) {
             data.push(clientEl);
+            const isClientExtended =
+                clientId in extendedClients && extendedClients[clientId];
 
-            let projects = {};
-            if (clientId in extendedClients && extendedClients[clientId])
-                projects = projectsStore.projects[clientId] || {};
+            const projects = projectsStore.projects[clientId];
+            let isSomeProject = false;
             for (const projectId in projects) {
                 const project = projects[projectId];
                 const projectEl = {
                     projectId: projectId,
-                    projectCreated: project.created.slice(0, 10),
                     projectName: project.name,
                     projectNumber: 0,
                     delete: true,
                     copy: true,
+                    projectCreated: project.created,
+                    projectUpdated: project.updated,
                 };
-                let isProjectFilter =
-                    !(filterStore.param in projectEl) ||
-                    String(projectEl[filterStore.param]).includes(
-                        filterStore.value,
-                    );
-                let isProjectDate =
-                    !(filterStore.dateFilter.param in project) ||
-                    (Date.parse(project[filterStore.dateFilter.param]) >=
-                        Date.parse(filterStore.dateFilter.from) &&
-                        Date.parse(project[filterStore.dateFilter.param]) <=
-                            Date.parse(filterStore.dateFilter.to));
+                if (isFiltred(filterStore, projectEl, project)) {
+                    if (isClientExtended) data.push(projectEl);
+                    const isProjectExtended =
+                        projectId in extendedProjects &&
+                        extendedProjects[projectId];
 
-                if (isProjectFilter && isProjectDate) {
-                    data.push(projectEl);
+                    const prepacks = projectsStore.prepacks[projectId];
+                    let isSomePrepack = false;
+                    for (const prepackId in prepacks) {
+                        const prepack = prepacks[prepackId];
+                        const prepackEl = {
+                            prepackId: prepackId,
+                            prepackName: prepack.name,
+                            prepackTypeId: prepack.prepackTypeId,
+                            prepackNumber: prepack.number,
+                            delete: true,
+                            copy: true,
+                            design: true,
+                            prepackCreated: prepack.created,
+                            prepackUpdated: prepack.updated,
+                        };
 
-                    if (extendedProjects[projectId]) {
-                        let prepacks = projectsStore.prepacks[projectId] || {};
-                        for (const prepackId in prepacks) {
-                            const prepack = prepacks[prepackId];
-                            const prepackEl = {
-                                prepackId: prepackId,
-                                prepackCreated: prepack.created.slice(0, 10),
-                                prepackName: prepack.name,
-                                prepackTypeId: prepack.prepackTypeId,
-                                prepackNumber: prepack.number,
-                                delete: true,
-                                copy: true,
-                                design: true,
-                            };
-
-                            let isPrepackFilter =
-                                !(filterStore.param in prepackEl) ||
-                                String(prepackEl[filterStore.param]).includes(
-                                    filterStore.value,
-                                ) ||
-                                filterStore.options.includes(
-                                    prepackEl[filterStore.param],
-                                );
-                            let isPrepackDate =
-                                !(filterStore.dateFilter.param in prepack) ||
-                                (Date.parse(
-                                    prepack[filterStore.dateFilter.param],
-                                ) >= Date.parse(filterStore.dateFilter.from) &&
-                                    Date.parse(
-                                        prepack[filterStore.dateFilter.param],
-                                    ) <= Date.parse(filterStore.dateFilter.to));
-
-                            if (isPrepackFilter && isPrepackDate)
+                        if (isFiltred(filterStore, prepackEl, prepack)) {
+                            if (isProjectExtended && isClientExtended)
                                 data.push(prepackEl);
+                            isSomePrepack = true;
                         }
-                        if (
-                            !(filterStore.param in projectEl) &&
-                            "projectId" in data.at(-1) &&
-                            filterStore.value != ""
-                        )
-                            data.pop();
-                        else if (
-                            projectId in extendedProjects &&
-                            extendedProjects[projectId]
-                        )
-                            data.push({ prepackId: "add" });
                     }
+
+                    console.log(
+                        projectId,
+                        !(filterStore.param in projectEl),
+                        filterStore.value != "",
+                        !isSomePrepack,
+                        isSomeProject,
+                    );
+                    isSomeProject = isSomePrepack || isSomeProject;
+                    if (
+                        !(filterStore.param in projectEl) &&
+                        "projectId" in data.at(-1) &&
+                        filterStore.value != "" &&
+                        !isSomePrepack
+                    )
+                        data.pop();
+                    else if (isProjectExtended && isClientExtended)
+                        data.push({ prepackId: "add" });
                 }
             }
+            console.log(
+                clientId,
+                !(filterStore.param in clientEl),
+                "clientId" in data.at(-1),
+                filterStore.value != "",
+                !isSomeProject,
+            );
             if (
                 !(filterStore.param in clientEl) &&
                 "clientId" in data.at(-1) &&
-                filterStore.value != ""
+                filterStore.value != "" &&
+                !isSomeProject
             )
                 data.pop();
-            else if (clientId in extendedClients && extendedClients[clientId])
-                data.push({ projectId: "add" });
+            else if (isClientExtended) data.push({ projectId: "add" });
         }
     }
 

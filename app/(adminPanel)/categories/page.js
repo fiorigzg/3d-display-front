@@ -36,6 +36,18 @@ export default function Home() {
             onClick: (ids) => productsStore.copyCategory(ids.id),
         },
         {
+            name: "Создание",
+            param: "created",
+            type: "date",
+            width: "150px",
+        },
+        {
+            name: "Обновление",
+            param: "updated",
+            type: "date",
+            width: "150px",
+        },
+        {
             name: "Название",
             param: "name",
             type: "input",
@@ -61,6 +73,8 @@ export default function Home() {
             name: category.name,
             delete: true,
             copy: true,
+            created: category.created,
+            updated: category.updated,
         };
 
         let isCategoryFilter = String(dataEl[filterStore.param]).includes(
