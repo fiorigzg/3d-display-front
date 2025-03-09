@@ -6,6 +6,7 @@ export const useFilterStore = create((set) => ({
     fields: [],
     param: "off",
     selectOptions: {},
+    multiSelectOptions: {},
     value: "",
     options: [],
     dateFilter: {
@@ -59,6 +60,13 @@ export const useFilterStore = create((set) => ({
         set((state) => {
             return {
                 selectOptions: selectOptions,
+            };
+        });
+    },
+    setMultiselectOptions: (multiSelectOptions) => {
+        set((state) => {
+            return {
+                multiSelectOptions: multiSelectOptions,
             };
         });
     },
