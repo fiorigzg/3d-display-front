@@ -13,12 +13,30 @@ export default function TopMenu({ style = {}, className = null }) {
         value: field.param,
         label: field.name,
     }));
-
     const dateOptions = [
         { value: "off", label: "Отключен" },
         { value: "created", label: "Дата создания" },
         { value: "updated", label: "Дата обновления" },
     ];
+    const selectStyle = {
+        control: (base) => ({
+            ...base,
+            fontSize: "14px",
+            maxWidth: "300px",
+        }),
+    };
+    const multiSelectStyle = {
+        control: (base) => ({
+            ...base,
+            fontSize: "14px",
+            maxWidth: "250px",
+        }),
+        valueContainer: (base) => ({
+            ...base,
+            maxHeight: "30px",
+            overflow: "scroll",
+        }),
+    };
 
     return (
         <div className={cx(styles.topMenu, className)} style={style}>
@@ -32,6 +50,7 @@ export default function TopMenu({ style = {}, className = null }) {
                     onChange={(selectedOption) => {
                         filterStore.setParam(selectedOption.value);
                     }}
+                    styles={selectStyle}
                     value={
                         fieldOptions.find(
                             (option) => option.value === filterStore.param,
@@ -49,18 +68,20 @@ export default function TopMenu({ style = {}, className = null }) {
                 />
             </div>
             <div className={styles.multiSelectFilter}>
+                <p>Скрытые колонки</p>
                 <Select
                     options={[...fieldOptions]}
                     onChange={(selectedOptions) => {
-                        filterStore.setParam(
-                            selectedOptions.map((option) => option.value),
+                        const realSelectedOptions = selectedOptions.map(
+                            (option) => option.value,
                         );
+                        filterStore.setParam(realSelectedOptions);
+                        filterStore.setExcludedFields(realSelectedOptions);
                     }}
+                    styles={multiSelectStyle}
                     isMulti
-                    value={fieldOptions.filter(
-                        (option) =>
-                            Array.isArray(filterStore.param) &&
-                            filterStore.param.includes(option.value),
+                    value={fieldOptions.filter((option) =>
+                        filterStore.excludedFields.includes(option.value),
                     )}
                 />
             </div>
@@ -74,6 +95,7 @@ export default function TopMenu({ style = {}, className = null }) {
                             param: selectedOption.value,
                         });
                     }}
+                    styles={selectStyle}
                     value={
                         dateOptions.find(
                             (option) =>

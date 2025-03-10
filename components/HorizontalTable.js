@@ -1,5 +1,3 @@
-"use client";
-
 import { useMemo, useCallback, useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { useTable } from "react-table";
@@ -91,20 +89,24 @@ const TableInput = ({ value, onEnter, column, thisIds }) => {
 export default function HorizontalTable({
     data,
     header,
+    excludedColumns,
     style = {},
     className = null,
 }) {
     const realColumns = useMemo(() => {
         let columns = [];
         for (const element of header) {
-            columns.push({
-                Header: element.name,
-                accessor: element.param,
-                ...element,
-            });
+            if (!excludedColumns.includes(element.param)) {
+                columns.push({
+                    Header: element.name,
+                    accessor: element.param,
+                    ...element,
+                });
+            }
         }
         return columns;
-    }, [header]);
+    }, [header, excludedColumns]);
+
     const realData = useMemo(() => data, [data]);
 
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =

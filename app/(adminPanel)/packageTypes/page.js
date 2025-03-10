@@ -116,13 +116,17 @@ export default function Home() {
 
     useEffect(() => {
         productsStore.initPackageTypes();
-        filterStore.setFields(header);
+        filterStore.setFields(header, ["created", "updated"]);
     }, []);
 
     return (
         <main>
             <div className={styles.table}>
-                <HorizontalTable data={data} header={header} />
+                <HorizontalTable
+                    data={data}
+                    header={header}
+                    excludedColumns={filterStore.excludedFields}
+                />
             </div>
         </main>
     );

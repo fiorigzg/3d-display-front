@@ -338,7 +338,7 @@ export default function Home() {
         productsStore.initCategories();
         productsStore.initPackageTypes();
         productsStore.getAllProducts();
-        filterStore.setFields(header);
+        filterStore.setFields(header, ["clientCreated", "clientUpdated"]);
     }, []);
 
     useEffect(() => {
@@ -351,7 +351,11 @@ export default function Home() {
     return (
         <main>
             <div className={styles.table}>
-                <HorizontalTable data={data} header={header} />
+                <HorizontalTable
+                    data={data}
+                    header={header}
+                    excludedColumns={filterStore.excludedFields}
+                />
             </div>
         </main>
     );

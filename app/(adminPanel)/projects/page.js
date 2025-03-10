@@ -290,13 +290,6 @@ export default function Home() {
                         }
                     }
 
-                    console.log(
-                        projectId,
-                        !(filterStore.param in projectEl),
-                        filterStore.value != "",
-                        !isSomePrepack,
-                        isSomeProject,
-                    );
                     isSomeProject = isSomePrepack || isSomeProject;
                     if (
                         !(filterStore.param in projectEl) &&
@@ -309,13 +302,6 @@ export default function Home() {
                         data.push({ prepackId: "add" });
                 }
             }
-            console.log(
-                clientId,
-                !(filterStore.param in clientEl),
-                "clientId" in data.at(-1),
-                filterStore.value != "",
-                !isSomeProject,
-            );
             if (
                 !(filterStore.param in clientEl) &&
                 "clientId" in data.at(-1) &&
@@ -332,7 +318,7 @@ export default function Home() {
         projectsStore.initPrepackTypes();
         projectsStore.getAllProjects();
         projectsStore.getAllPrepacks();
-        filterStore.setFields(header);
+        filterStore.setFields(header, ["clientCreated", "clientUpdated"]);
     }, []);
     useEffect(() => {
         filterStore.setSelectOptions({
@@ -343,7 +329,11 @@ export default function Home() {
     return (
         <main>
             <div className={styles.table}>
-                <HorizontalTable data={data} header={header} />
+                <HorizontalTable
+                    data={data}
+                    header={header}
+                    excludedColumns={filterStore.excludedFields}
+                />
             </div>
         </main>
     );

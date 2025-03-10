@@ -6,16 +6,16 @@ export const useFilterStore = create((set) => ({
     fields: [],
     param: "off",
     selectOptions: {},
-    multiSelectOptions: {},
     value: "",
     options: [],
+    excludedFields: [],
     dateFilter: {
         param: "off",
         from: "",
         to: "",
     },
 
-    setFields: (fields) => {
+    setFields: (fields, excludedFields = []) => {
         fields = fields
             .filter((field) => field.type != "button")
             .map((field) => {
@@ -24,6 +24,7 @@ export const useFilterStore = create((set) => ({
         set((state) => {
             return {
                 fields: fields,
+                excludedFields: excludedFields,
                 param: "off",
                 value: "",
                 options: [],
@@ -63,10 +64,10 @@ export const useFilterStore = create((set) => ({
             };
         });
     },
-    setMultiselectOptions: (multiSelectOptions) => {
+    setExcludedFields: (excludedFields) => {
         set((state) => {
             return {
-                multiSelectOptions: multiSelectOptions,
+                excludedFields: excludedFields,
             };
         });
     },

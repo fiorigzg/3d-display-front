@@ -461,6 +461,7 @@ export default function Home() {
                         className={styles.shelvesTable}
                         header={shelvesHeader}
                         data={shelvesData}
+                        excludedColumns={[]}
                     />
                 </div>
             </div>
