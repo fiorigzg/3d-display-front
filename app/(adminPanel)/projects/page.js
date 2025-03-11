@@ -241,12 +241,12 @@ export default function Home() {
             clientName: client.name,
             clientCreated: client.created,
             clientUpdated: client.updated,
+            isExtended:
+                clientId in extendedClients && extendedClients[clientId],
         };
 
         if (isFiltred(filterStore, clientEl, client)) {
             data.push(clientEl);
-            const isClientExtended =
-                clientId in extendedClients && extendedClients[clientId];
 
             const projects = projectsStore.projects[clientId];
             let isSomeProject = false;
@@ -260,12 +260,12 @@ export default function Home() {
                     copy: true,
                     projectCreated: project.created,
                     projectUpdated: project.updated,
+                    isExtended:
+                        projectId in extendedProjects &&
+                        extendedProjects[projectId],
                 };
                 if (isFiltred(filterStore, projectEl, project)) {
-                    if (isClientExtended) data.push(projectEl);
-                    const isProjectExtended =
-                        projectId in extendedProjects &&
-                        extendedProjects[projectId];
+                    if (clientEl.isExtended) data.push(projectEl);
 
                     const prepacks = projectsStore.prepacks[projectId];
                     let isSomePrepack = false;
@@ -284,7 +284,7 @@ export default function Home() {
                         };
 
                         if (isFiltred(filterStore, prepackEl, prepack)) {
-                            if (isProjectExtended && isClientExtended)
+                            if (projectEl.isExtended && clientEl.isExtended)
                                 data.push(prepackEl);
                             isSomePrepack = true;
                         }
@@ -298,7 +298,7 @@ export default function Home() {
                         !isSomePrepack
                     )
                         data.pop();
-                    else if (isProjectExtended && isClientExtended)
+                    else if (projectEl.isExtended && clientEl.isExtended)
                         data.push({ prepackId: "add" });
                 }
             }
@@ -309,7 +309,7 @@ export default function Home() {
                 !isSomeProject
             )
                 data.pop();
-            else if (isClientExtended) data.push({ projectId: "add" });
+            else if (clientEl.isExtended) data.push({ projectId: "add" });
         }
     }
 

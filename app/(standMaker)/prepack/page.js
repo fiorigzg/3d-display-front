@@ -105,6 +105,24 @@ export default function Home() {
         { name: "Толщина полок", param: "shelfThickness" },
         { name: "Высота фронтона", param: "frontonHeight" },
         { name: "Высота топпера над боковинами", param: "topperHeight" },
+        {
+            name: "Высота коробки",
+            param: null,
+            value: prepackStore.boxSizes.height,
+            onEnter: (value) => prepackStore.changeBoxSizes("height", value),
+        },
+        {
+            name: "Ширина коробки",
+            param: null,
+            value: prepackStore.boxSizes.width,
+            onEnter: (value) => prepackStore.changeBoxSizes("width", value),
+        },
+        {
+            name: "Глубина коробки",
+            param: null,
+            value: prepackStore.boxSizes.depth,
+            onEnter: (value) => prepackStore.changeBoxSizes("depth", value),
+        },
     ];
     const shelvesHeader = [
         {
@@ -114,6 +132,12 @@ export default function Home() {
             width: "80px",
             onSwitchExtend: (id) =>
                 prepackStore.switchShelfExtend(id, "isExtended"),
+        },
+        {
+            name: "Номер полки",
+            param: "shelfNumber",
+            type: "const",
+            width: "80px",
         },
         {
             name: "Ширина",
@@ -138,7 +162,7 @@ export default function Home() {
             param: "margin",
             type: "input",
             isNumber: true,
-            width: "170px",
+            width: "130px",
             onEnter: (ids, value) =>
                 prepackStore.changeShelf(ids, "margin", value),
         },
@@ -147,16 +171,16 @@ export default function Home() {
             param: "padding",
             type: "input",
             isNumber: true,
-            width: "170px",
+            width: "180px",
             onEnter: (ids, value) =>
                 prepackStore.changeShelf(ids, "padding", value),
         },
         {
-            name: "Количество рядов",
+            name: "Кол-во рядов",
             param: "rowsCount",
             type: "input",
             isNumber: true,
-            width: "170px",
+            width: "80px",
             onEnter: (ids, value) =>
                 prepackStore.changeRowsCount(
                     ids,
@@ -164,7 +188,7 @@ export default function Home() {
                     Object.keys(products)[0],
                 ),
         },
-        { name: "Ряд", accessor: "rowId", type: "id", width: "50px" },
+        { name: "Ряд", accessor: "rowId", type: "id", width: "80px" },
         {
             name: "Продукт",
             param: "product",
@@ -207,12 +231,28 @@ export default function Home() {
             width: "50px",
             onClick: (ids) => prepackStore.changeShelf(ids, "isRows", true),
         },
+        {
+            name: "Удаление",
+            type: "button",
+            icon: "delete",
+            param: "deleteRow",
+            width: "50px",
+            onClick: (ids) => prepackStore.deleteRow(ids),
+        },
     ];
+
     let shelvesData = [];
+    let forSizes = { firstShelfMaxProduct: 0 };
+    const scale = prepackStore.scale;
+    let shelvesArr = [];
+    let shelfTop = prepackStore.frontonHeight;
+    let isFirstShelf = true;
+    let shelfNumber = 0;
+
     for (const shelfId in prepackStore.shelves) {
         const shelf = prepackStore.shelves[shelfId];
-        let load = 0;
-        shelvesData.push({
+        shelfNumber++;
+        let thisShelf = {
             shelfId: shelfId,
             width:
                 prepackStore.width -
@@ -223,46 +263,52 @@ export default function Home() {
                 prepackStore.backThickness -
                 prepackStore.frontThickness -
                 shelf.padding * 2,
-            load: load,
+            load: 0,
             margin: shelf.margin,
             padding: shelf.padding,
             rowsCount: Object.keys(shelf.rows).length,
             makeShelf: true,
             updateShelf: !shelf.isRows,
             toRows: !shelf.isRows,
-        });
+            isExtended: shelf.isExtended,
+            shelfNumber: shelfNumber,
+        };
+        shelvesData.push(thisShelf);
 
-        if (shelf.isExtended) {
-            for (const rowId in shelf.rows) {
-                const row = shelf.rows[rowId];
-                shelvesData.push({
-                    rowId: rowId,
-                    product: row.productId,
-                    left: row.left,
-                });
-            }
-        }
-    }
-
-    let forSizes = { firstShelfMaxProduct: 0 };
-    const scale = prepackStore.scale;
-    let shelvesArr = [];
-    let shelfTop = prepackStore.frontonHeight;
-    let isFirstShelf = true;
-    for (const shelfId in prepackStore.shelves) {
-        const shelf = prepackStore.shelves[shelfId];
         shelfTop += shelf.margin;
-
         let productsArr = [];
         let standsArr = [];
         let partitionsArr = [];
+        let shelfLoad = 0;
         if (shelf.isRows) {
+            if (shelf.isExtended) {
+                let rowNumber = 0;
+                for (const rowId in shelf.rows) {
+                    const row = shelf.rows[rowId];
+                    rowNumber++;
+                    shelvesData.push({
+                        rowId: rowId,
+                        product: row.productId,
+                        left: row.left,
+                        deleteRow: true,
+                    });
+                }
+            }
+
             let productLeft = shelf.padding;
             for (const rowId in shelf.rows) {
                 const row = shelf.rows[rowId];
                 const product = products[row.productId];
                 if (product != undefined) {
                     productLeft += row.left;
+                    let productsCount = Math.floor(
+                        (prepackStore.depth -
+                            prepackStore.backThickness -
+                            prepackStore.frontThickness -
+                            shelf.padding * 2) /
+                            product.depth,
+                    );
+                    shelfLoad += product.weight * productsCount;
 
                     productsArr.push(
                         product.frontProjection == "" ? (
@@ -299,9 +345,9 @@ export default function Home() {
             }
         } else {
             if ("elems" in shelf.json) {
-                console.log(shelf.json);
                 for (const elem of shelf.json.elems) {
                     const product = products[elem.productId];
+                    shelfLoad += product.weight;
 
                     if (product != undefined)
                         productsArr.push(
@@ -357,6 +403,8 @@ export default function Home() {
                 }
             }
         }
+
+        thisShelf.load = shelfLoad;
 
         shelvesArr.push(
             <div
@@ -460,12 +508,16 @@ export default function Home() {
                     <HorizontalTable
                         className={styles.shelvesTable}
                         header={shelvesHeader}
+                        headerHeight="60px"
                         data={shelvesData}
                         excludedColumns={[]}
                     />
                 </div>
             </div>
             <div className={styles.divider} onMouseDown={handleMouseDown}>
+                <button className={styles.exitBtn} onClick={() => {}}>
+                    Выйти
+                </button>
                 <button
                     className={styles.stepBtn}
                     onClick={() => {
@@ -480,7 +532,7 @@ export default function Home() {
                         });
                     }}
                 >
-                    Завершить
+                    Сделать отчет
                 </button>
             </div>
             <div

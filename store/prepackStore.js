@@ -25,6 +25,7 @@ export const usePrepackStore = create((set, get) => ({
     shelfThickness: 20,
     frontonHeight: 200,
     topperHeight: 0,
+    boxSizes: { width: 0, height: 0, depth: 0 },
 
     initAll: async (id) => {
         let newState = await getAll(id);
@@ -33,8 +34,15 @@ export const usePrepackStore = create((set, get) => ({
     changePepack: async (param, value) => {
         const id = await get().id;
         let changes = { [param]: value };
-        if (param in prepackFields)
-            changeOne(`/poultice_${id}`, changes, prepackFields);
+        changeOne(`/poultice_${id}`, changes, prepackFields);
+        set(changes);
+    },
+    changeBoxSizes: async (param, value) => {
+        const id = await get().id;
+        let boxSizes = get().boxSizes;
+        if (param in boxSizes) boxSizes[param] = value;
+        let changes = { boxSizes: boxSizes };
+        changeOne(`/poultice_${id}`, changes, prepackFields);
         set(changes);
     },
     addScale: (isPositive) =>
@@ -132,6 +140,28 @@ export const usePrepackStore = create((set, get) => ({
 
         shelves[ids.shelfId].rows = rows;
         set({ shelves: shelves });
+    },
+    deleteRow: async (ids) => {
+        let shelves = get().shelves;
+        let shelf = shelves[ids.shelfId];
+        if (shelf.rows[ids.rowId]) {
+            delete shelf.rows[ids.rowId];
+
+            let newRows = {};
+            let newRowId = 1;
+            for (let oldRowId in shelf.rows) {
+                newRows[newRowId] = shelf.rows[oldRowId];
+                newRowId++;
+            }
+            shelf.rows = newRows;
+
+            await changeOne(
+                `/shelf_${ids.shelfId}`,
+                { rows: shelf.rows },
+                shelfFields,
+            );
+            set({ shelves: shelves });
+        }
     },
     changeRow: (ids, param, value) => {
         let shelves = get().shelves;

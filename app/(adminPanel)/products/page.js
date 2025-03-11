@@ -284,12 +284,12 @@ export default function Home() {
             clientName: client.name,
             clientCreated: client.created,
             clientUpdated: client.updated,
+            isExtended:
+                clientId in extendedClients && extendedClients[clientId],
         };
 
         if (isFiltred(filterStore, clientEl, client)) {
             data.push(clientEl);
-            const isClientExtended =
-                clientId in extendedClients && extendedClients[clientId];
 
             const products = productsStore.products[clientId];
             let isSomeProduct = false;
@@ -315,7 +315,7 @@ export default function Home() {
                 };
 
                 if (isFiltred(filterStore, productEl, product)) {
-                    if (isClientExtended) data.push(productEl);
+                    if (clientEl.isExtended) data.push(productEl);
                     isSomeProduct = true;
                 }
             }
@@ -326,7 +326,7 @@ export default function Home() {
                 !isSomeProduct
             )
                 data.pop();
-            else if (isClientExtended)
+            else if (clientEl.isExtended)
                 data.push({
                     productId: "add",
                 });

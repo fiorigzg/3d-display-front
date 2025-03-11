@@ -8,7 +8,13 @@ export async function getAll(id) {
     const prepackData = (await axios.get(`${serverUrl}/poultice_${id}`)).data
         .poultice;
     for (const field in prepackFields) {
-        newPrepackValues[field] = prepackData[prepackFields[field]];
+        if (field == "boxSizes") {
+            let tempBoxSizes = prepackData[prepackFields[field]];
+            if (!("width" in tempBoxSizes)) tempBoxSizes.width = 0;
+            if (!("height" in tempBoxSizes)) tempBoxSizes.height = 0;
+            if (!("depth" in tempBoxSizes)) tempBoxSizes.depth = 0;
+            newPrepackValues[field] = tempBoxSizes;
+        } else newPrepackValues[field] = prepackData[prepackFields[field]];
     }
 
     let newShelves = {};
@@ -63,6 +69,7 @@ export async function openShelfEditor(products, prepack, id, clientId) {
                     depth: product.depth,
                     width: product.width,
                     height: product.height,
+                    weight: product.weight,
                     topSvg: product.packagingType.top_svg,
                     sideSvg: product.packagingType.side_svg,
                     productId: row.productId,

@@ -79,6 +79,7 @@ export const prepackFields = {
     number: "number",
     created: "created",
     updated: "last_updated",
+    boxSizes: "json_sizes_box",
 };
 
 export const shelfFields = {

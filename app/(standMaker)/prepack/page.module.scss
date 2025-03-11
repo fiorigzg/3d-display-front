@@ -37,6 +37,9 @@
 
         .shelvesTable {
             position: relative;
+            th {
+                height: 50px;
+            }
         }
     }
 }
@@ -47,13 +50,11 @@
     background-color: #bebebe;
     cursor: ew-resize;
 
-    .stepBtn {
+    button {
         width: 120px;
         height: 40px;
         position: absolute;
-        bottom: 0;
         left: -60px;
-        border-radius: 10px 10px 0 0;
         cursor: pointer;
         background-color: #8a86ce;
         font-size: 16px;
@@ -63,6 +64,16 @@
         outline: none;
         cursor: pointer;
         padding: none;
+    }
+
+    .exitBtn {
+        border-radius: 10px;
+        bottom: 50px;
+    }
+
+    .stepBtn {
+        border-radius: 10px 10px 0 0;
+        bottom: 0;
     }
 }
 .ws {

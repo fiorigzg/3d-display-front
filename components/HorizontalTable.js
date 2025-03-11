@@ -127,7 +127,11 @@ export default function HorizontalTable({
                         className={styles.switchExtendBtn}
                         onClick={() => column.onSwitchExtend(value)}
                     >
-                        +
+                        <img
+                            src={
+                                element.isExtended ? "/close.svg" : "/open.svg"
+                            }
+                        />
                     </button>
                 );
             }
