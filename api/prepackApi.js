@@ -95,7 +95,7 @@ export async function openShelfEditor(products, prepack, id, clientId) {
             prepack.backThickness -
             prepack.frontThickness -
             shelf.padding * 2
-        }&&shelf_id=${id}&&client_id=${clientId}`,
+        }&&shelf_id=${id}&&client_id=${clientId}&&between_shelves=${shelf.margin}`,
         "mywin",
         `width=${window.screen.availWidth / 2},height=${window.screen.availHeight}`,
     );

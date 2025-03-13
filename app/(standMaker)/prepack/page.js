@@ -106,19 +106,19 @@ export default function Home() {
         { name: "Высота фронтона", param: "frontonHeight" },
         { name: "Высота топпера над боковинами", param: "topperHeight" },
         {
-            name: "Высота коробки",
+            name: "Высота короба",
             param: null,
             value: prepackStore.boxSizes.height,
             onEnter: (value) => prepackStore.changeBoxSizes("height", value),
         },
         {
-            name: "Ширина коробки",
+            name: "Ширина короба",
             param: null,
             value: prepackStore.boxSizes.width,
             onEnter: (value) => prepackStore.changeBoxSizes("width", value),
         },
         {
-            name: "Глубина коробки",
+            name: "Глубина короба",
             param: null,
             value: prepackStore.boxSizes.depth,
             onEnter: (value) => prepackStore.changeBoxSizes("depth", value),
@@ -387,9 +387,9 @@ export default function Home() {
                 }
             }
 
-            if ("partition" in shelf.json) {
+            if ("partitions" in shelf.json) {
                 for (const partition of shelf.json.partitions) {
-                    standsArr.push(
+                    partitionsArr.push(
                         <div
                             className={styles.partition}
                             style={{

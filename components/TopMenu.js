@@ -3,11 +3,14 @@
 import cx from "classnames";
 import { useState } from "react";
 import Select from "react-select";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import styles from "./css/topMenu.module.scss";
 import { useFilterStore } from "store/filterStore";
 
 export default function TopMenu({ style = {}, className = null }) {
     const filterStore = useFilterStore();
+    console.log(filterStore);
 
     const fieldOptions = filterStore.fields.map((field) => ({
         value: field.param,
@@ -35,6 +38,8 @@ export default function TopMenu({ style = {}, className = null }) {
             ...base,
             maxHeight: "30px",
             overflow: "scroll",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
         }),
     };
 
@@ -104,38 +109,52 @@ export default function TopMenu({ style = {}, className = null }) {
                     }
                 />
                 <p>От</p>
-                <input
-                    type="date"
-                    value={filterStore.dateFilter.from}
-                    className={styles.textInput}
-                    onChange={(e) => {
+                <DatePicker
+                    selected={
+                        filterStore.dateFilter.from
+                            ? new Date(filterStore.dateFilter.from)
+                            : null
+                    }
+                    onChange={(date) => {
+                        const formattedDate = date
+                            ? date.toISOString().split("T")[0]
+                            : "";
                         if (filterStore.dateFilter.to !== "")
                             filterStore.setDateFilter({
-                                from: e.target.value,
+                                from: formattedDate,
                             });
                         else
                             filterStore.setDateFilter({
-                                from: e.target.value,
-                                to: e.target.value,
+                                from: formattedDate,
+                                to: formattedDate,
                             });
                     }}
+                    dateFormat="dd/MM/yyyy"
+                    className={cx(styles.textInput, styles.dateInput)}
                 />
                 <p>До</p>
-                <input
-                    type="date"
-                    value={filterStore.dateFilter.to}
-                    className={styles.textInput}
-                    onChange={(e) => {
+                <DatePicker
+                    selected={
+                        filterStore.dateFilter.to
+                            ? new Date(filterStore.dateFilter.to)
+                            : null
+                    }
+                    onChange={(date) => {
+                        const formattedDate = date
+                            ? date.toISOString().split("T")[0]
+                            : "";
                         if (filterStore.dateFilter.from !== "")
                             filterStore.setDateFilter({
-                                to: e.target.value,
+                                to: formattedDate,
                             });
                         else
                             filterStore.setDateFilter({
-                                from: e.target.value,
-                                to: e.target.value,
+                                from: formattedDate,
+                                to: formattedDate,
                             });
                     }}
+                    dateFormat="dd/MM/yyyy"
+                    className={cx(styles.textInput, styles.dateInput)}
                 />
             </div>
         </div>
