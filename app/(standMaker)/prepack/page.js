@@ -351,16 +351,28 @@ export default function Home() {
 
                     if (product != undefined)
                         productsArr.push(
-                            <img
-                                className={styles.image}
-                                src={`${serverUrl}/loadfile/${product.frontProjection}`}
-                                style={{
-                                    width: `${product.width * scale}px`,
-                                    height: `${product.height * scale}px`,
-                                    left: `${(elem.x + shelf.padding) * scale}px`,
-                                    bottom: `${(elem.z + prepackStore.shelfThickness) * scale + 1}px`,
-                                }}
-                            />,
+                            product.frontProjection == "" ? (
+                                <div
+                                    className={styles.product}
+                                    style={{
+                                        width: `${product.width * scale - 2}px`,
+                                        height: `${product.height * scale - 4}px`,
+                                        left: `${(elem.x + shelf.padding) * scale}px`,
+                                        bottom: `${(elem.z + prepackStore.shelfThickness) * scale + 1}px`,
+                                    }}
+                                />
+                            ) : (
+                                <img
+                                    className={styles.image}
+                                    src={`${serverUrl}/loadfile/${product.frontProjection}`}
+                                    style={{
+                                        width: `${product.width * scale - 2}px`,
+                                        height: `${product.height * scale - 4}px`,
+                                        left: `${(elem.x + shelf.padding) * scale}px`,
+                                        bottom: `${(elem.z + prepackStore.shelfThickness) * scale + 1}px`,
+                                    }}
+                                />,
+                            )
                         );
 
                     if (isFirstShelf)
@@ -377,8 +389,8 @@ export default function Home() {
                         <div
                             className={styles.stand}
                             style={{
-                                width: `${stand.width * scale}px`,
-                                height: `${stand.height * scale}px`,
+                                width: `${stand.width * scale - 3}px`,
+                                height: `${stand.height * scale - 6}px`,
                                 left: `${(stand.x + shelf.padding) * scale}px`,
                                 bottom: `${(stand.z + prepackStore.shelfThickness) * scale + 1}px`,
                             }}
@@ -393,8 +405,8 @@ export default function Home() {
                         <div
                             className={styles.partition}
                             style={{
-                                width: `${partition.width * scale}px`,
-                                height: `${partition.height * scale}px`,
+                                width: `${partition.width * scale - 3}px`,
+                                height: `${partition.height * scale - 6}px`,
                                 left: `${(partition.x + shelf.padding) * scale}px`,
                                 bottom: `${(partition.z + prepackStore.shelfThickness) * scale + 1}px`,
                             }}
