@@ -315,8 +315,8 @@ export default function Home() {
                             <div
                                 className={styles.product}
                                 style={{
-                                    width: `${product.width * scale}px`,
-                                    height: `${product.height * scale}px`,
+                                    width: `${product.width * scale - 2}px`,
+                                    height: `${product.height * scale - 4}px`,
                                     left: `${productLeft * scale}px`,
                                     bottom: `${prepackStore.shelfThickness * scale + 1}px`,
                                 }}
@@ -326,8 +326,8 @@ export default function Home() {
                                 className={styles.image}
                                 src={`${serverUrl}/loadfile/${product.frontProjection}`}
                                 style={{
-                                    width: `${product.width * scale}px`,
-                                    height: `${product.height * scale}px`,
+                                    width: `${product.width * scale - 2}px`,
+                                    height: `${product.height * scale - 4}px`,
                                     left: `${productLeft * scale}px`,
                                     bottom: `${prepackStore.shelfThickness * scale + 1}px`,
                                 }}
