@@ -1,9 +1,9 @@
 .tableSpace {
     position: absolute;
     align-items: center;
-    margin-top: 99px;
+    margin-top: calc(160px - 1px);
     width: 100%;
-    height: calc(100% - 99px);
+    height: calc(100% - 159px);
 
     display: flex;
     flex-direction: column;
