@@ -10,7 +10,6 @@ import { useFilterStore } from "store/filterStore";
 
 export default function TopMenu({ style = {}, className = null }) {
     const filterStore = useFilterStore();
-    console.log(filterStore);
 
     const fieldOptions = filterStore.fields.map((field) => ({
         value: field.param,
@@ -21,6 +20,11 @@ export default function TopMenu({ style = {}, className = null }) {
         { value: "created", label: "Дата создания" },
         { value: "updated", label: "Дата обновления" },
     ];
+    const sortOptions = [
+        { value: "increase", label: "По возрастанию" },
+        { value: "decrease", label: "По убыванию" },
+    ];
+
     const selectStyle = {
         control: (base) => ({
             ...base,
@@ -54,22 +58,22 @@ export default function TopMenu({ style = {}, className = null }) {
                             ...fieldOptions,
                         ]}
                         onChange={(selectedOption) => {
-                            filterStore.setParam(selectedOption.value);
+                            filterStore.setFieldFilterParam(selectedOption.value);
                         }}
                         styles={selectStyle}
                         value={
                             fieldOptions.find(
-                                (option) => option.value === filterStore.param,
+                                (option) => option.value === filterStore.fieldFilter.param,
                             ) || { value: "off", label: "Отключен" }
                         }
                     />
                     <p>со значением</p>
                     <input
                         type="text"
-                        value={filterStore.value}
+                        value={filterStore.fieldFilter.value}
                         className={styles.textInput}
                         onChange={(e) => {
-                            filterStore.setValue(e.target.value);
+                            filterStore.setFieldFilterValue(e.target.value);
                         }}
                     />
                 </div>
@@ -81,7 +85,7 @@ export default function TopMenu({ style = {}, className = null }) {
                             const realSelectedOptions = selectedOptions.map(
                                 (option) => option.value,
                             );
-                            filterStore.setParam(realSelectedOptions);
+                            // filterStore.setParam(realSelectedOptions);
                             filterStore.setExcludedFields(realSelectedOptions);
                         }}
                         styles={multiSelectStyle}
@@ -168,29 +172,26 @@ export default function TopMenu({ style = {}, className = null }) {
                             ...fieldOptions,
                         ]}
                         onChange={(selectedOption) => {
-                            filterStore.setParam(selectedOption.value);
+                            filterStore.setFieldSorter({ param: selectedOption.value });
                         }}
                         styles={selectStyle}
                         value={
                             fieldOptions.find(
-                                (option) => option.value === filterStore.param,
+                                (option) => option.value === filterStore.fieldSorter.param,
                             ) || { value: "off", label: "Отключен" }
                         }
                     />
                     <p>по</p>
                     <Select
-                        options={[
-                            { value: "off", label: "Отключен" },
-                            ...fieldOptions,
-                        ]}
+                        options={sortOptions}
                         onChange={(selectedOption) => {
-                            filterStore.setParam(selectedOption.value);
+                            filterStore.setFieldSorter({ direction: selectedOption.value });
                         }}
                         styles={selectStyle}
                         value={
-                            fieldOptions.find(
-                                (option) => option.value === filterStore.param,
-                            ) || { value: "off", label: "Отключен" }
+                            sortOptions.find(
+                                (option) => option.value === filterStore.fieldSorter.direction,
+                            )
                         }
                     />
                 </div>

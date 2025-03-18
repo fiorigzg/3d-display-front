@@ -6,6 +6,8 @@ import styles from "./page.module.scss";
 import { useStaffStore } from "store/staffStore";
 import { useFilterStore } from "store/filterStore";
 import HorizontalTable from "components/HorizontalTable";
+import isFiltred from "components/isFiltred";
+import sortByField from "components/sortByField";
 
 export default function Home() {
     const staffStore = useStaffStore();
@@ -63,7 +65,7 @@ export default function Home() {
     for (const memberId in staffStore.members) {
         const member = staffStore.members[memberId];
         const dataEl = {
-            id: memberId,
+            id: Number(memberId),
             name: member.name,
             delete: true,
             copy: true,
@@ -71,17 +73,9 @@ export default function Home() {
             updated: member.updated,
         };
 
-        let isMemberFilter = String(dataEl[filterStore.param]).includes(
-            filterStore.value,
-        );
-        let isMemberDate =
-            !(filterStore.dateFilter.param in member) ||
-            (Date.parse(member[filterStore.dateFilter.param]) >=
-                Date.parse(filterStore.dateFilter.from) &&
-                Date.parse(member[filterStore.dateFilter.param]) <=
-                    Date.parse(filterStore.dateFilter.to));
-        if (isMemberFilter && isMemberDate) data.push(dataEl);
+        if (isFiltred(filterStore, dataEl, member)) data.push(dataEl);
     }
+    data = sortByField(filterStore, data);
     data.push({
         id: "add",
     });

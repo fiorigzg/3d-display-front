@@ -7,6 +7,8 @@ import styles from "./page.module.scss";
 import { useProductsStore } from "store/productsStore";
 import { useFilterStore } from "store/filterStore";
 import HorizontalTable from "components/HorizontalTable";
+import sortByField from "components/sortByField";
+import isFiltred from "components/isFiltred";
 
 export default function Home() {
     const productsStore = useProductsStore();
@@ -90,7 +92,7 @@ export default function Home() {
     for (const packageTypeId in productsStore.packageTypes) {
         const packageType = productsStore.packageTypes[packageTypeId];
         let dataEl = {
-            id: packageTypeId,
+            id: Number(packageTypeId),
             name: packageType.name,
             object: packageType.object,
             delete: true,
@@ -99,17 +101,10 @@ export default function Home() {
             updated: packageType.updated,
         };
 
-        let isPackageTypeFilter = String(dataEl[filterStore.param]).includes(
-            filterStore.value,
-        );
-        let isPrepackTypeDate =
-            !(filterStore.dateFilter.param in packageType) ||
-            (Date.parse(packageType[filterStore.dateFilter.param]) >=
-                Date.parse(filterStore.dateFilter.from) &&
-                Date.parse(packageType[filterStore.dateFilter.param]) <=
-                    Date.parse(filterStore.dateFilter.to));
-        if (isPackageTypeFilter && isPrepackTypeDate) data.push(dataEl);
+        if (isFiltred(filterStore, dataEl, packageType)) data.push(dataEl);
     }
+    data = sortByField(filterStore, data);
+    console.log(filterStore.fieldSorter);
     data.push({
         id: "add",
     });

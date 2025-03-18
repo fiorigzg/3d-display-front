@@ -6,6 +6,8 @@ import HorizontalTable from "components/HorizontalTable";
 import styles from "./page.module.scss";
 import { useProductsStore } from "store/productsStore";
 import { useFilterStore } from "store/filterStore";
+import isFiltred from "components/isFiltred";
+import sortByField from "components/sortByField";
 
 export default function Home() {
     const productsStore = useProductsStore();
@@ -69,7 +71,7 @@ export default function Home() {
     for (const categoryId in productsStore.categories) {
         const category = productsStore.categories[categoryId];
         const dataEl = {
-            id: categoryId,
+            id: Number(categoryId),
             name: category.name,
             delete: true,
             copy: true,
@@ -77,17 +79,9 @@ export default function Home() {
             updated: category.updated,
         };
 
-        let isCategoryFilter = String(dataEl[filterStore.param]).includes(
-            filterStore.value,
-        );
-        let isCategoryDate =
-            !(filterStore.dateFilter.param in category) ||
-            (Date.parse(category[filterStore.dateFilter.param]) >=
-                Date.parse(filterStore.dateFilter.from) &&
-                Date.parse(category[filterStore.dateFilter.param]) <=
-                    Date.parse(filterStore.dateFilter.to));
-        if (isCategoryFilter && isCategoryDate) data.push(dataEl);
+        if (isFiltred(filterStore, dataEl, category)) data.push(dataEl);
     }
+    data = sortByField(filterStore, data);
     data.push({
         id: "add",
     });

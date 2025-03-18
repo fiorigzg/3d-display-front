@@ -4,16 +4,11 @@ import { create } from "zustand";
 
 export const useFilterStore = create((set) => ({
     fields: [],
-    param: "off",
     selectOptions: {},
-    value: "",
-    options: [],
+    fieldFilter: { param: "off", value: "", options: [] },
+    dateFilter: { param: "off", from: "", to: "" },
+    fieldSorter: { param: "off", direction: "increase" },
     excludedFields: [],
-    dateFilter: {
-        param: "off",
-        from: "",
-        to: "",
-    },
 
     setFields: (fields, excludedFields = []) => {
         fields = fields
@@ -25,20 +20,27 @@ export const useFilterStore = create((set) => ({
             return {
                 fields: fields,
                 excludedFields: excludedFields,
-                param: "off",
-                value: "",
-                options: [],
+                fieldFilter: { param: "off", value: "", options: [] },
+                dateFilter: { param: "off", from: "", to: "" },
+                fieldSorter: { param: "off", field: "" },
+                excludedFields: excludedFields,
             };
         });
     },
-    setParam: (param) => {
+    setSelectOptions: (selectOptions) => {
+        set((state) => ({
+            selectOptions: selectOptions,
+        }));
+    },
+
+    setFieldFilterParam: (param) => {
         set((state) => {
-            return { param: param, value: "", options: [] };
+            return { fieldFilter: { param: param, value: "", options: [] } };
         });
     },
-    setValue: (value) => {
+    setFieldFilterValue: (value) => {
         set((state) => {
-            const param = state.param,
+            const param = state.fieldFilter.param,
                 selectOptions = state.selectOptions;
             if (param in selectOptions) {
                 const options = [];
@@ -48,27 +50,33 @@ export const useFilterStore = create((set) => ({
                         options.push(Number(optionId));
                     }
                 }
-                console.log(options);
-                return { value: value, options: options };
-            } else return { value: value, options: [] };
+                return {
+                    fieldFilter: {
+                        param: param,
+                        value: value,
+                        options: options,
+                    },
+                };
+            } else
+                return {
+                    fieldFilter: { param: param, value: value, options: [] },
+                };
         });
     },
-    setDateFilter: (dateFilter) =>
+
+    setDateFilter: (dateFilter) => {
         set((state) => ({
             dateFilter: { ...state.dateFilter, ...dateFilter },
-        })),
-    setSelectOptions: (selectOptions) => {
-        set((state) => {
-            return {
-                selectOptions: selectOptions,
-            };
-        });
+        }));
+    },
+    setFieldSorter: (fieldSorter) => {
+        set((state) => ({
+            fieldSorter: { ...state.fieldSorter, ...fieldSorter },
+        }));
     },
     setExcludedFields: (excludedFields) => {
-        set((state) => {
-            return {
-                excludedFields: excludedFields,
-            };
-        });
+        set((state) => ({
+            excludedFields: excludedFields,
+        }));
     },
 }));
