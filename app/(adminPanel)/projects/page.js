@@ -19,29 +19,12 @@ export default function Home() {
     const clientsStore = useClientsStore();
     const filterStore = useFilterStore();
 
-    const [extendedClients, setExtendedClients] = useState({});
-    const [extendedProjects, setExtendedProjects] = useState({});
-
     const header = [
         {
             name: "Клиент",
             param: "clientId",
             type: "id",
             width: "100px",
-            onSwitchExtend: (clientId) => {
-                if (!(clientId in projectsStore.projects)) {
-                    projectsStore.initProjects(clientId);
-                    setExtendedClients({
-                        ...extendedClients,
-                        [clientId]: true,
-                    });
-                } else {
-                    setExtendedClients({
-                        ...extendedClients,
-                        [clientId]: !extendedClients[clientId],
-                    });
-                }
-            },
         },
         {
             name: "Создание клиента",
@@ -67,20 +50,6 @@ export default function Home() {
             type: "id",
             width: "120px",
             onAdd: (ids) => projectsStore.createProject(ids.clientId),
-            onSwitchExtend: (projectId) => {
-                if (!(projectId in projectsStore.prepacks)) {
-                    projectsStore.initPrepacks(projectId);
-                    setExtendedProjects({
-                        ...extendedProjects,
-                        [projectId]: true,
-                    });
-                } else {
-                    setExtendedProjects({
-                        ...extendedProjects,
-                        [projectId]: !extendedProjects[projectId],
-                    });
-                }
-            },
         },
         {
             name: "Создание предпроекта",
@@ -241,76 +210,48 @@ export default function Home() {
             clientName: client.name,
             clientCreated: client.created,
             clientUpdated: client.updated,
-            isExtended:
-                clientId in extendedClients && extendedClients[clientId],
+            uniqueId: `client-${clientId}`,
+            children: [],
         };
 
-        if (isFiltred(filterStore, clientEl, client)) {
-            data.push(clientEl);
+        const projects = projectsStore.projects[clientId];
+        for (const projectId in projects) {
+            const project = projects[projectId];
+            const projectEl = {
+                projectId: projectId,
+                projectName: project.name,
+                projectNumber: 0,
+                delete: true,
+                copy: true,
+                projectCreated: project.created,
+                projectUpdated: project.updated,
+                uniqueId: `project-${projectId}`,
+                children: [],
+            };
 
-            const projects = projectsStore.projects[clientId];
-            let isSomeProject = false;
-            for (const projectId in projects) {
-                const project = projects[projectId];
-                const projectEl = {
-                    projectId: projectId,
-                    projectName: project.name,
-                    projectNumber: 0,
+            const prepacks = projectsStore.prepacks[projectId];
+            for (const prepackId in prepacks) {
+                const prepack = prepacks[prepackId];
+                const prepackEl = {
+                    prepackId: prepackId,
+                    prepackName: prepack.name,
+                    prepackTypeId: prepack.prepackTypeId,
+                    prepackNumber: prepack.number,
                     delete: true,
                     copy: true,
-                    projectCreated: project.created,
-                    projectUpdated: project.updated,
-                    isExtended:
-                        projectId in extendedProjects &&
-                        extendedProjects[projectId],
+                    design: true,
+                    prepackCreated: prepack.created,
+                    prepackUpdated: prepack.updated,
+                    uniqueId: `prepack-${prepackId}`,
                 };
-                if (isFiltred(filterStore, projectEl, project)) {
-                    if (clientEl.isExtended) data.push(projectEl);
 
-                    const prepacks = projectsStore.prepacks[projectId];
-                    let isSomePrepack = false;
-                    for (const prepackId in prepacks) {
-                        const prepack = prepacks[prepackId];
-                        const prepackEl = {
-                            prepackId: prepackId,
-                            prepackName: prepack.name,
-                            prepackTypeId: prepack.prepackTypeId,
-                            prepackNumber: prepack.number,
-                            delete: true,
-                            copy: true,
-                            design: true,
-                            prepackCreated: prepack.created,
-                            prepackUpdated: prepack.updated,
-                        };
-
-                        if (isFiltred(filterStore, prepackEl, prepack)) {
-                            if (projectEl.isExtended && clientEl.isExtended)
-                                data.push(prepackEl);
-                            isSomePrepack = true;
-                        }
-                    }
-
-                    isSomeProject = isSomePrepack || isSomeProject;
-                    if (
-                        !(filterStore.param in projectEl) &&
-                        "projectId" in data.at(-1) &&
-                        filterStore.value != "" &&
-                        !isSomePrepack
-                    )
-                        data.pop();
-                    else if (projectEl.isExtended && clientEl.isExtended)
-                        data.push({ prepackId: "add" });
-                }
+                projectEl.children.push(prepackEl);
             }
-            if (
-                !(filterStore.param in clientEl) &&
-                "clientId" in data.at(-1) &&
-                filterStore.value != "" &&
-                !isSomeProject
-            )
-                data.pop();
-            else if (clientEl.isExtended) data.push({ projectId: "add" });
+            projectEl.children.push({ prepackId: "add" });
+            clientEl.children.push(projectEl);
         }
+        data.push(clientEl);
+        clientEl.children.push({ projectId: "add" });
     }
 
     useEffect(() => {
@@ -329,11 +270,7 @@ export default function Home() {
     return (
         <main>
             <div className={styles.table}>
-                <HorizontalTable
-                    data={data}
-                    header={header}
-                    excludedColumns={filterStore.excludedFields}
-                />
+                <HorizontalTable data={data} header={header} />
             </div>
         </main>
     );

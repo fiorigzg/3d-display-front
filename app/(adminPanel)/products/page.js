@@ -14,13 +14,11 @@ import { useClientsStore } from "store/clientsStore";
 import { useFilterStore } from "store/filterStore";
 import HorizontalTable from "components/HorizontalTable";
 import getOptions from "components/getOptions";
-import isFiltred from "components/isFiltred";
 
 export default function Home() {
     const productsStore = useProductsStore();
     const clientsStore = useClientsStore();
     const filterStore = useFilterStore();
-    const [extendedClients, setExtendedClients] = useState({});
 
     const header = [
         {
@@ -28,17 +26,6 @@ export default function Home() {
             param: "clientId",
             type: "id",
             width: "100px",
-            onSwitchExtend: (id) => {
-                if (!(id in productsStore.products)) {
-                    productsStore.initProducts(id);
-                    setExtendedClients({ ...extendedClients, [id]: true });
-                } else {
-                    setExtendedClients({
-                        ...extendedClients,
-                        [id]: !extendedClients[id],
-                    });
-                }
-            },
         },
         {
             name: "Создание клиента",
@@ -284,53 +271,39 @@ export default function Home() {
             clientName: client.name,
             clientCreated: client.created,
             clientUpdated: client.updated,
-            isExtended:
-                clientId in extendedClients && extendedClients[clientId],
+            children: [],
+            uniqueId: `client-${clientId}`,
         };
 
-        if (isFiltred(filterStore, clientEl, client)) {
-            data.push(clientEl);
+        const products = productsStore.products[clientId];
+        for (const productId in products) {
+            const product = products[productId];
+            const productEl = {
+                productId: productId,
+                name: product.name,
+                width: product.width,
+                height: product.height,
+                depth: product.depth,
+                weight: product.weight,
+                count: product.count,
+                volume: product.volume,
+                qrcode: product.qrcode,
+                categoryId: product.categoryId,
+                packageTypeId: product.packageTypeId,
+                frontProjection: product.frontProjection,
+                delete: true,
+                copy: true,
+                productCreated: product.created,
+                productUpdated: product.updated,
+                uniqueId: `product-${productId}`,
+            };
 
-            const products = productsStore.products[clientId];
-            let isSomeProduct = false;
-            for (const productId in products) {
-                const product = products[productId];
-                const productEl = {
-                    productId: productId,
-                    name: product.name,
-                    width: product.width,
-                    height: product.height,
-                    depth: product.depth,
-                    weight: product.weight,
-                    count: product.count,
-                    volume: product.volume,
-                    qrcode: product.qrcode,
-                    categoryId: product.categoryId,
-                    packageTypeId: product.packageTypeId,
-                    frontProjection: product.frontProjection,
-                    delete: true,
-                    copy: true,
-                    productCreated: product.created,
-                    productUpdated: product.updated,
-                };
-
-                if (isFiltred(filterStore, productEl, product)) {
-                    if (clientEl.isExtended) data.push(productEl);
-                    isSomeProduct = true;
-                }
-            }
-            if (
-                !(filterStore.param in clientEl) &&
-                "clientId" in data.at(-1) &&
-                filterStore.value != "" &&
-                !isSomeProduct
-            )
-                data.pop();
-            else if (clientEl.isExtended)
-                data.push({
-                    productId: "add",
-                });
+            clientEl.children.push(productEl);
         }
+        clientEl.children.push({
+            productId: "add",
+        });
+        data.push(clientEl);
     }
 
     useEffect(() => {
@@ -351,11 +324,7 @@ export default function Home() {
     return (
         <main>
             <div className={styles.table}>
-                <HorizontalTable
-                    data={data}
-                    header={header}
-                    excludedColumns={filterStore.excludedFields}
-                />
+                <HorizontalTable data={data} header={header} />
             </div>
         </main>
     );

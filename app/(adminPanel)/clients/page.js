@@ -71,16 +71,7 @@ export default function Home() {
             updated: client.updated,
         };
 
-        let isClientFilter =
-            !(filterStore.param in dataEl) ||
-            String(dataEl[filterStore.param]).includes(filterStore.value);
-        let isClientDate =
-            !(filterStore.dateFilter.param in client) ||
-            (Date.parse(client[filterStore.dateFilter.param]) >=
-                Date.parse(filterStore.dateFilter.from) &&
-                Date.parse(client[filterStore.dateFilter.param]) <=
-                    Date.parse(filterStore.dateFilter.to));
-        if (isClientFilter && isClientDate) data.push(dataEl);
+        data.push(dataEl);
     }
     data.push({
         id: "add",
@@ -94,11 +85,7 @@ export default function Home() {
     return (
         <main>
             <div className={styles.table}>
-                <HorizontalTable
-                    data={data}
-                    header={header}
-                    excludedColumns={filterStore.excludedFields}
-                />
+                <HorizontalTable data={data} header={header} />
             </div>
         </main>
     );

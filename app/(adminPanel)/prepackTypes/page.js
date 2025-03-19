@@ -77,16 +77,7 @@ export default function Home() {
             updated: prepackType.updated,
         };
 
-        let isPrepackTypeFilter = String(dataEl[filterStore.param]).includes(
-            filterStore.value,
-        );
-        let isPrepackTypeDate =
-            !(filterStore.dateFilter.param in prepackType) ||
-            (Date.parse(prepackType[filterStore.dateFilter.param]) >=
-                Date.parse(filterStore.dateFilter.from) &&
-                Date.parse(prepackType[filterStore.dateFilter.param]) <=
-                    Date.parse(filterStore.dateFilter.to));
-        if (isPrepackTypeFilter && isPrepackTypeDate) data.push(dataEl);
+        data.push(dataEl);
     }
     data.push({
         id: "add",
@@ -100,11 +91,7 @@ export default function Home() {
     return (
         <main>
             <div className={styles.table}>
-                <HorizontalTable
-                    data={data}
-                    header={header}
-                    excludedColumns={filterStore.excludedFields}
-                />
+                <HorizontalTable data={data} header={header} />
             </div>
         </main>
     );

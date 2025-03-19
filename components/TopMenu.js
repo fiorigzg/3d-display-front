@@ -11,18 +11,35 @@ import { useFilterStore } from "store/filterStore";
 export default function TopMenu({ style = {}, className = null }) {
     const filterStore = useFilterStore();
 
+    const [fieldFilterValue, setFieldFilterValue] = useState("");
+    const [dateFilterValue, setDateFilterValue] = useState("");
+
+    function setRealDateFilter() {
+        let newValue = { ...dateFilterValue };
+        if (newValue.to == "" && newValue.from != "")
+            newValue.to = newValue.from;
+        if (newValue.from == "" && newValue.to != "")
+            newValue.from = newValue.to;
+
+        setDateFilterValue(newValue);
+        filterStore.setDateFilter(newValue);
+    }
+
     const fieldOptions = filterStore.fields.map((field) => ({
         value: field.param,
         label: field.name,
     }));
-    const dateOptions = [
-        { value: "off", label: "Отключен" },
-        { value: "created", label: "Дата создания" },
-        { value: "updated", label: "Дата обновления" },
-    ];
+    const filterOptions = filterStore.filterFields.map((field) => ({
+        value: field.param,
+        label: field.name,
+    }));
+    const dateOptions = filterStore.dateFields.map((field) => ({
+        value: field.param,
+        label: field.name,
+    }));
     const sortOptions = [
-        { value: "increase", label: "По возрастанию" },
-        { value: "decrease", label: "По убыванию" },
+        { value: "increase", label: "Возрастанию" },
+        { value: "decrease", label: "Убыванию" },
     ];
 
     const selectStyle = {
@@ -55,25 +72,38 @@ export default function TopMenu({ style = {}, className = null }) {
                     <Select
                         options={[
                             { value: "off", label: "Отключен" },
-                            ...fieldOptions,
+                            ...filterOptions,
                         ]}
                         onChange={(selectedOption) => {
-                            filterStore.setFieldFilterParam(selectedOption.value);
+                            filterStore.setFieldFilterParam(
+                                selectedOption.value,
+                            );
+                            setFieldFilterValue("");
                         }}
                         styles={selectStyle}
                         value={
-                            fieldOptions.find(
-                                (option) => option.value === filterStore.fieldFilter.param,
+                            filterOptions.find(
+                                (option) =>
+                                    option.value ===
+                                    filterStore.fieldFilter.param,
                             ) || { value: "off", label: "Отключен" }
                         }
                     />
                     <p>со значением</p>
                     <input
                         type="text"
-                        value={filterStore.fieldFilter.value}
+                        value={fieldFilterValue}
                         className={styles.textInput}
                         onChange={(e) => {
+                            setFieldFilterValue(e.target.value);
+                        }}
+                        onBlur={(e) => {
                             filterStore.setFieldFilterValue(e.target.value);
+                        }}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                filterStore.setFieldFilterValue(e.target.value);
+                            }
                         }}
                     />
                 </div>
@@ -100,7 +130,10 @@ export default function TopMenu({ style = {}, className = null }) {
                 <div className={styles.dateFilter}>
                     <p>Фильтр по дате</p>
                     <Select
-                        options={dateOptions}
+                        options={[
+                            { value: "off", label: "Отключен" },
+                            ...dateOptions,
+                        ]}
                         onChange={(selectedOption) => {
                             filterStore.setDateFilter({
                                 param: selectedOption.value,
@@ -118,23 +151,24 @@ export default function TopMenu({ style = {}, className = null }) {
                     <p>От</p>
                     <DatePicker
                         selected={
-                            filterStore.dateFilter.from
-                                ? new Date(filterStore.dateFilter.from)
+                            dateFilterValue.from
+                                ? new Date(dateFilterValue.from)
                                 : null
                         }
                         onChange={(date) => {
                             const formattedDate = date
                                 ? date.toISOString().split("T")[0]
                                 : "";
-                            if (filterStore.dateFilter.to !== "")
-                                filterStore.setDateFilter({
-                                    from: formattedDate,
-                                });
-                            else
-                                filterStore.setDateFilter({
-                                    from: formattedDate,
-                                    to: formattedDate,
-                                });
+                            setDateFilterValue({
+                                from: formattedDate,
+                                to: dateFilterValue.to,
+                            });
+                        }}
+                        onBlur={() => setRealDateFilter()}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                setRealDateFilter();
+                            }
                         }}
                         dateFormat="dd/MM/yyyy"
                         className={cx(styles.textInput, styles.dateInput)}
@@ -142,23 +176,24 @@ export default function TopMenu({ style = {}, className = null }) {
                     <p>До</p>
                     <DatePicker
                         selected={
-                            filterStore.dateFilter.to
-                                ? new Date(filterStore.dateFilter.to)
+                            dateFilterValue.to
+                                ? new Date(dateFilterValue.to)
                                 : null
                         }
                         onChange={(date) => {
                             const formattedDate = date
                                 ? date.toISOString().split("T")[0]
                                 : "";
-                            if (filterStore.dateFilter.from !== "")
-                                filterStore.setDateFilter({
-                                    to: formattedDate,
-                                });
-                            else
-                                filterStore.setDateFilter({
-                                    from: formattedDate,
-                                    to: formattedDate,
-                                });
+                            setDateFilterValue({
+                                from: dateFilterValue.from,
+                                to: formattedDate,
+                            });
+                        }}
+                        onBlur={() => setRealDateFilter()}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                setRealDateFilter();
+                            }
                         }}
                         dateFormat="dd/MM/yyyy"
                         className={cx(styles.textInput, styles.dateInput)}
@@ -172,12 +207,16 @@ export default function TopMenu({ style = {}, className = null }) {
                             ...fieldOptions,
                         ]}
                         onChange={(selectedOption) => {
-                            filterStore.setFieldSorter({ param: selectedOption.value });
+                            filterStore.setFieldSorter({
+                                param: selectedOption.value,
+                            });
                         }}
                         styles={selectStyle}
                         value={
                             fieldOptions.find(
-                                (option) => option.value === filterStore.fieldSorter.param,
+                                (option) =>
+                                    option.value ===
+                                    filterStore.fieldSorter.param,
                             ) || { value: "off", label: "Отключен" }
                         }
                     />
@@ -185,14 +224,16 @@ export default function TopMenu({ style = {}, className = null }) {
                     <Select
                         options={sortOptions}
                         onChange={(selectedOption) => {
-                            filterStore.setFieldSorter({ direction: selectedOption.value });
+                            filterStore.setFieldSorter({
+                                direction: selectedOption.value,
+                            });
                         }}
                         styles={selectStyle}
-                        value={
-                            sortOptions.find(
-                                (option) => option.value === filterStore.fieldSorter.direction,
-                            )
-                        }
+                        value={sortOptions.find(
+                            (option) =>
+                                option.value ===
+                                filterStore.fieldSorter.direction,
+                        )}
                     />
                 </div>
             </div>

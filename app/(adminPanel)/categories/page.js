@@ -6,8 +6,6 @@ import HorizontalTable from "components/HorizontalTable";
 import styles from "./page.module.scss";
 import { useProductsStore } from "store/productsStore";
 import { useFilterStore } from "store/filterStore";
-import isFiltred from "components/isFiltred";
-import sortByField from "components/sortByField";
 
 export default function Home() {
     const productsStore = useProductsStore();
@@ -79,9 +77,8 @@ export default function Home() {
             updated: category.updated,
         };
 
-        if (isFiltred(filterStore, dataEl, category)) data.push(dataEl);
+        data.push(dataEl);
     }
-    data = sortByField(filterStore, data);
     data.push({
         id: "add",
     });
@@ -94,11 +91,7 @@ export default function Home() {
     return (
         <main>
             <div className={styles.table}>
-                <HorizontalTable
-                    data={data}
-                    header={header}
-                    excludedColumns={filterStore.excludedFields}
-                />
+                <HorizontalTable data={data} header={header} />
             </div>
         </main>
     );

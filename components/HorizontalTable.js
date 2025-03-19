@@ -6,6 +6,7 @@ import axios from "axios";
 
 import styles from "./css/horizontalTable.module.scss";
 import { serverUrl } from "constants/main";
+import { useFilterStore } from "store/filterStore";
 
 const TableDate = ({ value }) => {
     const date = new Date(value);
@@ -89,14 +90,16 @@ const TableInput = ({ value, onEnter, column, thisIds }) => {
 export default function HorizontalTable({
     data,
     header,
-    excludedColumns,
     style = {},
     className = null,
 }) {
+    const [extended, setExtended] = useState({});
+    const filterStore = useFilterStore();
+
     const realColumns = useMemo(() => {
         let columns = [];
         for (const element of header) {
-            if (!excludedColumns.includes(element.param)) {
+            if (!filterStore.excludedFields.includes(element.param)) {
                 columns.push({
                     Header: element.name,
                     accessor: element.param,
@@ -105,9 +108,122 @@ export default function HorizontalTable({
             }
         }
         return columns;
-    }, [header, excludedColumns]);
+    }, [header, filterStore.excludedFields]);
 
-    const realData = useMemo(() => data, [data]);
+    const realData = useMemo(() => {
+        let newData = [...data];
+        const fieldSorter = filterStore.fieldSorter;
+
+        if (fieldSorter.param != "off") {
+            const sortData = (newData, direction) => {
+                return newData.sort((a, b) => {
+                    if (fieldSorter.param in a && fieldSorter.param in b) {
+                        if (a[fieldSorter.param] < b[fieldSorter.param]) {
+                            return direction === "increase" ? -1 : 1;
+                        }
+                        if (a[fieldSorter.param] > b[fieldSorter.param]) {
+                            return direction === "increase" ? 1 : -1;
+                        }
+                    }
+                    return 0;
+                });
+            };
+
+            const sortRecursive = (element) => {
+                if (element.children) {
+                    element.children = sortData(
+                        element.children,
+                        fieldSorter.direction,
+                    );
+                    element.children.forEach(sortRecursive);
+                }
+            };
+
+            newData = sortData(newData, fieldSorter.direction);
+            newData.forEach(sortRecursive);
+        }
+
+        if (
+            filterStore.fieldFilter.param !== "off" &&
+            filterStore.fieldFilter.value != ""
+        ) {
+            const fieldFilter = filterStore.fieldFilter;
+
+            const filterData = (newData) => {
+                return newData.filter((element) => {
+                    if (fieldFilter.param in element) {
+                        if (
+                            element[fieldFilter.param]
+                                .toString()
+                                .includes(fieldFilter.value)
+                        ) {
+                            return true;
+                        }
+                    } else if ("children" in element) {
+                        let children = filterData(element.children);
+                        console.log(children);
+                        if (children.length > 0) {
+                            element.children = children;
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+            };
+
+            newData = filterData(newData);
+        }
+
+        if (
+            filterStore.dateFilter.param !== "off" &&
+            (filterStore.dateFilter.to != "" ||
+                filterStore.dateFilter.from != "")
+        ) {
+            const dateFilter = filterStore.dateFilter;
+
+            const filterData = (newData) => {
+                return newData.filter((element) => {
+                    if (dateFilter.param in element) {
+                        const elementDate = new Date(element[dateFilter.param]);
+                        const fromDate = new Date(dateFilter.from);
+                        const toDate = new Date(dateFilter.to);
+
+                        if (
+                            (isNaN(fromDate.getTime()) ||
+                                elementDate >= fromDate) &&
+                            (isNaN(toDate.getTime()) || elementDate <= toDate)
+                        ) {
+                            return true;
+                        }
+                    } else if ("children" in element) {
+                        let children = filterData(element.children);
+                        if (children.length > 0) {
+                            element.children = children;
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+            };
+
+            newData = filterData(newData);
+        }
+
+        let resultData = [];
+
+        function addChildren(element) {
+            resultData.push(element);
+
+            if ("children" in element) {
+                element.isParent = true;
+                if (extended[element.uniqueId])
+                    element.children.forEach(addChildren);
+            }
+        }
+        newData.forEach(addChildren);
+
+        return resultData;
+    }, [data, extended, filterStore.fieldSorter]);
 
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
         useTable({ columns: realColumns, data: realData });
@@ -120,21 +236,6 @@ export default function HorizontalTable({
 
         for (const column of realColumns) {
             const value = element[column.accessor];
-            let button = null;
-            if (column.onSwitchExtend != undefined) {
-                button = (
-                    <button
-                        className={styles.switchExtendBtn}
-                        onClick={() => column.onSwitchExtend(value)}
-                    >
-                        <img
-                            src={
-                                element.isExtended ? "/close.svg" : "/open.svg"
-                            }
-                        />
-                    </button>
-                );
-            }
 
             if (value != undefined) {
                 if (column.type == "id") {
@@ -142,7 +243,34 @@ export default function HorizontalTable({
                         thisIds[column.accessor] = Number(value);
                         cellsArr.push(
                             <td key={cellsArr.length}>
-                                {button}
+                                {element.isParent ? (
+                                    <button
+                                        className={styles.switchExtendBtn}
+                                        onClick={() => {
+                                            const uid = element.uniqueId;
+
+                                            if (!(uid in extended))
+                                                setExtended({
+                                                    ...extended,
+                                                    [uid]: true,
+                                                });
+                                            else
+                                                setExtended({
+                                                    ...extended,
+                                                    [uid]: !extended[uid],
+                                                });
+                                        }}
+                                    >
+                                        <img
+                                            src={
+                                                extended[element.uniqueId]
+                                                    ? "/close.svg"
+                                                    : "/open.svg"
+                                            }
+                                        />
+                                    </button>
+                                ) : null}
+
                                 <p>{value}</p>
                             </td>,
                         );
@@ -158,7 +286,6 @@ export default function HorizontalTable({
                 } else if (column.type == "const") {
                     cellsArr.push(
                         <td key={cellsArr.length}>
-                            {button}
                             <p>{value}</p>
                         </td>,
                     );

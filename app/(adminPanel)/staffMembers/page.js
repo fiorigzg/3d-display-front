@@ -6,8 +6,6 @@ import styles from "./page.module.scss";
 import { useStaffStore } from "store/staffStore";
 import { useFilterStore } from "store/filterStore";
 import HorizontalTable from "components/HorizontalTable";
-import isFiltred from "components/isFiltred";
-import sortByField from "components/sortByField";
 
 export default function Home() {
     const staffStore = useStaffStore();
@@ -73,9 +71,8 @@ export default function Home() {
             updated: member.updated,
         };
 
-        if (isFiltred(filterStore, dataEl, member)) data.push(dataEl);
+        data.push(dataEl);
     }
-    data = sortByField(filterStore, data);
     data.push({
         id: "add",
     });
@@ -88,11 +85,7 @@ export default function Home() {
     return (
         <main>
             <div className={styles.table}>
-                <HorizontalTable
-                    data={data}
-                    header={header}
-                    excludedColumns={filterStore.excludedFields}
-                />
+                <HorizontalTable data={data} header={header} />
             </div>
         </main>
     );
