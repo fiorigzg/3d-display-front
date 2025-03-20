@@ -9,17 +9,22 @@ export const useFilterStore = create((set) => ({
     selectOptions: {},
     fieldFilter: { param: "off", value: "", options: [] },
     dateFilter: { param: "off", from: "", to: "" },
-    fieldSorter: { param: "off", direction: "increase" },
+    fieldSorter: { param: "off", direction: "decrease" },
     excludedFields: [],
 
     setFields: (header, excludedFields = []) => {
         let newFields = header
-            .filter((field) => field.type != "button")
+            .filter((field) => field.type != "button" && field.type != "id")
             .map((field) => {
                 return { name: field.name, param: field.param };
             });
         let newFilterFields = header
-            .filter((field) => field.type != "button" && field.type != "date")
+            .filter(
+                (field) =>
+                    field.type != "button" &&
+                    field.type != "date" &&
+                    field.type != "id",
+            )
             .map((field) => {
                 return { name: field.name, param: field.param };
             });

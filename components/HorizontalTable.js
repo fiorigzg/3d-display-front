@@ -5,7 +5,7 @@ import cx from "classnames";
 import axios from "axios";
 
 import styles from "./css/horizontalTable.module.scss";
-import { serverUrl } from "constants/main";
+import { isIdInTable, serverUrl } from "constants/main";
 import { useFilterStore } from "store/filterStore";
 
 const TableDate = ({ value }) => {
@@ -241,38 +241,54 @@ export default function HorizontalTable({
                 if (column.type == "id") {
                     if (value != "add") {
                         thisIds[column.accessor] = Number(value);
+
+                        const onExtend = () => {
+                            const uid = element.uniqueId;
+
+                            if (!(uid in extended))
+                                setExtended({
+                                    ...extended,
+                                    [uid]: true,
+                                });
+                            else
+                                setExtended({
+                                    ...extended,
+                                    [uid]: !extended[uid],
+                                });
+                        };
+
+                        let extendButton = null;
+                        if (!isIdInTable && element.isParent)
+                            extendButton = [
+                                <button onClick={() => onExtend()}>
+                                    <img
+                                        src={
+                                            extended[element.uniqueId]
+                                                ? "/close.svg"
+                                                : "/open.svg"
+                                        }
+                                    />
+                                </button>,
+                            ];
+                        if (isIdInTable && element.isParent)
+                            extendButton = [
+                                <button
+                                    className={styles.switchExtendBtn}
+                                    onClick={() => onExtend()}
+                                >
+                                    <img
+                                        src={
+                                            extended[element.uniqueId]
+                                                ? "/close.svg"
+                                                : "/open.svg"
+                                        }
+                                    />
+                                </button>,
+                                <p>{value}</p>,
+                            ];
+
                         cellsArr.push(
-                            <td key={cellsArr.length}>
-                                {element.isParent ? (
-                                    <button
-                                        className={styles.switchExtendBtn}
-                                        onClick={() => {
-                                            const uid = element.uniqueId;
-
-                                            if (!(uid in extended))
-                                                setExtended({
-                                                    ...extended,
-                                                    [uid]: true,
-                                                });
-                                            else
-                                                setExtended({
-                                                    ...extended,
-                                                    [uid]: !extended[uid],
-                                                });
-                                        }}
-                                    >
-                                        <img
-                                            src={
-                                                extended[element.uniqueId]
-                                                    ? "/close.svg"
-                                                    : "/open.svg"
-                                            }
-                                        />
-                                    </button>
-                                ) : null}
-
-                                <p>{value}</p>
-                            </td>,
+                            <td key={cellsArr.length}>{extendButton}</td>,
                         );
                     } else {
                         cellsArr.push(
