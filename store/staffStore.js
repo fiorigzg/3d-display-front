@@ -10,11 +10,13 @@ import {
     checkValueType,
     changeOne,
 } from "api/commonApi";
+import { useSaveStore } from "./saveStore";
 
 import { create } from "zustand";
 
-export const useStaffStore = create((set) => ({
+export const useStaffStore = create((set, get) => ({
     members: {},
+    newMemberId: 0,
 
     initMembers: async () => {
         const members = await getAll("/employees", "employees", memberFields);
@@ -26,36 +28,34 @@ export const useStaffStore = create((set) => ({
 
     createMember: async () => {
         let member = { ...initMember };
-        let id = await createOne(
-            "/create_employee",
-            "employee_id",
-            member,
-            memberFields,
-        );
+        const newMemberId = get().newMemberId + 1;
+        await useSaveStore
+            .getState()
+            .createOne("member", "$" + newMemberId, member, memberFields);
 
         set((state) => {
             let members = state.members;
-            members[id] = member;
+            members["$" + newMemberId] = member;
             return {
+                newMemberId: newMemberId,
                 members: members,
             };
         });
     },
     copyMember: async (id) => {
-        const newIds = await copyOne("employee", id);
-        const newId = newIds.find((el) => el.type == "employee").id;
-
-        set((state) => {
-            let members = state.members;
-            let member = { ...members[id] };
-            members[newId] = member;
-            return {
-                members: members,
-            };
-        });
+        // const newIds = await copyOne("employee", id);
+        // const newId = newIds.find((el) => el.type == "employee").id;
+        // set((state) => {
+        //     let members = state.members;
+        //     let member = { ...members[id] };
+        //     members[newId] = member;
+        //     return {
+        //         members: members,
+        //     };
+        // });
     },
     deleteMember: async (id) => {
-        await deleteOne(`/employee_${id}`);
+        await useSaveStore.getState().deleteOne("member", id);
 
         set((state) => {
             let members = state.members;
@@ -69,11 +69,14 @@ export const useStaffStore = create((set) => ({
         let realValue = checkValueType(value, type);
         if (realValue != null) {
             if (isReq)
-                await changeOne(
-                    `/employee_${id}`,
-                    { [param]: realValue },
-                    memberFields,
-                );
+                await useSaveStore
+                    .getState()
+                    .changeOne(
+                        "member",
+                        id,
+                        { [param]: realValue },
+                        memberFields,
+                    );
 
             set((state) => {
                 let members = state.members;

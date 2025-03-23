@@ -240,7 +240,7 @@ export default function HorizontalTable({
             if (value != undefined) {
                 if (column.type == "id") {
                     if (value != "add") {
-                        thisIds[column.accessor] = Number(value);
+                        thisIds[column.accessor] = value;
 
                         const onExtend = () => {
                             const uid = element.uniqueId;
@@ -258,32 +258,36 @@ export default function HorizontalTable({
                         };
 
                         let extendButton = null;
-                        if (!isIdInTable && element.isParent)
+                        if (!isIdInTable)
                             extendButton = [
-                                <button onClick={() => onExtend()}>
-                                    <img
-                                        src={
-                                            extended[element.uniqueId]
-                                                ? "/close.svg"
-                                                : "/open.svg"
-                                        }
-                                    />
-                                </button>,
+                                element.isParent ? (
+                                    <button onClick={() => onExtend()}>
+                                        <img
+                                            src={
+                                                extended[element.uniqueId]
+                                                    ? "/close.svg"
+                                                    : "/open.svg"
+                                            }
+                                        />
+                                    </button>
+                                ) : null,
                             ];
-                        if (isIdInTable && element.isParent)
+                        if (isIdInTable)
                             extendButton = [
-                                <button
-                                    className={styles.switchExtendBtn}
-                                    onClick={() => onExtend()}
-                                >
-                                    <img
-                                        src={
-                                            extended[element.uniqueId]
-                                                ? "/close.svg"
-                                                : "/open.svg"
-                                        }
-                                    />
-                                </button>,
+                                element.isParent ? (
+                                    <button
+                                        className={styles.switchExtendBtn}
+                                        onClick={() => onExtend()}
+                                    >
+                                        <img
+                                            src={
+                                                extended[element.uniqueId]
+                                                    ? "/close.svg"
+                                                    : "/open.svg"
+                                            }
+                                        />
+                                    </button>
+                                ) : null,
                                 <p>{value}</p>,
                             ];
 

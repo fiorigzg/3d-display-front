@@ -2,19 +2,14 @@
 
 import { initClient } from "constants/initValues";
 import { clientFields } from "constants/fields";
-import {
-    getAll,
-    createOne,
-    copyOne,
-    deleteOne,
-    checkValueType,
-    changeOne,
-} from "api/commonApi";
+import { getAll, checkValueType } from "api/commonApi";
+import { useSaveStore } from "./saveStore";
 
 import { create } from "zustand";
 
-export const useClientsStore = create((set) => ({
+export const useClientsStore = create((set, get) => ({
     clients: {},
+    newClientId: 0,
 
     initClients: async () => {
         const clients = await getAll("/clients", "clients", clientFields);
@@ -25,36 +20,34 @@ export const useClientsStore = create((set) => ({
     },
     createClient: async () => {
         let client = { ...initClient };
-        let id = await createOne(
-            "/create_client",
-            "client_id",
-            client,
-            clientFields,
-        );
+        const newClientId = get().newClientId + 1;
+        await useSaveStore
+            .getState()
+            .createOne("client", "$" + newClientId, client, clientFields);
 
         set((state) => {
             let clients = state.clients;
-            clients[id] = client;
+            clients["$" + newClientId] = client;
             return {
                 clients: clients,
+                newClientId: newClientId,
             };
         });
     },
     copyClient: async (id) => {
-        const newIds = await copyOne("client", id);
-        const newId = newIds.find((el) => el.type == "client").id;
-
-        set((state) => {
-            let clients = state.clients;
-            let client = { ...clients[id] };
-            clients[newId] = client;
-            return {
-                clients: clients,
-            };
-        });
+        // const newIds = await copyOne("client", id);
+        // const newId = newIds.find((el) => el.type == "client").id;
+        // set((state) => {
+        //     let clients = state.clients;
+        //     let client = { ...clients[id] };
+        //     clients[newId] = client;
+        //     return {
+        //         clients: clients,
+        //     };
+        // });
     },
     deleteClient: async (id) => {
-        await deleteOne(`/client_${id}`);
+        await useSaveStore.getState().deleteOne("client", id);
 
         set((state) => {
             let clients = state.clients;
@@ -68,11 +61,14 @@ export const useClientsStore = create((set) => ({
         let realValue = checkValueType(value, type);
         if (realValue != null) {
             if (isReq)
-                await changeOne(
-                    `/client_${id}`,
-                    { [param]: realValue },
-                    clientFields,
-                );
+                await useSaveStore
+                    .getState()
+                    .changeOne(
+                        "client",
+                        id,
+                        { [param]: realValue },
+                        clientFields,
+                    );
 
             set((state) => {
                 let clients = state.clients;

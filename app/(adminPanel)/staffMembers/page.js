@@ -63,7 +63,7 @@ export default function Home() {
     for (const memberId in staffStore.members) {
         const member = staffStore.members[memberId];
         const dataEl = {
-            id: Number(memberId),
+            id: memberId,
             name: member.name,
             delete: true,
             copy: true,

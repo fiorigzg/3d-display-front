@@ -69,7 +69,7 @@ export default function Home() {
     for (const prepackTypeId in projectsStore.prepackTypes) {
         const prepackType = projectsStore.prepackTypes[prepackTypeId];
         let dataEl = {
-            id: Number(prepackTypeId),
+            id: prepackTypeId,
             name: prepackType.name,
             delete: true,
             copy: true,

@@ -9,26 +9,22 @@ export async function getAll(endpoint, resFieldName, fields) {
     let allData = {};
 
     for (const oneServerData of allServerData) {
-        // if (!("active" in oneServerData) || oneServerData.active) {
         let oneData = {};
         for (const field in fields) {
             oneData[field] = oneServerData[fields[field]];
         }
         allData[oneServerData.id] = oneData;
-        // }
     }
 
     return allData;
 }
 
-export async function createOne(endpoint, idFieldName, json, fields) {
-    let realJson = {};
-    for (const field in json) {
-        if (field != "id") realJson[fields[field]] = json[field];
-    }
-    const res = await axios.post(`${serverUrl}${endpoint}`, realJson);
-    return res.data[idFieldName];
+export async function runSequence(sequence) {
+    const res = await axios.post(`${serverUrl}/run_sequence`, sequence);
+    console.log(res);
 }
+
+export async function createOne(name, id, json, fields) {}
 
 export async function copyOne(model, id) {
     const typeChange = {
@@ -58,9 +54,7 @@ export async function copyOne(model, id) {
     return newIds;
 }
 
-export async function deleteOne(endpoint) {
-    const res = await axios.delete(`${serverUrl}${endpoint}`);
-}
+export async function deleteOne(name, id) {}
 
 export function checkValueType(newValue, type) {
     const reg = /^-?\d*(\.\d*)?$/;
@@ -72,12 +66,4 @@ export function checkValueType(newValue, type) {
     return value;
 }
 
-export async function changeOne(endpoint, changes, fields) {
-    let realChanges = {};
-
-    for (const field in changes) {
-        if (field != "id") realChanges[fields[field]] = changes[field];
-    }
-
-    const res = await axios.put(`${serverUrl}${endpoint}`, realChanges);
-}
+export async function changeOne(name, id, changes, fields) {}

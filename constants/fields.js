@@ -59,6 +59,7 @@ export const projectFields = {
     clientId: "client_id",
     created: "created",
     updated: "last_updated",
+    number: "number",
 };
 
 export const prepackFields = {
@@ -103,4 +104,15 @@ export const rowFields = {
 export const newIdFields = {
     type: "type",
     id: "id",
+};
+
+export const models = {
+    client: "client",
+    project: "project",
+    prepack: "poultice",
+    prepackType: "packaging_type",
+    product: "product",
+    category: "product_category",
+    packageType: "packaging_type",
+    member: "employee",
 };

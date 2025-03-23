@@ -69,7 +69,7 @@ export default function Home() {
     for (const categoryId in productsStore.categories) {
         const category = productsStore.categories[categoryId];
         const dataEl = {
-            id: Number(categoryId),
+            id: categoryId,
             name: category.name,
             delete: true,
             copy: true,

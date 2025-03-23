@@ -20,11 +20,15 @@ import {
     checkValueType,
     changeOne,
 } from "api/commonApi";
+import { useSaveStore } from "./saveStore";
 
 export const useProjectsStore = create((set, get) => ({
     projects: {},
+    newProjectId: 0,
     prepacks: {},
+    newPrepackId: 0,
     prepackTypes: {},
+    newPrepackTypeId: 0,
 
     getAllProjects: async () => {
         const projects = await getAll("/projects", "projects", projectFields);
@@ -55,37 +59,38 @@ export const useProjectsStore = create((set, get) => ({
     },
     createProject: async (clientId) => {
         let project = { ...initProject, clientId };
-        let id = await createOne(
-            "/create_project",
-            "project_id",
-            project,
-            projectFields,
-        );
+        const newProjectId = get().newProjectId + 1;
+        await useSaveStore
+            .getState()
+            .createOne("project", "$" + newProjectId, project, projectFields);
 
         set((state) => {
             return {
+                newProjectId: newProjectId,
                 projects: {
                     ...state.projects,
-                    [clientId]: { ...state.projects[clientId], [id]: project },
+                    [clientId]: {
+                        ...state.projects[clientId],
+                        ["$" + newProjectId]: project,
+                    },
                 },
             };
         });
     },
     copyProject: async (clientId, id) => {
-        const newIds = await copyOne("project", id);
-        const newId = newIds.find((el) => el.type == "project").id;
-
-        set((state) => {
-            let projects = state.projects;
-            let project = { ...projects[clientId][id] };
-            projects[clientId][newId] = project;
-            return {
-                projects: projects,
-            };
-        });
+        // const newIds = await copyOne("project", id);
+        // const newId = newIds.find((el) => el.type == "project").id;
+        // set((state) => {
+        //     let projects = state.projects;
+        //     let project = { ...projects[clientId][id] };
+        //     projects[clientId][newId] = project;
+        //     return {
+        //         projects: projects,
+        //     };
+        // });
     },
     deleteProject: async (clientId, id) => {
-        await deleteOne(`/project_${id}`);
+        await useSaveStore.getState().deleteOne("project", id);
 
         set((state) => {
             let projects = state.projects[clientId];
@@ -97,11 +102,14 @@ export const useProjectsStore = create((set, get) => ({
         let realValue = checkValueType(value, type);
         if (realValue != null) {
             if (isReq)
-                await changeOne(
-                    `/project_${id}`,
-                    { [param]: realValue },
-                    projectFields,
-                );
+                await useSaveStore
+                    .getState()
+                    .changeOne(
+                        "project",
+                        id,
+                        { [param]: realValue },
+                        projectFields,
+                    );
 
             set((state) => {
                 let projects = state.projects[clientId];
@@ -146,40 +154,38 @@ export const useProjectsStore = create((set, get) => ({
             ...initPrepack,
             projectId: projectId,
         };
-        let id = await createOne(
-            "/poultice",
-            "poultice_id",
-            prepack,
-            prepackFields,
-        );
+        let newPrepackId = get().newPrepackId + 1;
+        await useSaveStore
+            .getState()
+            .createOne("prepack", "$" + newPrepackId, prepack, prepackFields);
 
         set((state) => {
             return {
+                newPrepackId: newPrepackId,
                 prepacks: {
                     ...state.prepacks,
                     [projectId]: {
                         ...state.prepacks[projectId],
-                        [id]: prepack,
+                        ["$" + newPrepackId]: prepack,
                     },
                 },
             };
         });
     },
     copyPrepack: async (projectId, id) => {
-        const newIds = await copyOne("prepack", id);
-        const newId = newIds.find((el) => el.type == "prepack").id;
-
-        set((state) => {
-            let prepacks = state.prepacks;
-            let prepack = { ...prepacks[projectId][id] };
-            prepacks[projectId][newId] = prepack;
-            return {
-                prepacks: prepacks,
-            };
-        });
+        // const newIds = await copyOne("prepack", id);
+        // const newId = newIds.find((el) => el.type == "prepack").id;
+        // set((state) => {
+        //     let prepacks = state.prepacks;
+        //     let prepack = { ...prepacks[projectId][id] };
+        //     prepacks[projectId][newId] = prepack;
+        //     return {
+        //         prepacks: prepacks,
+        //     };
+        // });
     },
     deletePrepack: async (projectId, id) => {
-        await deleteOne(`/poultice_${id}`);
+        await useSaveStore.getState().deleteOne("prepack", id);
 
         set((state) => {
             let prepacks = state.prepacks[projectId];
@@ -187,19 +193,23 @@ export const useProjectsStore = create((set, get) => ({
             return { prepacks: { ...state.prepacks, [projectId]: prepacks } };
         });
     },
-    changePrepack: async (projectId, prepackId, param, value, type, isReq) => {
+    changePrepack: async (projectId, id, param, value, type, isReq) => {
         let realValue = checkValueType(value, type);
         if (realValue != null) {
             if (isReq)
-                await changeOne(
-                    `/poultice_${prepackId}`,
-                    { [param]: realValue },
-                    prepackFields,
-                );
+                await useSaveStore
+                    .getState()
+                    .changeOne(
+                        "prepack",
+                        id,
+                        { [param]: realValue },
+                        prepackFields,
+                    );
 
             set((state) => {
                 let prepacks = state.prepacks[projectId];
-                let prepack = prepacks[prepackId];
+                console.log(prepacks, id);
+                let prepack = prepacks[id];
                 prepack[param] = realValue;
                 return {
                     prepacks: { ...state.prepacks, [projectId]: prepacks },
@@ -221,35 +231,39 @@ export const useProjectsStore = create((set, get) => ({
     },
     createPrepackType: async () => {
         let prepackType = { ...initPrepackType };
-        let id = await createOne(
-            "/preptype",
-            "preptype_id",
-            prepackType,
-            prepackTypeFields,
-        );
+        const newPrepackTypeId = get().newPrepackTypeId + 1;
+        await useSaveStore
+            .getState()
+            .createOne(
+                "prepackType",
+                "$" + newPrepackTypeId,
+                prepackType,
+                prepackTypeFields,
+            );
 
         set((state) => {
             let prepackTypes = state.prepackTypes;
-            prepackTypes[id] = prepackType;
+            prepackTypes["$" + newPrepackTypeId] = prepackType;
+            console.log(prepackTypes);
             return {
+                newPrepackTypeId: newPrepackTypeId,
                 prepackTypes: prepackTypes,
             };
         });
     },
     copyPrepackType: async (id) => {
-        const copiedId = await copyOne(`/preptype_${id}`, prepackTypeFields);
-
-        set((state) => {
-            let prepackTypes = state.prepackTypes;
-            let prepackType = { ...prepackTypes[id] };
-            prepackTypes[copiedId] = prepackType;
-            return {
-                prepackTypes: prepackTypes,
-            };
-        });
+        // const copiedId = await copyOne(`/preptype_${id}`, prepackTypeFields);
+        // set((state) => {
+        //     let prepackTypes = state.prepackTypes;
+        //     let prepackType = { ...prepackTypes[id] };
+        //     prepackTypes[copiedId] = prepackType;
+        //     return {
+        //         prepackTypes: prepackTypes,
+        //     };
+        // });
     },
     deletePrepackType: async (id) => {
-        await deleteOne(`/preptype_${id}`);
+        await useSaveStore.getState().deleteOne("prepackType", id);
 
         set((state) => {
             let prepackTypes = state.prepackTypes;
@@ -263,11 +277,14 @@ export const useProjectsStore = create((set, get) => ({
         let realValue = checkValueType(value, type);
         if (realValue != null) {
             if (isReq)
-                await changeOne(
-                    `/preptype_${id}`,
-                    { [param]: realValue },
-                    prepackTypeFields,
-                );
+                await useSaveStore
+                    .getState()
+                    .changeOne(
+                        "prepackType",
+                        id,
+                        { [param]: realValue },
+                        prepackTypeFields,
+                    );
 
             set((state) => {
                 let prepackTypes = state.prepackTypes;

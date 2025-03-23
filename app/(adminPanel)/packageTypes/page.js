@@ -90,7 +90,7 @@ export default function Home() {
     for (const packageTypeId in productsStore.packageTypes) {
         const packageType = productsStore.packageTypes[packageTypeId];
         let dataEl = {
-            id: Number(packageTypeId),
+            id: packageTypeId,
             name: packageType.name,
             object: packageType.object,
             delete: true,
