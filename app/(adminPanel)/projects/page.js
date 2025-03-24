@@ -235,7 +235,7 @@ export default function Home() {
                     prepackNumber: prepack.number,
                     delete: true,
                     copy: true,
-                    design: true,
+                    design: !prepackId.startsWith("$"),
                     prepackCreated: prepack.created,
                     prepackUpdated: prepack.updated,
                     uniqueId: `prepack-${prepackId}`,

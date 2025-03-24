@@ -12,14 +12,7 @@ import {
     categoryFields,
     productFields,
 } from "constants/fields";
-import {
-    getAll,
-    createOne,
-    copyOne,
-    deleteOne,
-    checkValueType,
-    changeOne,
-} from "api/commonApi";
+import { getAll, checkValueType } from "api/commonApi";
 import { useSaveStore } from "./saveStore";
 
 export const useProductsStore = create((set, get) => ({
@@ -83,16 +76,21 @@ export const useProductsStore = create((set, get) => ({
         });
     },
     copyProduct: async (clientId, id) => {
-        // const newIds = await copyOne("product", id);
-        // const newId = newIds.find((el) => el.type == "product").id;
-        // set((state) => {
-        //     let products = state.products;
-        //     let product = { ...products[clientId][id] };
-        //     products[clientId][newId] = product;
-        //     return {
-        //         products: products,
-        //     };
-        // });
+        const newProductId = get().newProductId + 1;
+        await useSaveStore
+            .getState()
+            .copyOne("product", id, { [`product-${id}`]: "$" + newProductId });
+
+        set((state) => {
+            let products = state.products;
+            products[clientId]["$" + newProductId] = {
+                ...products[clientId][id],
+            };
+            return {
+                products: products,
+                newProductId: newProductId,
+            };
+        });
     },
     deleteProduct: async (clientId, id) => {
         await useSaveStore.getState().deleteOne("product", id);
@@ -167,16 +165,19 @@ export const useProductsStore = create((set, get) => ({
         });
     },
     copyCategory: async (id) => {
-        // const newIds = await copyOne("product_category", id);
-        // const newId = newIds.find((el) => el.type == "product_category").id;
-        // set((state) => {
-        //     let categories = state.categories;
-        //     let category = { ...categories[id] };
-        //     categories[newId] = category;
-        //     return {
-        //         categories: categories,
-        //     };
-        // });
+        const newCategoryId = get().newCategoryId + 1;
+        await useSaveStore.getState().copyOne("category", id, {
+            [`category-${id}`]: "$" + newCategoryId,
+        });
+
+        set((state) => {
+            let categories = state.categories;
+            categories["$" + newCategoryId] = { ...categories[id] };
+            return {
+                categories: categories,
+                newCategoryId: newCategoryId,
+            };
+        });
     },
     deleteCategory: async (id) => {
         await useSaveStore.getState().deleteOne("category", id);
@@ -251,16 +252,19 @@ export const useProductsStore = create((set, get) => ({
         });
     },
     copyPackageType: async (id) => {
-        // const newIds = await copyOne("packaging_type", id);
-        // const newId = newIds.find((el) => el.type == "packaging_type").id;
-        // set((state) => {
-        //     let packageTypes = state.packageTypes;
-        //     let packageType = { ...packageTypes[id] };
-        //     packageTypes[newId] = packageType;
-        //     return {
-        //         packageTypes: packageTypes,
-        //     };
-        // });
+        const newPackageTypeId = get().newPackageTypeId + 1;
+        await useSaveStore.getState().copyOne("packageType", id, {
+            [`packageType-${id}`]: "$" + newPackageTypeId,
+        });
+
+        set((state) => {
+            let packageTypes = state.packageTypes;
+            packageTypes["$" + newPackageTypeId] = { ...packageTypes[id] };
+            return {
+                packageTypes: packageTypes,
+                newPackageTypeId: newPackageTypeId,
+            };
+        });
     },
     deletePackageType: async (id) => {
         await useSaveStore.getState().deleteOne("packageType", id);

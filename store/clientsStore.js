@@ -35,16 +35,19 @@ export const useClientsStore = create((set, get) => ({
         });
     },
     copyClient: async (id) => {
-        // const newIds = await copyOne("client", id);
-        // const newId = newIds.find((el) => el.type == "client").id;
-        // set((state) => {
-        //     let clients = state.clients;
-        //     let client = { ...clients[id] };
-        //     clients[newId] = client;
-        //     return {
-        //         clients: clients,
-        //     };
-        // });
+        const newClientId = get().newClientId + 1;
+        await useSaveStore
+            .getState()
+            .copyOne("client", id, { [`client-${id}`]: "$" + newClientId });
+
+        set((state) => {
+            let clients = state.clients;
+            clients["$" + newClientId] = { ...clients[id] };
+            return {
+                clients: clients,
+                newClientId: newClientId,
+            };
+        });
     },
     deleteClient: async (id) => {
         await useSaveStore.getState().deleteOne("client", id);

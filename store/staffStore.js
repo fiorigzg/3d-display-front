@@ -2,14 +2,7 @@
 
 import { initMember } from "constants/initValues";
 import { memberFields } from "constants/fields";
-import {
-    getAll,
-    createOne,
-    copyOne,
-    deleteOne,
-    checkValueType,
-    changeOne,
-} from "api/commonApi";
+import { getAll, checkValueType } from "api/commonApi";
 import { useSaveStore } from "./saveStore";
 
 import { create } from "zustand";
@@ -43,16 +36,19 @@ export const useStaffStore = create((set, get) => ({
         });
     },
     copyMember: async (id) => {
-        // const newIds = await copyOne("employee", id);
-        // const newId = newIds.find((el) => el.type == "employee").id;
-        // set((state) => {
-        //     let members = state.members;
-        //     let member = { ...members[id] };
-        //     members[newId] = member;
-        //     return {
-        //         members: members,
-        //     };
-        // });
+        const newMemberId = get().newMemberId + 1;
+        await useSaveStore
+            .getState()
+            .copyOne("member", id, { [`member-${id}`]: "$" + newMemberId });
+
+        set((state) => {
+            let members = state.members;
+            members["$" + newMemberId] = { ...members[id] };
+            return {
+                members: members,
+                newMemberId: newMemberId,
+            };
+        });
     },
     deleteMember: async (id) => {
         await useSaveStore.getState().deleteOne("member", id);

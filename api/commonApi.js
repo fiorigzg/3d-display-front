@@ -24,8 +24,6 @@ export async function runSequence(sequence) {
     console.log(res);
 }
 
-export async function createOne(name, id, json, fields) {}
-
 export async function copyOne(model, id) {
     const typeChange = {
         poultice: "prepack",
@@ -54,8 +52,6 @@ export async function copyOne(model, id) {
     return newIds;
 }
 
-export async function deleteOne(name, id) {}
-
 export function checkValueType(newValue, type) {
     const reg = /^-?\d*(\.\d*)?$/;
     let value = null;
@@ -65,5 +61,3 @@ export function checkValueType(newValue, type) {
 
     return value;
 }
-
-export async function changeOne(name, id, changes, fields) {}

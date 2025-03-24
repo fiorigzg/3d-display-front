@@ -54,6 +54,25 @@ export const useSaveStore = create((set, get) => ({
         });
     },
 
+    copyOne: async (name, id, ids) => {
+        set((state) => {
+            let idsString = "";
+            for (const copyObj in ids) {
+                const newId = ids[copyObj];
+                const [modelName, oldId] = copyObj.split("-");
+                if (idsString != "") idsString += ", ";
+                idsString += `${models[modelName]}_${oldId}=${newId}`;
+            }
+            console.log(state.sequence);
+            return {
+                sequence: [
+                    ...state.sequence,
+                    `copy ${models[name]} ${id} created ${idsString}`,
+                ],
+            };
+        });
+    },
+
     save: async () => {
         await runSequence(get().sequence);
         if (reloadOnSave) window.location.reload();

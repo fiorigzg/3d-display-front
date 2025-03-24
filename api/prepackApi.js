@@ -3,13 +3,16 @@ import axios from "axios";
 import { serverUrl } from "constants/main";
 import { prepackFields, shelfFields } from "constants/fields";
 
-export async function getAll(id) {
+export async function getAll(id, session = null) {
     let newPrepackValues = {};
-    const prepackData = (await axios.get(`${serverUrl}/poultice_${id}`)).data
-        .poultice;
+    const prepackData = (
+        await axios.get(
+            `${serverUrl}/poultice_${id}${session == null ? "" : "?session_name=" + session}`,
+        )
+    ).data.poultice[0];
     for (const field in prepackFields) {
         if (field == "boxSizes") {
-            let tempBoxSizes = prepackData[prepackFields[field]];
+            let tempBoxSizes = prepackData[prepackFields[field]] || {};
             if (!("width" in tempBoxSizes)) tempBoxSizes.width = 0;
             if (!("height" in tempBoxSizes)) tempBoxSizes.height = 0;
             if (!("depth" in tempBoxSizes)) tempBoxSizes.depth = 0;
@@ -33,6 +36,10 @@ export async function getAll(id) {
         ...newPrepackValues,
         shelves: newShelves,
     };
+}
+
+export async function saveAll(session) {
+    await axios.post(`${serverUrl}/commit_session?session_name=${session}`);
 }
 
 export async function getJsonShelf(id) {
@@ -135,4 +142,34 @@ export async function sendPrepackImage(prepackImageDataUrl, prepackId) {
     } catch (error) {
         console.error("Error saving all data:", error);
     }
+}
+
+export async function changeOne(endpoint, changes, fields, session) {
+    let realChanges = {};
+
+    for (const field in changes) {
+        if (field != "id") realChanges[fields[field]] = changes[field];
+    }
+
+    const res = await axios.put(
+        `${serverUrl}${endpoint}?session_name=${session}&execNow=true`,
+        realChanges,
+    );
+}
+
+export async function createOne(endpoint, json, fields, session, id) {
+    let realJson = {};
+    for (const field in json) {
+        if (field != "id") realJson[fields[field]] = json[field];
+    }
+    const res = await axios.post(
+        `${serverUrl}${endpoint}?session_name=${session}&original_id=${id}&execNow=true`,
+        realJson,
+    );
+}
+
+export async function deleteOne(endpoint, session) {
+    const res = await axios.delete(
+        `${serverUrl}${endpoint}?session_name=${session}&execNow=true`,
+    );
 }

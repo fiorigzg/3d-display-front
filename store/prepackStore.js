@@ -7,8 +7,9 @@ import {
     getJsonShelf,
     openShelfEditor,
     sendPrepackImage,
+    saveAll,
 } from "api/prepackApi";
-import { changeOne, createOne, deleteOne } from "api/commonApi";
+import { changeOne, createOne, deleteOne } from "api/prepackApi";
 import { prepackFields, shelfFields, rowFields } from "constants/fields";
 import { initShelf, initRow } from "constants/initValues";
 
@@ -26,23 +27,27 @@ export const usePrepackStore = create((set, get) => ({
     frontonHeight: 200,
     topperHeight: 0,
     boxSizes: { width: 0, height: 0, depth: 0 },
+    session: 0,
 
     initAll: async (id) => {
         let newState = await getAll(id);
-        set({ ...newState, id: id, step: "make" });
+        set({ ...newState, id: id, step: "make", session: "haha" });
     },
     changePepack: async (param, value) => {
         const id = await get().id;
+        const session = await get().session;
         let changes = { [param]: value };
-        changeOne(`/poultice_${id}`, changes, prepackFields);
+        changeOne(`/poultice_${id}`, changes, prepackFields, session);
         set(changes);
     },
     changeBoxSizes: async (param, value) => {
         const id = await get().id;
+        const session = await get().session;
         let boxSizes = get().boxSizes;
         if (param in boxSizes) boxSizes[param] = value;
         let changes = { boxSizes: boxSizes };
-        changeOne(`/poultice_${id}`, changes, prepackFields);
+        changeOne(`/poultice_${id}`, changes, prepackFields, session);
+        let newState = await getAll(id, session);
         set(changes);
     },
     addScale: (isPositive) =>
@@ -55,30 +60,41 @@ export const usePrepackStore = create((set, get) => ({
         }),
     sendPrepackImage: async (dataUrl) => {
         const id = get().id;
-        sendPrepackImage(dataUrl, id);
+        const session = get().session;
+
+        await saveAll(session);
+        await sendPrepackImage(dataUrl, id);
     },
 
     shelves: {},
     changeShelvesCount: async (value) => {
         let shelves = get().shelves;
-        let prepackId = get().id;
+        const prepackId = get().id;
+        const session = get().session;
 
         let count = Object.keys(shelves).length;
+        let newId =
+            Math.max(0, ...Object.keys(shelves).map((el) => Number(el))) + 1 ||
+            1;
         if (count < value) {
             for (let i = count + 1; i <= value; i++) {
                 const newShelf = { ...initShelf, prepackId: prepackId };
-                const newShelfId = await createOne(
+                await createOne(
                     "/shelf",
-                    "shelf_id",
                     newShelf,
                     shelfFields,
+                    session,
+                    newId,
                 );
-                shelves[newShelfId] = newShelf;
+                shelves[newId] = newShelf;
+                newId++;
             }
         } else {
             for (let i = count; i > value; i--) {
                 const lastShelfId = Object.keys(shelves).pop();
-                await deleteOne(`/shelf_${lastShelfId}`);
+                const session = get().session;
+
+                await deleteOne(`/shelf_${lastShelfId}`, session);
                 delete shelves[lastShelfId];
             }
         }
@@ -92,9 +108,15 @@ export const usePrepackStore = create((set, get) => ({
     },
     changeShelf: async (ids, param, value) => {
         let shelves = get().shelves;
+        const session = get().session;
         shelves[ids.shelfId][param] = value;
         if (param in shelfFields)
-            changeOne(`/shelf_${ids.shelfId}`, { [param]: value }, shelfFields);
+            changeOne(
+                `/shelf_${ids.shelfId}`,
+                { [param]: value },
+                shelfFields,
+                session,
+            );
 
         set({ shelves: shelves });
     },
@@ -122,6 +144,7 @@ export const usePrepackStore = create((set, get) => ({
 
     changeRowsCount: async (ids, value, defaultProductId) => {
         let shelves = get().shelves;
+        const session = get().session;
         let rows = structuredClone(shelves[ids.shelfId].rows);
         let count = Object.keys(rows).length;
         if (count < value) {
@@ -136,7 +159,12 @@ export const usePrepackStore = create((set, get) => ({
                 delete rows[i];
             }
         }
-        changeOne(`/shelf_${ids.shelfId}`, { rows: rows }, shelfFields);
+        changeOne(
+            `/shelf_${ids.shelfId}`,
+            { rows: rows },
+            shelfFields,
+            session,
+        );
 
         shelves[ids.shelfId].rows = rows;
         set({ shelves: shelves });
@@ -144,6 +172,7 @@ export const usePrepackStore = create((set, get) => ({
     deleteRow: async (ids) => {
         let shelves = get().shelves;
         let shelf = shelves[ids.shelfId];
+        const session = get().session;
         if (shelf.rows[ids.rowId]) {
             delete shelf.rows[ids.rowId];
 
@@ -159,16 +188,18 @@ export const usePrepackStore = create((set, get) => ({
                 `/shelf_${ids.shelfId}`,
                 { rows: shelf.rows },
                 shelfFields,
+                session,
             );
             set({ shelves: shelves });
         }
     },
     changeRow: (ids, param, value) => {
+        const session = get().session;
         let shelves = get().shelves;
         let shelf = shelves[ids.shelfId];
         shelf.rows[ids.rowId][param] = value;
         if (param in rowFields) {
-            changeOne(`/shelf_${ids.shelfId}`, shelf, shelfFields);
+            changeOne(`/shelf_${ids.shelfId}`, shelf, shelfFields, session);
         }
 
         set({ shelves: shelves });
