@@ -73,21 +73,17 @@ export const usePrepackStore = create((set, get) => ({
         const session = get().session;
 
         let count = Object.keys(shelves).length;
-        let newId =
-            Math.max(0, ...Object.keys(shelves).map((el) => Number(el))) + 1 ||
-            1;
         if (count < value) {
             for (let i = count + 1; i <= value; i++) {
                 const newShelf = { ...initShelf, prepackId: prepackId };
-                await createOne(
+                const newShelfId = await createOne(
                     "/shelf",
                     newShelf,
                     shelfFields,
+                    "shelf_id",
                     session,
-                    newId,
                 );
-                shelves[newId] = newShelf;
-                newId++;
+                shelves[newShelfId] = newShelf;
             }
         } else {
             for (let i = count; i > value; i--) {

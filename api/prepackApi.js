@@ -157,15 +157,17 @@ export async function changeOne(endpoint, changes, fields, session) {
     );
 }
 
-export async function createOne(endpoint, json, fields, session, id) {
+export async function createOne(endpoint, json, fields, idParam, session) {
     let realJson = {};
     for (const field in json) {
         if (field != "id") realJson[fields[field]] = json[field];
     }
     const res = await axios.post(
-        `${serverUrl}${endpoint}?session_name=${session}&original_id=${id}&execNow=true`,
+        `${serverUrl}${endpoint}?session_name=${session}&execNow=true`,
         realJson,
     );
+
+    return res.data[idParam];
 }
 
 export async function deleteOne(endpoint, session) {
