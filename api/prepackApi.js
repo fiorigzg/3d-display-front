@@ -170,8 +170,8 @@ export async function createOne(endpoint, json, fields, idParam, session) {
     return res.data[idParam];
 }
 
-export async function deleteOne(endpoint, session) {
+export async function deleteOne(endpoint) {
     const res = await axios.delete(
-        `${serverUrl}${endpoint}?session_name=${session}&execNow=true`,
+        `${serverUrl}${endpoint}`,
     );
 }

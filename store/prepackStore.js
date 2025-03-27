@@ -88,9 +88,8 @@ export const usePrepackStore = create((set, get) => ({
         } else {
             for (let i = count; i > value; i--) {
                 const lastShelfId = Object.keys(shelves).pop();
-                const session = get().session;
 
-                await deleteOne(`/shelf_${lastShelfId}`, session);
+                await deleteOne(`/shelf_${lastShelfId}`);
                 delete shelves[lastShelfId];
             }
         }

@@ -110,7 +110,7 @@ export const models = {
     client: "client",
     project: "project",
     prepack: "poultice",
-    prepackType: "packaging_type",
+    prepackType: "prep_type",
     product: "product",
     category: "product_category",
     packageType: "packaging_type",
