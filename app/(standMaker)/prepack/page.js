@@ -129,9 +129,7 @@ export default function Home() {
             name: "Полка",
             param: "shelfId",
             type: "id",
-            width: "80px",
-            onSwitchExtend: (id) =>
-                prepackStore.switchShelfExtend(id, "isExtended"),
+            width: "100px",
         },
         {
             name: "Номер полки",
@@ -188,7 +186,7 @@ export default function Home() {
                     Object.keys(products)[0],
                 ),
         },
-        { name: "Ряд", accessor: "rowId", type: "id", width: "80px" },
+        { name: "Ряд", accessor: "rowId", type: "id", width: "100px" },
         {
             name: "Продукт",
             param: "product",
@@ -252,7 +250,7 @@ export default function Home() {
     for (const shelfId in prepackStore.shelves) {
         const shelf = prepackStore.shelves[shelfId];
         shelfNumber++;
-        let thisShelf = {
+        let shelfEl = {
             shelfId: shelfId,
             width:
                 prepackStore.width -
@@ -270,10 +268,10 @@ export default function Home() {
             makeShelf: true,
             updateShelf: !shelf.isRows,
             toRows: !shelf.isRows,
-            isExtended: shelf.isExtended,
             shelfNumber: shelfNumber,
+            uniqueId: `shelf-${shelfId}`,
+            children: [],
         };
-        shelvesData.push(thisShelf);
 
         shelfTop += shelf.margin;
         let productsArr = [];
@@ -281,18 +279,17 @@ export default function Home() {
         let partitionsArr = [];
         let shelfLoad = 0;
         if (shelf.isRows) {
-            if (shelf.isExtended) {
-                let rowNumber = 0;
-                for (const rowId in shelf.rows) {
-                    const row = shelf.rows[rowId];
-                    rowNumber++;
-                    shelvesData.push({
-                        rowId: rowId,
-                        product: row.productId,
-                        left: row.left,
-                        deleteRow: true,
-                    });
-                }
+            let rowNumber = 0;
+            for (const rowId in shelf.rows) {
+                const rowEl = shelf.rows[rowId];
+                rowNumber++;
+                shelfEl.children.push({
+                    rowId: rowId,
+                    product: rowEl.productId,
+                    left: rowEl.left,
+                    deleteRow: true,
+                    uniqueId: `row-${rowId}`,
+                });
             }
 
             let productLeft = shelf.padding;
@@ -306,7 +303,7 @@ export default function Home() {
                             prepackStore.backThickness -
                             prepackStore.frontThickness -
                             shelf.padding * 2) /
-                            product.depth,
+                            Math.max(product.depth, 1),
                     );
                     shelfLoad += product.weight * productsCount;
 
@@ -416,8 +413,9 @@ export default function Home() {
             }
         }
 
-        thisShelf.load = shelfLoad;
+        shelfEl.load = shelfLoad;
 
+        shelvesData.push(shelfEl);
         shelvesArr.push(
             <div
                 className={styles.box}
@@ -527,8 +525,10 @@ export default function Home() {
                 </div>
             </div>
             <div className={styles.divider} onMouseDown={handleMouseDown}>
-                <button className={styles.exitBtn} onClick={() => {}}>
-                    Выйти
+                <button className={styles.saveBtn} onClick={() => {
+                    prepackStore.saveAll();
+                }}>
+                    Сохранить
                 </button>
                 <button
                     className={styles.stepBtn}

@@ -12,6 +12,7 @@ import {
 import { changeOne, createOne, deleteOne } from "api/prepackApi";
 import { prepackFields, shelfFields, rowFields } from "constants/fields";
 import { initShelf, initRow } from "constants/initValues";
+import { reloadOnSave } from "constants/main";
 
 export const usePrepackStore = create((set, get) => ({
     step: "load",
@@ -31,7 +32,7 @@ export const usePrepackStore = create((set, get) => ({
 
     initAll: async (id) => {
         let newState = await getAll(id);
-        set({ ...newState, id: id, step: "make", session: "haha" });
+        set({ ...newState, id: id, step: "make", session: Date.now() });
     },
     changePepack: async (param, value) => {
         const id = await get().id;
@@ -60,10 +61,14 @@ export const usePrepackStore = create((set, get) => ({
         }),
     sendPrepackImage: async (dataUrl) => {
         const id = get().id;
+
+        await sendPrepackImage(dataUrl, id);
+    },
+    saveAll: async () => {
         const session = get().session;
 
         await saveAll(session);
-        await sendPrepackImage(dataUrl, id);
+        if (reloadOnSave) window.location.reload();
     },
 
     shelves: {},
@@ -124,6 +129,7 @@ export const usePrepackStore = create((set, get) => ({
             state,
             ids.shelfId,
             clientId,
+            state.session,
         );
 
         shelves[ids.shelfId] = { ...shelves[ids.shelfId], ...shelfChanges };

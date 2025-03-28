@@ -47,7 +47,13 @@ export async function getJsonShelf(id) {
         .json_shelf;
 }
 
-export async function openShelfEditor(products, prepack, id, clientId) {
+export async function openShelfEditor(
+    products,
+    prepack,
+    id,
+    clientId,
+    session,
+) {
     let shelf = prepack.shelves[id];
     let shelfChanges = {};
 
@@ -93,7 +99,10 @@ export async function openShelfEditor(products, prepack, id, clientId) {
         for (const field in shelfFields) {
             req[shelfFields[field]] = shelfChanges[field];
         }
-        let res = await axios.put(`${serverUrl}/shelf_${id}`, req);
+        let res = await axios.put(
+            `${serverUrl}/shelf_${id}?session_name=${session}&execNow=true`,
+            req,
+        );
     }
 
     window.open(
@@ -102,7 +111,7 @@ export async function openShelfEditor(products, prepack, id, clientId) {
             prepack.backThickness -
             prepack.frontThickness -
             shelf.padding * 2
-        }&&shelf_id=${id}&&client_id=${clientId}&&between_shelves=${shelf.margin}`,
+        }&&shelf_id=${id}&&client_id=${clientId}&&between_shelves=${shelf.margin}&&session_name=${session}`,
         "mywin",
         `width=${window.screen.availWidth / 2},height=${window.screen.availHeight}`,
     );
@@ -171,7 +180,5 @@ export async function createOne(endpoint, json, fields, idParam, session) {
 }
 
 export async function deleteOne(endpoint) {
-    const res = await axios.delete(
-        `${serverUrl}${endpoint}`,
-    );
+    const res = await axios.delete(`${serverUrl}${endpoint}`);
 }
