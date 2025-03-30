@@ -94,7 +94,7 @@ export const usePrepackStore = create((set, get) => ({
             for (let i = count; i > value; i--) {
                 const lastShelfId = Object.keys(shelves).pop();
 
-                await deleteOne(`/shelf_${lastShelfId}`);
+                await deleteOne(`/shelf_${lastShelfId}`, session);
                 delete shelves[lastShelfId];
             }
         }
@@ -137,7 +137,9 @@ export const usePrepackStore = create((set, get) => ({
     },
     updateShelfJson: async (ids) => {
         let shelves = get().shelves;
-        let json = await getJsonShelf(ids.shelfId);
+        let session = get().session;
+        let json = await getJsonShelf(ids.shelfId, session);
+        console.log(json);
         shelves[ids.shelfId].json = json;
 
         set({ shelves: shelves });

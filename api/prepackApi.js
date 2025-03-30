@@ -42,9 +42,9 @@ export async function saveAll(session) {
     await axios.post(`${serverUrl}/commit_session?session_name=${session}`);
 }
 
-export async function getJsonShelf(id) {
-    return (await axios.get(`${serverUrl}/shelf_${id}`)).data.shelf[0]
-        .json_shelf;
+export async function getJsonShelf(id, session) {
+    return (await axios.get(`${serverUrl}/shelf_${id}?session_name=${session}`))
+        .data.shelf[1].json_shelf;
 }
 
 export async function openShelfEditor(
@@ -179,6 +179,8 @@ export async function createOne(endpoint, json, fields, idParam, session) {
     return res.data[idParam];
 }
 
-export async function deleteOne(endpoint) {
-    const res = await axios.delete(`${serverUrl}${endpoint}`);
+export async function deleteOne(endpoint, session) {
+    const res = await axios.delete(
+        `${serverUrl}${endpoint}?session_name=${session}&execNow=true`,
+    );
 }
