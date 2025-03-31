@@ -61,8 +61,9 @@ export const usePrepackStore = create((set, get) => ({
         }),
     sendPrepackImage: async (dataUrl) => {
         const id = get().id;
+        const session = get().session;
 
-        await sendPrepackImage(dataUrl, id);
+        await sendPrepackImage(dataUrl, id, session);
     },
     saveAll: async () => {
         const session = get().session;

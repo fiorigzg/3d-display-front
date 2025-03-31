@@ -119,7 +119,11 @@ export async function openShelfEditor(
     return shelfChanges;
 }
 
-export async function sendPrepackImage(prepackImageDataUrl, prepackId) {
+export async function sendPrepackImage(
+    prepackImageDataUrl,
+    prepackId,
+    session,
+) {
     try {
         const prepackImageRes = await axios({
             method: "get",
@@ -147,7 +151,9 @@ export async function sendPrepackImage(prepackImageDataUrl, prepackId) {
             },
         });
 
-        window.open(`http://94.103.83.218:8080/prepack?id=${prepackId}`);
+        window.open(
+            `http://94.103.83.218:8080/prepack?id=${prepackId}&&session_name=${session}`,
+        );
     } catch (error) {
         console.error("Error saving all data:", error);
     }
