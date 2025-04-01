@@ -1,4 +1,5 @@
-export const serverUrl = "http://94.103.83.218:800";
-export const localUrl = "http://localhost:3000";
+export const serverUrl = "https://back.3d-dpl.ru";
+export const localUrl = "https://3d-dpl.ru";
+export const shelfUrl = "https://shelf.3d-dpl.ru";
 export const isIdInTable = true;
 export const reloadOnSave = true;
