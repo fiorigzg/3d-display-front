@@ -142,7 +142,7 @@ export async function sendPrepackImage(
     prepackImageFormData.append("file", prepackImageFile);
 
     // Send the form data to the server
-    await axios.post(`${serverUrl}/uploadfile/`, prepackImageFormData, {
+    await axios.post(`${serverUrl}/uploadfile`, prepackImageFormData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
