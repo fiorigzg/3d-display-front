@@ -20,6 +20,18 @@ export async function getAll(id, session = null) {
     } else newPrepackValues[field] = prepackData[prepackFields[field]];
   }
 
+  // newPrepackValues.info = {};
+  // const projectData = (
+  //   await axios.get(
+  //     `${serverUrl}/project_${prepackData.project_id}`
+  //   )
+  // ).data.project;
+  // const clientData = (
+  //   await axios.get(
+  //     `${serverUrl}/client_${projectData.client_id}`
+  //   )
+  // ).data.client;
+
   let newShelves = {};
   const shelvesData = (
     await axios.get(`${serverUrl}/shelves?poultice_id=${id}`)
@@ -70,7 +82,7 @@ export async function openShelfEditor(
           prepack.backThickness -
           prepack.frontThickness -
           shelf.padding * 2) /
-          product.depth,
+        product.depth,
       );
       let depth = 0;
       for (let i = 0; i < count; i++) {
@@ -106,11 +118,10 @@ export async function openShelfEditor(
   }
 
   window.open(
-    `${shelfUrl}/?width=${prepack.width - prepack.sideThickness * 2 - shelf.padding * 2}&&height=${prepack.shelfThickness}&&length=${
-      prepack.depth -
-      prepack.backThickness -
-      prepack.frontThickness -
-      shelf.padding * 2
+    `${shelfUrl}/?width=${prepack.width - prepack.sideThickness * 2 - shelf.padding * 2}&&height=${prepack.shelfThickness}&&length=${prepack.depth -
+    prepack.backThickness -
+    prepack.frontThickness -
+    shelf.padding * 2
     }&&shelf_id=${id}&&client_id=${clientId}&&between_shelves=${shelf.margin}&&session_name=${session}`,
     "mywin",
     `width=${window.screen.availWidth / 2},height=${window.screen.availHeight}`,
@@ -161,7 +172,7 @@ export async function changeOne(endpoint, changes, fields, session) {
   let realChanges = {};
 
   for (const field in changes) {
-    if (field != "id") realChanges[fields[field]] = changes[field];
+    if (field != "id" && field != "info") realChanges[fields[field]] = changes[field];
   }
 
   const res = await axios.put(
@@ -173,7 +184,7 @@ export async function changeOne(endpoint, changes, fields, session) {
 export async function createOne(endpoint, json, fields, idParam, session) {
   let realJson = {};
   for (const field in json) {
-    if (field != "id") realJson[fields[field]] = json[field];
+    if (field != "id" && field != "info") realJson[fields[field]] = json[field];
   }
   const res = await axios.post(
     `${serverUrl}${endpoint}?session_name=${session}&execNow=true`,
