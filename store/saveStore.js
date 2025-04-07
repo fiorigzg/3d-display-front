@@ -14,7 +14,7 @@ export const useSaveStore = create((set, get) => ({
       let createString = "";
       for (const field in json) {
         if (field != "id") {
-          if (createString != "") createString += "&& ";
+          if (createString != "") createString += " && ";
           createString += `${fields[field]}=${json[field]}`;
         }
       }
@@ -40,7 +40,7 @@ export const useSaveStore = create((set, get) => ({
       let changesString = "";
       for (const field in changes) {
         if (field != "id") {
-          if (changesString != "") changesString += "&& ";
+          if (changesString != "") changesString += " && ";
           changesString += `${fields[field]}=${changes[field]}`;
         }
       }
@@ -60,7 +60,7 @@ export const useSaveStore = create((set, get) => ({
       for (const copyObj in ids) {
         const newId = ids[copyObj];
         const [modelName, oldId] = copyObj.split("-");
-        if (idsString != "") idsString += "&& ";
+        if (idsString != "") idsString += " && ";
         idsString += `${models[modelName]}_${oldId}=${newId}`;
       }
       console.log(state.sequence);
