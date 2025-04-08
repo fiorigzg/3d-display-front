@@ -17,12 +17,12 @@ export default function VerticalTable({
 
   let rowsArr = [];
   for (const element of realHeader) {
-    let thisOnEnter = () => { }
+    let thisOnEnter = () => {};
     if (!element.isConst) {
       if (element.param == null) {
         thisOnEnter = (e) => element.onEnter(Number(e.target.value));
       } else {
-        thisOnEnter = (e) => onEnter(element.param, Number(e.target.value))
+        thisOnEnter = (e) => onEnter(element.param, Number(e.target.value));
       }
     }
 
@@ -31,13 +31,11 @@ export default function VerticalTable({
         <td>{element.name}</td>
         <td>
           {element.isConst ? (
-            <p>{element.value}</p>
+            <p>{realData[element.param]}</p>
           ) : (
             <input
               defaultValue={
-                element.param != null
-                  ? realData[element.param]
-                  : element.value
+                element.param != null ? realData[element.param] : element.value
               }
               onKeyDown={(e) => {
                 if (e.key == "Enter") thisOnEnter(e);
@@ -51,10 +49,7 @@ export default function VerticalTable({
   }
 
   return (
-    <table
-      style={{ ...style }}
-      className={cx(styles.verticalTable, className)}
-    >
+    <table style={{ ...style }} className={cx(styles.verticalTable, className)}>
       <tbody>{rowsArr}</tbody>
     </table>
   );

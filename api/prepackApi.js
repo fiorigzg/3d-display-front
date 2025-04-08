@@ -5,11 +5,16 @@ import { prepackFields, shelfFields } from "constants/fields";
 
 export async function getAll(id, session = null) {
   let newPrepackValues = {};
-  const prepackData = (
+  let prepackData = (
     await axios.get(
       `${serverUrl}/poultice_${id}${session == null ? "" : "?session_name=" + session}`,
     )
-  ).data.poultice[0];
+  ).data.poultice;
+  if (session != null) {
+    prepackData = prepackData[0];
+  }
+
+  console.log(prepackData);
   for (const field in prepackFields) {
     if (field == "boxSizes") {
       let tempBoxSizes = prepackData[prepackFields[field]] || {};
@@ -41,7 +46,6 @@ export async function getAll(id, session = null) {
     for (const field in shelfFields) {
       newShelves[shelf.id][field] = shelf[shelfFields[field]];
     }
-    console.log(newShelves[shelf.id]);
   }
 
   return {
@@ -82,7 +86,7 @@ export async function openShelfEditor(
           prepack.backThickness -
           prepack.frontThickness -
           shelf.padding * 2) /
-        product.depth,
+          product.depth,
       );
       let depth = 0;
       for (let i = 0; i < count; i++) {
@@ -118,10 +122,11 @@ export async function openShelfEditor(
   }
 
   window.open(
-    `${shelfUrl}/?width=${prepack.width - prepack.sideThickness * 2 - shelf.padding * 2}&&height=${prepack.shelfThickness}&&length=${prepack.depth -
-    prepack.backThickness -
-    prepack.frontThickness -
-    shelf.padding * 2
+    `${shelfUrl}/?width=${prepack.width - prepack.sideThickness * 2 - shelf.padding * 2}&&height=${prepack.shelfThickness}&&length=${
+      prepack.depth -
+      prepack.backThickness -
+      prepack.frontThickness -
+      shelf.padding * 2
     }&&shelf_id=${id}&&client_id=${clientId}&&between_shelves=${shelf.margin}&&session_name=${session}`,
     "mywin",
     `width=${window.screen.availWidth / 2},height=${window.screen.availHeight}`,
@@ -172,7 +177,8 @@ export async function changeOne(endpoint, changes, fields, session) {
   let realChanges = {};
 
   for (const field in changes) {
-    if (field != "id" && field != "info") realChanges[fields[field]] = changes[field];
+    if (field != "id" && field != "info")
+      realChanges[fields[field]] = changes[field];
   }
 
   const res = await axios.put(

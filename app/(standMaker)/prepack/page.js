@@ -90,11 +90,11 @@ export default function Home() {
   const prepackHeader = [
     {
       name: "Клиент",
-      value: "Sigma",
+      param: "clientName",
       isConst: true,
     }, {
       name: "Проект",
-      value: "Sigma 1",
+      param: "projectName",
       isConst: true,
     },
     {

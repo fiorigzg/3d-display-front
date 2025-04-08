@@ -64,6 +64,8 @@ export const projectFields = {
 
 export const prepackFields = {
   name: "name",
+  clientName: "client_name",
+  projectName: "project_name",
   width: "size_x",
   depth: "size_z",
   height: "size_y",
