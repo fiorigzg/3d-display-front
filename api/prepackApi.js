@@ -9,12 +9,8 @@ export async function getAll(id, session = null) {
     await axios.get(
       `${serverUrl}/poultice_${id}${session == null ? "" : "?session_name=" + session}`,
     )
-  ).data.poultice;
-  if (session != null) {
-    prepackData = prepackData[0];
-  }
+  ).data.poultice.at(-1);
 
-  console.log(prepackData);
   for (const field in prepackFields) {
     if (field == "boxSizes") {
       let tempBoxSizes = prepackData[prepackFields[field]] || {};
@@ -59,8 +55,9 @@ export async function saveAll(session) {
 }
 
 export async function getJsonShelf(id, session) {
-  return (await axios.get(`${serverUrl}/shelf_${id}?session_name=${session}`))
-    .data.shelf[1].json_shelf;
+  return (
+    await axios.get(`${serverUrl}/shelf_${id}?session_name=${session}`)
+  ).data.shelf.at(-1).json_shelf;
 }
 
 export async function openShelfEditor(
