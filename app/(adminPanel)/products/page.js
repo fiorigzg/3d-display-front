@@ -89,7 +89,7 @@ export default function Home() {
           "name",
           value,
           "text",
-          true,
+          true
         ),
     },
     {
@@ -105,7 +105,7 @@ export default function Home() {
           "width",
           value,
           "number",
-          true,
+          true
         ),
     },
     {
@@ -121,7 +121,7 @@ export default function Home() {
           "height",
           value,
           "number",
-          true,
+          true
         ),
     },
     {
@@ -137,7 +137,7 @@ export default function Home() {
           "depth",
           value,
           "number",
-          true,
+          true
         ),
     },
     {
@@ -153,7 +153,7 @@ export default function Home() {
           "weight",
           value,
           "number",
-          true,
+          true
         ),
     },
     {
@@ -169,7 +169,7 @@ export default function Home() {
           "count",
           value,
           "number",
-          true,
+          true
         ),
     },
     {
@@ -185,7 +185,7 @@ export default function Home() {
           "volume",
           value,
           "number",
-          true,
+          true
         ),
     },
     {
@@ -201,7 +201,7 @@ export default function Home() {
           "qrcode",
           value,
           "text",
-          true,
+          true
         ),
     },
     {
@@ -217,7 +217,7 @@ export default function Home() {
           "categoryId",
           value,
           "select",
-          true,
+          true
         ),
     },
     {
@@ -233,7 +233,7 @@ export default function Home() {
           "packageTypeId",
           value,
           "select",
-          true,
+          true
         ),
     },
     {
@@ -249,7 +249,7 @@ export default function Home() {
           "frontProjection",
           data.original_file.slice(10),
           "text",
-          true,
+          true
         );
       },
     },
@@ -317,7 +317,7 @@ export default function Home() {
   return (
     <main>
       <div className={styles.table}>
-        <HorizontalTable data={data} header={header} />
+        <HorizontalTable data={data} header={header} name="products" />
       </div>
     </main>
   );

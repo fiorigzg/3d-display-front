@@ -526,6 +526,7 @@ export default function Home() {
         <h1>Параметры полок</h1>
         <div className={styles.shelvesTableContainer}>
           <HorizontalTable
+            name={`shelves-${prepackStore.id}`}
             className={styles.shelvesTable}
             header={shelvesHeader}
             headerHeight="60px"
