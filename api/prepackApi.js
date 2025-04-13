@@ -78,7 +78,7 @@ export async function openShelfEditor(
       const product = products[row.productId];
 
       left += row.left;
-      let count = Math.floor(
+      let count = row.count || Math.floor(
         (prepack.depth -
           prepack.backThickness -
           prepack.frontThickness -

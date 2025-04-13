@@ -212,7 +212,15 @@ export default function Home() {
       type: "input",
       isNumber: true,
       onEnter: (ids, value) => prepackStore.changeRow(ids, "left", value),
-      width: "150px",
+      width: "80px",
+    },
+    {
+      name: "Кол-во продуктов",
+      param: "count",
+      type: "input",
+      isNumber: true,
+      onEnter: (ids, value) => prepackStore.changeRow(ids, "count", value),
+      width: "100px",
     },
     {
       name: "Проектировать",
@@ -289,41 +297,33 @@ export default function Home() {
     let partitionsArr = [];
     let shelfLoad = 0;
     if (shelf.isRows) {
-      let rowNumber = 0;
+      let productLeft = shelf.padding;
+
       for (const rowId in shelf.rows) {
         const rowEl = shelf.rows[rowId];
-        rowNumber++;
-        shelfEl.children.push({
-          rowId: rowId,
-          product: rowEl.productId,
-          left: rowEl.left,
-          deleteRow: true,
-          uniqueId: `row-${rowId}`,
-        });
-      }
+        const productEl = products[rowEl.productId];
+        let productsCount = rowEl.count || rowEl.count;
 
-      let productLeft = shelf.padding;
-      for (const rowId in shelf.rows) {
-        const row = shelf.rows[rowId];
-        const product = products[row.productId];
-        if (product != undefined) {
-          productLeft += row.left;
-          let productsCount = Math.floor(
-            (prepackStore.depth -
-              prepackStore.backThickness -
-              prepackStore.frontThickness -
-              shelf.padding * 2) /
-            Math.max(product.depth, 1),
-          );
-          shelfLoad += product.weight * productsCount;
+        if (productEl != undefined) {
+          productLeft += rowEl.left;
+          if (productsCount == 0) {
+            productsCount = Math.floor(
+              (prepackStore.depth -
+                prepackStore.backThickness -
+                prepackStore.frontThickness -
+                shelf.padding * 2) /
+              Math.max(productEl.depth, 1),
+            );
+          }
+          shelfLoad += productEl.weight * productsCount;
 
           productsArr.push(
-            product.frontProjection == "" ? (
+            productEl.frontProjection == "" ? (
               <div
                 className={styles.product}
                 style={{
-                  width: `${product.width * scale - 2}px`,
-                  height: `${product.height * scale - 4}px`,
+                  width: `${productEl.width * scale - 2}px`,
+                  height: `${productEl.height * scale - 4}px`,
                   left: `${productLeft * scale}px`,
                   bottom: `${prepackStore.shelfThickness * scale + 1}px`,
                 }}
@@ -331,10 +331,10 @@ export default function Home() {
             ) : (
               <img
                 className={styles.image}
-                src={`${serverUrl}/loadfile/${product.frontProjection}`}
+                src={`${serverUrl}/loadfile/${productEl.frontProjection}`}
                 style={{
-                  width: `${product.width * scale - 2}px`,
-                  height: `${product.height * scale - 4}px`,
+                  width: `${productEl.width * scale - 2}px`,
+                  height: `${productEl.height * scale - 4}px`,
                   left: `${productLeft * scale}px`,
                   bottom: `${prepackStore.shelfThickness * scale + 1}px`,
                 }}
@@ -345,10 +345,19 @@ export default function Home() {
           if (isFirstShelf)
             forSizes.firstShelfMaxProduct = Math.max(
               forSizes.firstShelfMaxProduct,
-              product.height,
+              productEl.height,
             );
-          productLeft += product.width;
+          productLeft += productEl.width;
         }
+
+        shelfEl.children.push({
+          rowId: rowId,
+          product: rowEl.productId,
+          left: rowEl.left,
+          count: productsCount,
+          deleteRow: true,
+          uniqueId: `row-${rowId}`,
+        });
       }
     } else {
       if ("elems" in shelf.json) {

@@ -93,5 +93,6 @@ export const initShelf = {
 export const initRow = {
   id: 1,
   left: 10,
+  count: 0,
   productId: 24,
 };
