@@ -101,6 +101,8 @@ export const shelfFields = {
 export const rowFields = {
   left: "left",
   productId: "product_id",
+  count: "count",
+  between: "between",
 };
 
 export const newIdFields = {

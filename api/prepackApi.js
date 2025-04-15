@@ -78,15 +78,11 @@ export async function openShelfEditor(
       const product = products[row.productId];
 
       left += row.left;
-      let count = row.count || Math.floor(
-        (prepack.depth -
-          prepack.backThickness -
-          prepack.frontThickness -
-          shelf.padding * 2) /
-          product.depth,
-      );
-      let depth = 0;
-      for (let i = 0; i < count; i++) {
+      const productDepth = Math.max(product.depth, 1);
+      let productCount = row.count || -1;
+      let depth = prepack.depth - prepack.backThickness - prepack.frontThickness - shelf.padding * 2 - productDepth;
+      console.log(depth, productCount);
+      while(productCount > 0 || (productCount < 0 && depth > 0)) {
         elems.push({
           x: left,
           y: depth,
@@ -101,7 +97,8 @@ export async function openShelfEditor(
           productId: row.productId,
           shelfIndex: id,
         });
-        depth += product.depth;
+        depth -= productDepth + row.between;
+        productCount -= 1;
       }
       left += product.width;
     }

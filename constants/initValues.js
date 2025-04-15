@@ -95,4 +95,5 @@ export const initRow = {
   left: 10,
   count: 0,
   productId: 24,
+  between: 0,
 };

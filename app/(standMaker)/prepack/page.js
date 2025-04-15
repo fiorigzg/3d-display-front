@@ -223,6 +223,14 @@ export default function Home() {
       width: "100px",
     },
     {
+      name: "Отступ между",
+      param: "between",
+      type: "input",
+      isNumber: true,
+      onEnter: (ids, value) => prepackStore.changeRow(ids, "between", value),
+      width: "100px",
+    },
+    {
       name: "Проектировать",
       type: "button",
       icon: "next",
@@ -308,11 +316,16 @@ export default function Home() {
           productLeft += rowEl.left;
           if (productsCount == 0) {
             productsCount = Math.floor(
-              (prepackStore.depth -
-                prepackStore.backThickness -
-                prepackStore.frontThickness -
-                shelf.padding * 2) /
-              Math.max(productEl.depth, 1),
+              (
+                (
+                  prepackStore.depth -
+                  prepackStore.backThickness -
+                  prepackStore.frontThickness -
+                  shelf.padding * 2
+                ) + rowEl.between
+              ) / (
+                Math.max(productEl.depth, 1) + rowEl.between
+              )
             );
           }
           shelfLoad += productEl.weight * productsCount;
@@ -356,6 +369,7 @@ export default function Home() {
           left: rowEl.left,
           count: productsCount,
           deleteRow: true,
+          between: rowEl.between,
           uniqueId: `row-${rowId}`,
         });
       }
