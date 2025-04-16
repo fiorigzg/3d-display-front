@@ -49,21 +49,52 @@ export default function Home() {
             width: "150px",
         },
         {
-            name: "Объект товара",
+            name: "Передняя проекция",
             type: "upload",
-            param: "object",
+            param: "frontSvg",
             width: "calc(50% - 100px)",
             minWidth: "300px",
-            accept: ".obj",
+            accept: ".svg",
             onUpload: async (ids, data) => {
-                await productsStore.putPackageType(
+                await productsStore.changePackageType(
                     ids.id,
-                    {
-                        frontSvg: data.front_svg_file,
-                        sideSvg: data.side_svg_file,
-                        topSvg: data.top_svg_file,
-                        object: data.original_file.slice(10),
-                    },
+                    "frontSvg",
+                    data.original_file.replace("/loadfile/", ""),
+                    "text",
+                    true,
+                );
+            },
+        },
+        {
+            name: "Верхняя проекция",
+            type: "upload",
+            param: "topSvg",
+            width: "calc(50% - 100px)",
+            minWidth: "300px",
+            accept: ".svg",
+            onUpload: async (ids, data) => {
+                await productsStore.changePackageType(
+                    ids.id,
+                    "topSvg",
+                    data.original_file.replace("/loadfile/", ""),
+                    "text",
+                    true,
+                );
+            },
+        },
+        {
+            name: "Боковая проекция",
+            type: "upload",
+            param: "sideSvg",
+            width: "calc(50% - 100px)",
+            minWidth: "300px",
+            accept: ".svg",
+            onUpload: async (ids, data) => {
+                await productsStore.changePackageType(
+                    ids.id,
+                    "sideSvg",
+                    data.original_file.replace("/loadfile/", ""),
+                    "text",
                     true,
                 );
             },
@@ -92,7 +123,9 @@ export default function Home() {
         let dataEl = {
             id: packageTypeId,
             name: packageType.name,
-            object: packageType.object,
+            frontSvg: packageType.frontSvg,
+            topSvg: packageType.topSvg,
+            sideSvg: packageType.sideSvg,
             delete: true,
             copy: true,
             created: packageType.created,

@@ -1,0 +1,29 @@
+.verticalDivider {
+  position: absolute;
+  height: 100%;
+  width: 3px;
+  background-color: #bebebe;
+  cursor: ew-resize;
+  z-index: 2;
+
+  button, a {
+    width: 120px;
+    height: 40px;
+    position: absolute;
+    left: -60px;
+    cursor: pointer;
+    background-color: #8a86ce;
+    font-size: 16px;
+    font-weight: 400;
+    color: #ffffff;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: none;
+    border-radius: 10px;
+  }
+
+  .firstBtn {
+    border-radius: 10px 10px 0 0;
+  }
+}

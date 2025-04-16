@@ -1,0 +1,199 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { toPng } from "html-to-image";
+import jsPDF from "jspdf";
+
+import { usePrepackStore } from "store/prepackStore";
+import { useProductsStore } from "store/productsStore";
+import styles from "./page.module.scss";
+import VerticalTable from "components/VerticalTable";
+import HorizontalTable from "components/HorizontalTable";
+import VerticalDivider from "components/VerticalDivider";
+import Prepack from "components/Prepack";
+import TopShelf from "components/TopShelf";
+import FrontShelf from "components/FrontShelf";
+import { jsonFromRows } from "api/prepackApi";
+
+export default function Home() {
+  const prepackStore = usePrepackStore();
+  const productsStore = useProductsStore();
+  const [queryParams, setQueryParams] = useState({
+    id: null,
+    clientId: null,
+  });
+  const [prepackScale, setPrepackScale] = useState(0.4);
+  const [shelvesScale, setShelvesScale] = useState(0.4);
+  const [dividerLeft, setDividerLeft] = useState(30);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    let newQueryParams = {
+      id: Number(urlParams.get("id")),
+      clientId: Number(urlParams.get("clientId")),
+    };
+    setQueryParams(newQueryParams);
+    if (newQueryParams.clientId != null) {
+      productsStore.initProducts(newQueryParams.clientId);
+    }
+    if (newQueryParams.id != null) {
+      prepackStore.initAll(newQueryParams.id);
+    }
+  }, []);
+
+  if (prepackStore.step == "load") {
+    return (
+      <div className={styles.main}>
+        <p className={styles.load}>Загрузка...</p>
+      </div>
+    );
+  }
+
+  let rowsArr = [];
+  let shelfNumber = 1;
+  for (const shelfId in prepackStore.shelves) {
+    const shelf = prepackStore.shelves[shelfId];
+    let shelfWeight = 0,
+      shelfProducts = {};
+
+    if (shelf.isRows) {
+      jsonFromRows(
+        productsStore.products[queryParams.clientId],
+        prepackStore,
+        shelfId
+      );
+    }
+
+    if ("elems" in shelf.json) {
+      for (const elem of shelf.json.elems) {
+        const product =
+          productsStore.products[queryParams.clientId][elem.productId];
+
+        if (product != undefined) {
+          shelfWeight += product.weight;
+
+          if (!(elem.productId in shelfProducts)) {
+            shelfProducts[elem.productId] = { name: product.name, count: 1 };
+          } else {
+            shelfProducts[elem.productId].count++;
+          }
+        }
+      }
+    }
+
+    rowsArr.push(
+      <div className={styles.row} key={shelfId}>
+        <TopShelf
+          prepackStore={prepackStore}
+          id={shelfId}
+          scale={shelvesScale}
+          clientProducts={productsStore.products[queryParams.clientId]}
+        />
+        <FrontShelf
+          prepackStore={prepackStore}
+          id={shelfId}
+          scale={shelvesScale}
+          clientProducts={productsStore.products[queryParams.clientId]}
+        />
+        <div className={styles.info}>
+          <h1>
+            Полка {shelfNumber} - {shelfWeight} г.
+          </h1>
+          {Object.keys(shelfProducts).map((id) => (
+            <p key={id}>
+              {shelfProducts[id].name} - {shelfProducts[id].count} шт.
+            </p>
+          ))}
+        </div>
+      </div>
+    );
+
+    shelfNumber++;
+  }
+
+  return (
+    <main className={styles.main}>
+      <div
+        className={styles.prepack}
+        style={{ width: `${dividerLeft}%` }}
+        onWheel={(e) => {
+          setPrepackScale(
+            prepackScale +
+              (e.deltaY < 0
+                ? 0.05 * (prepackScale < 1)
+                : -0.05 * (prepackScale > 0.1))
+          );
+        }}
+      >
+        <div className={styles.header}>
+          <h1>{`${prepackStore.clientName} - ${prepackStore.projectName} - ${prepackStore.name}`}</h1>
+        </div>
+        <Prepack
+          prepackStore={prepackStore}
+          scale={prepackScale}
+          clientProducts={productsStore.products[queryParams.clientId]}
+        />
+        <div className={styles.info}>
+          <p>
+            <b>Размеры короба:</b> {prepackStore.boxSizes.width}x
+            {prepackStore.boxSizes.height}x{prepackStore.boxSizes.depth}
+          </p>
+        </div>
+      </div>
+      <VerticalDivider
+        left={dividerLeft}
+        setLeft={setDividerLeft}
+        buttons={[
+          {
+            text: "Распечатать",
+            onClick: async () => {
+              try {
+                const element = document.documentElement;
+      
+                const dataUrl = await toPng(element);
+      
+                const image = new Image();
+                image.src = dataUrl;
+                image.onload = () => {
+                  const pdf = new jsPDF({
+                    orientation: "landscape",
+                    unit: "px",
+                    format: [image.width, image.height],
+                  });
+      
+                  pdf.addImage(
+                    image, 
+                    "PNG", 
+                    0, 
+                    0, 
+                    image.width, 
+                    image.height
+                  );
+      
+                  pdf.save("screenshot.pdf");
+                };
+              } catch (error) {
+                console.error("Failed to capture screenshot:", error);
+              }
+            },
+          }
+        ]}
+      />
+      <div
+        className={styles.shelves}
+        style={{ width: `calc(${100 - dividerLeft}% - 1px)` }}
+        onWheel={(e) => {
+          setShelvesScale(
+            shelvesScale +
+              (e.deltaY < 0
+                ? 0.05 * (shelvesScale < 1)
+                : -0.05 * (shelvesScale > 0.1))
+          );
+        }}
+      >
+        {rowsArr}
+      </div>
+    </main>
+  );
+}

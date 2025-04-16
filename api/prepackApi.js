@@ -60,56 +60,68 @@ export async function getJsonShelf(id, session) {
   ).data.shelf.at(-1).json_shelf;
 }
 
+export function jsonFromRows(clientProducts, prepack, id) {
+  let shelf = prepack.shelves[id];
+  let elems = [];
+  let left = 0;
+
+  for (let rowId in shelf.rows) {
+    const row = shelf.rows[rowId];
+    const product = clientProducts[row.productId];
+
+    left += row.left;
+    const productDepth = Math.max(product.depth, 1);
+    let productCount = row.count || -1;
+    let depth =
+      prepack.depth -
+      prepack.backThickness -
+      prepack.frontThickness -
+      shelf.padding * 2 -
+      productDepth;
+
+    while (productCount > 0 || (productCount < 0 && depth > 0)) {
+      elems.push({
+        x: left,
+        y: depth,
+        z: 0,
+        type: "goods",
+        depth: product.depth,
+        width: product.width,
+        height: product.height,
+        weight: product.weight,
+        topSvg: product.packagingType.top_svg,
+        sideSvg: product.packagingType.side_svg,
+        productId: row.productId,
+        shelfIndex: id,
+      });
+      depth -= productDepth + row.between;
+      productCount -= 1;
+    }
+
+    left += product.width;
+  }
+
+  shelf.json = { elems: elems, inserts: [], partitions: [] };
+  shelf.isRows = false;
+}
+
 export async function openShelfEditor(
-  products,
+  clientProducts,
   prepack,
   id,
   clientId,
   session,
 ) {
   let shelf = prepack.shelves[id];
-  let shelfChanges = {};
 
   if (shelf.isRows) {
-    let elems = [];
-    let left = 0;
-    for (let rowId in shelf.rows) {
-      const row = shelf.rows[rowId];
-      const product = products[row.productId];
-
-      left += row.left;
-      const productDepth = Math.max(product.depth, 1);
-      let productCount = row.count || -1;
-      let depth = prepack.depth - prepack.backThickness - prepack.frontThickness - shelf.padding * 2 - productDepth;
-      console.log(depth, productCount);
-      while(productCount > 0 || (productCount < 0 && depth > 0)) {
-        elems.push({
-          x: left,
-          y: depth,
-          z: 0,
-          type: "goods",
-          depth: product.depth,
-          width: product.width,
-          height: product.height,
-          weight: product.weight,
-          topSvg: product.packagingType.top_svg,
-          sideSvg: product.packagingType.side_svg,
-          productId: row.productId,
-          shelfIndex: id,
-        });
-        depth -= productDepth + row.between;
-        productCount -= 1;
-      }
-      left += product.width;
-    }
-    shelfChanges.json = { elems: elems, inserts: [], partitions: [] };
-    shelfChanges.isRows = false;
+    jsonFromRows(clientProducts, prepack, id);
 
     let req = {};
     for (const field in shelfFields) {
-      req[shelfFields[field]] = shelfChanges[field];
+      req[shelfFields[field]] = shelf[field];
     }
-    let res = await axios.put(
+    await axios.put(
       `${serverUrl}/shelf_${id}?session_name=${session}&execNow=true`,
       req,
     );
@@ -126,45 +138,7 @@ export async function openShelfEditor(
     `width=${window.screen.availWidth / 2},height=${window.screen.availHeight}`,
   );
 
-  return shelfChanges;
-}
-
-export async function sendPrepackImage(
-  prepackImageDataUrl,
-  prepackId,
-  session,
-) {
-  try {
-    const prepackImageRes = await axios({
-      method: "get",
-      url: prepackImageDataUrl,
-      responseType: "blob",
-    });
-    const prepackImageBlob = prepackImageRes.data;
-    const prepackImageFile = new File(
-      [prepackImageBlob],
-      `paultice_${prepackId}.png`,
-      {
-        type: prepackImageBlob.type,
-      },
-    );
-    const prepackImageFormData = new FormData();
-    prepackImageFormData.append("file", prepackImageFile);
-
-    // Send the form data to the server
-    await axios.post(`${serverUrl}/uploadfile`, prepackImageFormData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      params: {
-        save_name: true,
-      },
-    });
-
-    window.open(`${shelfUrl}/prepack?id=${prepackId}&&session_name=${session}`);
-  } catch (error) {
-    console.error("Error saving all data:", error);
-  }
+  return shelf;
 }
 
 export async function changeOne(endpoint, changes, fields, session) {
