@@ -39,30 +39,18 @@ export default function VerticalDivider({ left, setLeft, buttons }) {
   let buttonsArr = [];
   let marginBottom = 0;
   for (const button of buttons) {
-    console.log(button)
-    if ("onClick" in button) {
-      buttonsArr.push(
-        <button
-          key={buttonsArr.length}
-          onClick={button.onClick}
-          className={marginBottom == 0 ? styles.firstBtn : null}
-          style={{ bottom: `${marginBottom}px` }}
-        >
-          {button.text}
-        </button>,
-      );
-    } else if ("link" in button) {
-      buttonsArr.push(
-        <a
-          key={buttonsArr.length}
-          href={button.link}
-          className={marginBottom == 0 ? styles.firstBtn : null}
-          style={{ bottom: `${marginBottom}px` }}
-        >
-          {button.text}
-        </a>,
-      );
-    }
+    buttonsArr.push(
+      <button
+        id={button.id ? button.id : null}
+        key={buttonsArr.length}
+        onClick={button.onClick}
+        onMouseDown={(e) => e.stopPropagation()}
+        className={marginBottom == 0 ? styles.firstBtn : null}
+        style={{ bottom: `${marginBottom}px` }}
+      >
+        {button.text}
+      </button>
+    );
 
     marginBottom += 50;
   }

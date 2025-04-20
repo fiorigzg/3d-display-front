@@ -14,6 +14,7 @@ import Prepack from "components/Prepack";
 import TopShelf from "components/TopShelf";
 import FrontShelf from "components/FrontShelf";
 import { jsonFromRows } from "api/prepackApi";
+import cx from "classnames";
 
 export default function Home() {
   const prepackStore = usePrepackStore();
@@ -74,7 +75,11 @@ export default function Home() {
           shelfWeight += product.weight;
 
           if (!(elem.productId in shelfProducts)) {
-            shelfProducts[elem.productId] = { name: product.name, count: 1 };
+            shelfProducts[elem.productId] = {
+              name: product.name,
+              weight: product.weight,
+              count: 1,
+            };
           } else {
             shelfProducts[elem.productId].count++;
           }
@@ -84,25 +89,28 @@ export default function Home() {
 
     rowsArr.push(
       <div className={styles.row} key={shelfId}>
-        <TopShelf
-          prepackStore={prepackStore}
-          id={shelfId}
-          scale={shelvesScale}
-          clientProducts={productsStore.products[queryParams.clientId]}
-        />
+        <div className={styles.column}>
+          <h1>
+            Полка {shelfNumber} - {shelfWeight} г.
+          </h1>
+          <TopShelf
+            prepackStore={prepackStore}
+            id={shelfId}
+            scale={shelvesScale}
+            clientProducts={productsStore.products[queryParams.clientId]}
+          />
+        </div>
+
         <FrontShelf
           prepackStore={prepackStore}
           id={shelfId}
           scale={shelvesScale}
           clientProducts={productsStore.products[queryParams.clientId]}
         />
-        <div className={styles.info}>
-          <h1>
-            Полка {shelfNumber} - {shelfWeight} г.
-          </h1>
+        <div className={cx(styles.column, styles.info)}>
           {Object.keys(shelfProducts).map((id) => (
             <p key={id}>
-              {shelfProducts[id].name} - {shelfProducts[id].count} шт.
+              {shelfProducts[id].name} - {shelfProducts[id].count} x {shelfProducts[id].weight} г.
             </p>
           ))}
         </div>
@@ -114,85 +122,93 @@ export default function Home() {
 
   return (
     <main className={styles.main}>
-      <div
-        className={styles.prepack}
-        style={{ width: `${dividerLeft}%` }}
-        onWheel={(e) => {
-          setPrepackScale(
-            prepackScale +
-              (e.deltaY < 0
-                ? 0.05 * (prepackScale < 1)
-                : -0.05 * (prepackScale > 0.1))
-          );
-        }}
-      >
-        <div className={styles.header}>
-          <h1>{`${prepackStore.clientName} - ${prepackStore.projectName} - ${prepackStore.name}`}</h1>
-        </div>
-        <Prepack
-          prepackStore={prepackStore}
-          scale={prepackScale}
-          clientProducts={productsStore.products[queryParams.clientId]}
-        />
-        <div className={styles.info}>
-          <p>
-            <b>Размеры короба:</b> {prepackStore.boxSizes.width}x
-            {prepackStore.boxSizes.height}x{prepackStore.boxSizes.depth}
-          </p>
-        </div>
+      <div className={styles.header}>
+        <h1>{`${prepackStore.clientName} - ${prepackStore.projectName} - ${prepackStore.name}`}</h1>
       </div>
-      <VerticalDivider
-        left={dividerLeft}
-        setLeft={setDividerLeft}
-        buttons={[
-          {
-            text: "Распечатать",
-            onClick: async () => {
-              try {
-                const element = document.documentElement;
-      
-                const dataUrl = await toPng(element);
-      
-                const image = new Image();
-                image.src = dataUrl;
-                image.onload = () => {
-                  const pdf = new jsPDF({
-                    orientation: "landscape",
-                    unit: "px",
-                    format: [image.width, image.height],
-                  });
-      
-                  pdf.addImage(
-                    image, 
-                    "PNG", 
-                    0, 
-                    0, 
-                    image.width, 
-                    image.height
-                  );
-      
-                  pdf.save("screenshot.pdf");
-                };
-              } catch (error) {
-                console.error("Failed to capture screenshot:", error);
-              }
+      <div className={styles.doc}>
+        <div
+          className={styles.prepack}
+          style={{ width: `${dividerLeft}%` }}
+          onWheel={(e) => {
+            setPrepackScale(
+              prepackScale +
+                (e.deltaY < 0
+                  ? 0.05 * (prepackScale < 1)
+                  : -0.05 * (prepackScale > 0.1))
+            );
+          }}
+        >
+          <div className={styles.container}>
+            <Prepack
+              prepackStore={prepackStore}
+              scale={prepackScale}
+              clientProducts={productsStore.products[queryParams.clientId]}
+            />
+          </div>
+          <div className={styles.info}>
+            <p>
+              <b>Размеры препака:</b>{" "}
+              {prepackStore.sideHeight + prepackStore.frontonHeight}x
+              {prepackStore.width}x{prepackStore.depth}
+            </p>
+            <p>
+              <b>Размеры короба:</b> {prepackStore.boxSizes.width}x
+              {prepackStore.boxSizes.height}x{prepackStore.boxSizes.depth}
+            </p>
+          </div>
+        </div>
+        <VerticalDivider
+          left={dividerLeft}
+          setLeft={setDividerLeft}
+          buttons={[
+            {
+              text: "Распечатать",
+              id: "print-btn",
+              onClick: async () => {
+                try {
+                  const element = document.documentElement;
+                  const printButton = document.querySelector("#print-btn");
+
+                  printButton.style.display = "none";
+
+                  const dataUrl = await toPng(element);
+
+                  printButton.style.display = "block";
+
+                  const image = new Image();
+                  image.src = dataUrl;
+                  image.onload = () => {
+                    const pdf = new jsPDF({
+                      orientation: "landscape",
+                      unit: "px",
+                      format: [image.width, image.height],
+                    });
+
+                    pdf.addImage(image, "PNG", 0, 0, image.width, image.height);
+
+                    pdf.save("screenshot.pdf");
+                  };
+                } catch (error) {
+                  console.error("Failed to capture screenshot:", error);
+                }
+              },
             },
-          }
-        ]}
-      />
-      <div
-        className={styles.shelves}
-        style={{ width: `calc(${100 - dividerLeft}% - 1px)` }}
-        onWheel={(e) => {
-          setShelvesScale(
-            shelvesScale +
-              (e.deltaY < 0
-                ? 0.05 * (shelvesScale < 1)
-                : -0.05 * (shelvesScale > 0.1))
-          );
-        }}
-      >
-        {rowsArr}
+          ]}
+        />
+        <div
+          className={styles.shelves}
+          style={{ width: `calc(${100 - dividerLeft}% - 1px)` }}
+          onWheel={(e) => {
+            setShelvesScale(
+              shelvesScale +
+                (e.deltaY < 0
+                  ? 0.05 * (shelvesScale < 1)
+                  : -0.05 * (shelvesScale > 0.1))
+            );
+          }}
+        >
+          {rowsArr}
+        </div>
       </div>
     </main>
   );
