@@ -1,140 +1,133 @@
 .main {
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: #ffffff;
-
-  .header {
-    position: relative;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 50px;
-
-    border-bottom: 1px solid #bebebe;
-    background-color: #ffffff;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2;
-
-    h1 {
-      font-size: 20px;
-      font-weight: 500;
-      color: #605e92;
-    }
-  }
-
-  .doc {
-    position: relative;
     width: 100vw;
-    height: calc(100vh - 51px);
+    height: 100vh;
     display: flex;
-    flex-direction: row;
-    text-align: center;
+    flex-direction: column;
     background-color: #ffffff;
-  }
-  
+    color: #0105ff;
+    font-family: Arial, Helvetica, sans-serif;
+
+    .header {
+        position: relative;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 50px;
+
+        border-bottom: 1px solid #bebebe;
+        background-color: #ffffff;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+
+        h1 {
+            font-size: 20px;
+            font-weight: 500;
+        }
+    }
+
+    .doc {
+        position: relative;
+        width: 100vw;
+        height: calc(100vh - 51px);
+        display: flex;
+        flex-direction: row;
+        text-align: center;
+        background-color: #ffffff;
+    }
 }
 
 .load {
-  width: 100%;
-  height: calc(100% - 50px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  font-weight: 500;
+    width: 100%;
+    height: calc(100% - 50px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 500;
 }
 
 .shelves {
-  height: 100%;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-
-  .row {
+    height: 100%;
+    overflow: hidden;
     display: flex;
-    flex-direction: row;
-    align-items: end;
+    flex-direction: column;
     justify-content: space-evenly;
-    width: 100%;
 
-    .column {
-      display: flex;
-      flex-direction: column;
-      align-items: start;
-      justify-content: center;
-      gap: 5px;
-      height: 100%;
+    .row {
+        display: flex;
+        flex-direction: row;
+        align-items: end;
+        justify-content: space-evenly;
+        width: 100%;
+
+        .column {
+            display: flex;
+            flex-direction: column;
+            align-items: start;
+            justify-content: center;
+            gap: 5px;
+            height: 100%;
+        }
     }
-  }
 
-  .info {
-    max-width: 400px;
-  }
+    .info {
+        max-width: 400px;
+    }
 
-  h1 {
-    margin: 0;
-    font-size: 16px;
-    font-weight: 600;
-    color: #605e92;
-  }
-  
-  p {
-    margin: 0;
-    font-size: 15px;
-    font-weight: 500;
-    color: #605e92
-  }
+    h1 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 500;
+    }
+
+    p {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 500;
+    }
 }
 
 .prepack {
-  position: relative;
-  height: 100%;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: end;
-
-  .container {
-    display: flex;
-    width: 100%;
+    position: relative;
     height: 100%;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .info {
-    bottom: 0;
-    left: 0;
-    width: calc(100% - 30px);
-    padding: 15px;
-    
-    border-top: 1px solid #bebebe;
-    background-color: #ffffff;
-    
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 5px;
-    z-index: 2;
+    justify-content: end;
 
-    p {
-      font-size: 15px;
-      font-weight: 500;
-      margin: 0px;
-      color: #605e92;
-
-      b {
-        font-weight: 600;
-      }
+    .container {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
     }
-  }
+
+    .info {
+        bottom: 0;
+        left: 0;
+        width: calc(100% - 30px);
+        padding: 15px;
+
+        border-top: 1px solid #bebebe;
+        background-color: #ffffff;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        z-index: 2;
+
+        p {
+            font-size: 15px;
+            font-weight: 500;
+            margin: 0px;
+        }
+    }
 }

@@ -62,7 +62,7 @@ export default function Home() {
       jsonFromRows(
         productsStore.products[queryParams.clientId],
         prepackStore,
-        shelfId
+        shelfId,
       );
     }
 
@@ -110,11 +110,12 @@ export default function Home() {
         <div className={cx(styles.column, styles.info)}>
           {Object.keys(shelfProducts).map((id) => (
             <p key={id}>
-              {shelfProducts[id].name} - {shelfProducts[id].count} x {shelfProducts[id].weight} г.
+              {shelfProducts[id].name} - {shelfProducts[id].count} x{" "}
+              {shelfProducts[id].weight} г.
             </p>
           ))}
         </div>
-      </div>
+      </div>,
     );
 
     shelfNumber++;
@@ -134,7 +135,7 @@ export default function Home() {
               prepackScale +
                 (e.deltaY < 0
                   ? 0.05 * (prepackScale < 1)
-                  : -0.05 * (prepackScale > 0.1))
+                  : -0.05 * (prepackScale > 0.1)),
             );
           }}
         >
@@ -147,12 +148,12 @@ export default function Home() {
           </div>
           <div className={styles.info}>
             <p>
-              <b>Размеры препака:</b>{" "}
+              Размеры препака:{" "}
               {prepackStore.sideHeight + prepackStore.frontonHeight}x
               {prepackStore.width}x{prepackStore.depth}
             </p>
             <p>
-              <b>Размеры короба:</b> {prepackStore.boxSizes.width}x
+              Размеры короба: {prepackStore.boxSizes.width}x
               {prepackStore.boxSizes.height}x{prepackStore.boxSizes.depth}
             </p>
           </div>
@@ -203,7 +204,7 @@ export default function Home() {
               shelvesScale +
                 (e.deltaY < 0
                   ? 0.05 * (shelvesScale < 1)
-                  : -0.05 * (shelvesScale > 0.1))
+                  : -0.05 * (shelvesScale > 0.1)),
             );
           }}
         >
