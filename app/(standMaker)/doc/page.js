@@ -43,6 +43,28 @@ export default function Home() {
     }
   }, []);
 
+  async function takeScreenshot(after) {
+    try {
+      const element = document.documentElement;
+      const printButton = document.querySelector("#print-btn");
+      const exportButton = document.querySelector("#export-btn");
+
+      printButton.style.display = "none";
+      exportButton.style.display = "none";
+
+      const dataUrl = await toPng(element);
+
+      printButton.style.display = "block";
+      exportButton.style.display = "block";
+
+      const image = new Image();
+      image.src = dataUrl;
+      image.onload = () => after(image);
+    } catch (error) {
+      console.error("Failed to capture screenshot:", error);
+    }
+  }
+
   if (prepackStore.step == "load") {
     return (
       <div className={styles.main}>
@@ -133,9 +155,9 @@ export default function Home() {
           onWheel={(e) => {
             setPrepackScale(
               prepackScale +
-                (e.deltaY < 0
-                  ? 0.05 * (prepackScale < 1)
-                  : -0.05 * (prepackScale > 0.1)),
+              (e.deltaY < 0
+                ? 0.05 * (prepackScale < 1)
+                : -0.05 * (prepackScale > 0.1)),
             );
           }}
         >
@@ -163,35 +185,33 @@ export default function Home() {
           setLeft={setDividerLeft}
           buttons={[
             {
-              text: "Распечатать",
+              text: "Экспорт PDF",
               id: "print-btn",
-              onClick: async () => {
-                try {
-                  const element = document.documentElement;
-                  const printButton = document.querySelector("#print-btn");
+              onClick: () => {
+                takeScreenshot((image) => {
+                  const pdf = new jsPDF({
+                    orientation: "landscape",
+                    unit: "px",
+                    format: [image.width, image.height],
+                  });
 
-                  printButton.style.display = "none";
+                  pdf.addImage(image, "PNG", 0, 0, image.width, image.height);
 
-                  const dataUrl = await toPng(element);
+                  pdf.save("screenshot.pdf");
+                })
+              },
+            },
+            {
+              text: "Экспорт JPG",
+              id: "export-btn",
+              onClick: () => {
+                takeScreenshot((image) => {
+                  const link = document.createElement("a");
+                  link.href = image.src;
+                  link.download = "screenshot.jpg";
 
-                  printButton.style.display = "block";
-
-                  const image = new Image();
-                  image.src = dataUrl;
-                  image.onload = () => {
-                    const pdf = new jsPDF({
-                      orientation: "landscape",
-                      unit: "px",
-                      format: [image.width, image.height],
-                    });
-
-                    pdf.addImage(image, "PNG", 0, 0, image.width, image.height);
-
-                    pdf.save("screenshot.pdf");
-                  };
-                } catch (error) {
-                  console.error("Failed to capture screenshot:", error);
-                }
+                  link.click();
+                })
               },
             },
           ]}
@@ -202,9 +222,9 @@ export default function Home() {
           onWheel={(e) => {
             setShelvesScale(
               shelvesScale +
-                (e.deltaY < 0
-                  ? 0.05 * (shelvesScale < 1)
-                  : -0.05 * (shelvesScale > 0.1)),
+              (e.deltaY < 0
+                ? 0.05 * (shelvesScale < 1)
+                : -0.05 * (shelvesScale > 0.1)),
             );
           }}
         >
