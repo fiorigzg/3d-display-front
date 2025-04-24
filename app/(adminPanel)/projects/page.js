@@ -214,7 +214,7 @@ export default function Home() {
       const projectEl = {
         projectId: projectId,
         projectName: project.name,
-        projectNumber: 0,
+        projectNumber: project.number,
         delete: true,
         copy: true,
         projectCreated: project.created,
