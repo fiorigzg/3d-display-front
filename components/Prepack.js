@@ -26,60 +26,73 @@ export default function Prepack({ prepackStore, scale, clientProducts }) {
     let standsArr = [];
     let partitionsArr = [];
     let isFirstShelf = true;
-
     if (shelf.isRows) {
       let productLeft = shelf.padding;
-
       for (const rowId in shelf.rows) {
-        const rowEl = shelf.rows[rowId];
-        const productEl = clientProducts[rowEl.productId];
-        let productsCount = rowEl.count || rowEl.count;
+        const row = shelf.rows[rowId];
+        const product = clientProducts[row.productId];
+        let productsCount = row.count || row.count;
 
-        if (productEl != undefined) {
-          productLeft += rowEl.left;
+        if (product != undefined) {
+          productLeft += row.left;
           if (productsCount == 0) {
             productsCount = Math.floor(
               (prepackStore.depth -
                 prepackStore.backThickness -
                 prepackStore.frontThickness -
                 shelf.padding * 2 +
-                rowEl.between) /
-                (Math.max(productEl.depth, 1) + rowEl.between),
+                row.between) /
+                (Math.max(product.depth, 1) + row.between)
             );
           }
 
-          productsArr.push(
-            productEl.frontProjection == "" ? (
+          if (product.frontProjection != "") {
+            productsArr.push(
+              <img
+                className={styles.image}
+                src={`${serverUrl}/loadfile/${product.frontProjection}`}
+                style={{
+                  width: `${product.width * scale - 2}px`,
+                  height: `${product.height * scale - 4}px`,
+                  left: `${productLeft * scale}px`,
+                  bottom: `${prepackStore.shelfThickness * scale + 1}px`,
+                }}
+              />
+            );
+          } else if (product.packagingType.front_svg != "") {
+            productsArr.push(
+              <img
+                className={styles.image}
+                src={`${serverUrl}/loadfile/${product.packagingType.front_svg}`}
+                style={{
+                  width: `${product.width * scale}px`,
+                  height: `${product.height * scale}px`,
+                  left: `${(productLeft + shelf.padding) * scale}px`,
+                  bottom: `${prepackStore.shelfThickness * scale}px`,
+                }}
+              />
+            );
+          } else {
+            productsArr.push(
               <div
                 className={styles.product}
                 style={{
-                  width: `${productEl.width * scale - 2}px`,
-                  height: `${productEl.height * scale - 4}px`,
+                  width: `${product.width * scale - 2}px`,
+                  height: `${product.height * scale - 4}px`,
                   left: `${productLeft * scale}px`,
                   bottom: `${prepackStore.shelfThickness * scale + 1}px`,
                 }}
               />
-            ) : (
-              <img
-                className={styles.image}
-                src={`${serverUrl}/loadfile/${productEl.frontProjection}`}
-                style={{
-                  width: `${productEl.width * scale - 2}px`,
-                  height: `${productEl.height * scale - 4}px`,
-                  left: `${productLeft * scale}px`,
-                  bottom: `${prepackStore.shelfThickness * scale + 1}px`,
-                }}
-              />
-            ),
-          );
+            );
+          }
 
           if (isFirstShelf) {
             forSizes.firstShelfMaxProduct = Math.max(
               forSizes.firstShelfMaxProduct,
-              productEl.height,
+              product.height
             );
           }
-          productLeft += productEl.width;
+          productLeft += product.width;
         }
       }
     } else {
@@ -88,20 +101,8 @@ export default function Prepack({ prepackStore, scale, clientProducts }) {
           const product = clientProducts[elem.productId];
 
           if (product != undefined) {
-            productsArr.push(
-              product.frontProjection == "" ? (
-                <div
-                  className={styles.product}
-                  style={{
-                    width: `${product.width * scale - 2}px`,
-                    height: `${product.height * scale - 4}px`,
-                    left: `${(elem.x + shelf.padding) * scale}px`,
-                    bottom: `${
-                      (elem.z + prepackStore.shelfThickness) * scale + 1
-                    }px`,
-                  }}
-                />
-              ) : (
+            if (product.frontProjection != "") {
+              productsArr.push(
                 <img
                   className={styles.image}
                   src={`${serverUrl}/loadfile/${product.frontProjection}`}
@@ -114,14 +115,43 @@ export default function Prepack({ prepackStore, scale, clientProducts }) {
                     }px`,
                   }}
                 />
-              ),
-            );
+              );
+            } else if (product.packagingType.front_svg != "") {
+              productsArr.push(
+                <img
+                  className={styles.image}
+                  src={`${serverUrl}/loadfile/${product.packagingType.front_svg}`}
+                  style={{
+                    width: `${product.width * scale}px`,
+                    height: `${product.height * scale}px`,
+                    left: `${(elem.x + shelf.padding) * scale}px`,
+                    bottom: `${
+                      (elem.z + prepackStore.shelfThickness) * scale
+                    }px`,
+                  }}
+                />
+              );
+            } else {
+              productsArr.push(
+                <div
+                  className={styles.product}
+                  style={{
+                    width: `${product.width * scale - 2}px`,
+                    height: `${product.height * scale - 4}px`,
+                    left: `${(elem.x + shelf.padding) * scale}px`,
+                    bottom: `${
+                      (elem.z + prepackStore.shelfThickness) * scale + 1
+                    }px`,
+                  }}
+                />
+              );
+            }
           }
 
           if (isFirstShelf) {
             forSizes.firstShelfMaxProduct = Math.max(
               forSizes.firstShelfMaxProduct,
-              product.height + elem.z,
+              product.height + elem.z
             );
           }
         }
@@ -138,7 +168,7 @@ export default function Prepack({ prepackStore, scale, clientProducts }) {
                 left: `${(stand.x + shelf.padding) * scale}px`,
                 bottom: `${(stand.z + prepackStore.shelfThickness) * scale}px`,
               }}
-            />,
+            />
           );
         }
       }
@@ -152,9 +182,11 @@ export default function Prepack({ prepackStore, scale, clientProducts }) {
                 width: `${partition.width * scale}px`,
                 height: `${partition.height * scale}px`,
                 left: `${(partition.x + shelf.padding) * scale}px`,
-                bottom: `${(partition.z + prepackStore.shelfThickness) * scale}px`,
+                bottom: `${
+                  (partition.z + prepackStore.shelfThickness) * scale
+                }px`,
               }}
-            />,
+            />
           );
         }
       }
@@ -164,7 +196,9 @@ export default function Prepack({ prepackStore, scale, clientProducts }) {
       <div
         className={styles.box}
         style={{
-          width: `${(prepackStore.width - prepackStore.sideThickness * 2) * scale - 2}px`,
+          width: `${
+            (prepackStore.width - prepackStore.sideThickness * 2) * scale - 2
+          }px`,
           height: `${prepackStore.shelfThickness * scale}px`,
           left: `${prepackStore.sideThickness * scale}px`,
           top: `${shelfTop * scale - 2 + isFirstShelf}px`,
@@ -173,7 +207,7 @@ export default function Prepack({ prepackStore, scale, clientProducts }) {
         {productsArr}
         {standsArr}
         {partitionsArr}
-      </div>,
+      </div>
     );
 
     if (isFirstShelf) isFirstShelf = false;
@@ -228,7 +262,7 @@ export default function Prepack({ prepackStore, scale, clientProducts }) {
       height={forSizes.prepackHeight * scale - 2}
       left={-60}
       top={0}
-    />,
+    />
   );
 
   sizesArr.push(
@@ -243,7 +277,7 @@ export default function Prepack({ prepackStore, scale, clientProducts }) {
       width={forSizes.prepackWidth * scale}
       bottom={-45}
       left={0}
-    />,
+    />
   );
 
   return (

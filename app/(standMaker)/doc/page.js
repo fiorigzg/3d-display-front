@@ -24,7 +24,7 @@ export default function Home() {
     clientId: null,
   });
   const [prepackScale, setPrepackScale] = useState(0.4);
-  const [shelvesScale, setShelvesScale] = useState(0.4);
+  const [shelvesScale, setShelvesScale] = useState(0.7);
   const [dividerLeft, setDividerLeft] = useState(30);
 
   useEffect(() => {
@@ -129,12 +129,16 @@ export default function Home() {
           scale={shelvesScale}
           clientProducts={productsStore.products[queryParams.clientId]}
         />
-        <div className={cx(styles.column, styles.info)}>
+        <div className={cx(styles.column, styles.info)} style={{ width: `${500 * shelvesScale}px` }}>
           {Object.keys(shelfProducts).map((id) => (
-            <p key={id}>
-              {shelfProducts[id].name} - {shelfProducts[id].count} x{" "}
-              {shelfProducts[id].weight} г.
-            </p>
+            <div className={styles.product} key={id}> 
+              <p>
+                {shelfProducts[id].name}
+              </p>
+              <p>
+                {shelfProducts[id].count}
+              </p>
+            </div>
           ))}
         </div>
       </div>,
