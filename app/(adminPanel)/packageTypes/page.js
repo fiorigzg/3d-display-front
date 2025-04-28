@@ -63,6 +63,13 @@ export default function Home() {
                     "text",
                     true,
                 );
+                await productsStore.changePackageType(
+                    ids.id,
+                    "sideSvg",
+                    data.original_file.replace("/loadfile/", ""),
+                    "text",
+                    true,
+                );
             },
         },
         {
@@ -76,23 +83,6 @@ export default function Home() {
                 await productsStore.changePackageType(
                     ids.id,
                     "topSvg",
-                    data.original_file.replace("/loadfile/", ""),
-                    "text",
-                    true,
-                );
-            },
-        },
-        {
-            name: "Боковая проекция",
-            type: "upload",
-            param: "sideSvg",
-            width: "calc(50% - 100px)",
-            minWidth: "300px",
-            accept: ".svg",
-            onUpload: async (ids, data) => {
-                await productsStore.changePackageType(
-                    ids.id,
-                    "sideSvg",
                     data.original_file.replace("/loadfile/", ""),
                     "text",
                     true,
@@ -125,7 +115,6 @@ export default function Home() {
             name: packageType.name,
             frontSvg: packageType.frontSvg,
             topSvg: packageType.topSvg,
-            sideSvg: packageType.sideSvg,
             delete: true,
             copy: true,
             created: packageType.created,
