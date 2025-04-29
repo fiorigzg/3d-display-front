@@ -22,6 +22,7 @@ export default function TopShelf({ prepackStore, id, scale, clientProducts }) {
 
   if ("elems" in shelf.json) {
     for (const elem of shelf.json.elems) {
+      console.log(elem);
       const product = clientProducts[elem.productId];
 
       if (product != undefined) {
@@ -36,6 +37,7 @@ export default function TopShelf({ prepackStore, id, scale, clientProducts }) {
                 height: `${product.depth * scale}px`,
                 left: `${(elem.x + shelf.padding) * scale}px`,
                 top: `${(elem.y + shelf.padding) * scale}px`,
+                transform: `rotate(${elem.angleTop}deg)`,
               }}
             />
           ) : (
@@ -47,6 +49,7 @@ export default function TopShelf({ prepackStore, id, scale, clientProducts }) {
                 height: `${product.depth * scale}px`,
                 left: `${(elem.x + shelf.padding) * scale}px`,
                 top: `${(elem.y + shelf.padding) * scale}px`,
+                transform: `rotate(${elem.angleTop}deg)`,
               }}
             />
           ),
