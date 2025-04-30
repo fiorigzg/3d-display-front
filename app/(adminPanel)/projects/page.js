@@ -211,6 +211,7 @@ export default function Home() {
     const projects = projectsStore.projects[clientId];
     for (const projectId in projects) {
       const project = projects[projectId];
+      console.log(project.number, project.name)
       const projectEl = {
         projectId: projectId,
         projectName: project.name,

@@ -61,6 +61,7 @@ export const initProject = {
   name: "Новый предпроект",
   created: new Date(Date.now()).toISOString().split("T")[0],
   updated: new Date(Date.now()).toISOString().split("T")[0],
+  number: 1,
 };
 
 export const initPrepack = {

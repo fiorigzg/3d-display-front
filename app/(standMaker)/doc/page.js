@@ -65,6 +65,23 @@ export default function Home() {
     }
   }
 
+  function printPage() {
+    try {
+      const printButton = document.querySelector("#print-btn");
+      const exportButton = document.querySelector("#export-btn");
+
+      printButton.style.display = "none";
+      exportButton.style.display = "none";
+
+      print();
+
+      printButton.style.display = "block";
+      exportButton.style.display = "block";
+    } catch (error) {
+      console.error("Failed to print page:", error);
+    }
+  }
+
   if (prepackStore.step == "load") {
     return (
       <div className={styles.main}>
@@ -131,7 +148,7 @@ export default function Home() {
         />
         <div className={cx(styles.column, styles.info)} style={{ width: `${500 * shelvesScale}px` }}>
           {Object.keys(shelfProducts).map((id) => (
-            <div className={styles.product} key={id}> 
+            <div className={styles.product} key={id}>
               <p>
                 {shelfProducts[id].name}
               </p>
@@ -193,15 +210,16 @@ export default function Home() {
               id: "print-btn",
               onClick: () => {
                 takeScreenshot((image) => {
-                  const pdf = new jsPDF({
-                    orientation: "landscape",
-                    unit: "px",
-                    format: [image.width, image.height],
-                  });
+                  // const pdf = new jsPDF({
+                  //   orientation: "landscape",
+                  //   unit: "px",
+                  //   format: [image.width, image.height],
+                  // });
+                  //
+                  // pdf.addImage(image, "PNG", 0, 0, image.width, image.height);
 
-                  pdf.addImage(image, "PNG", 0, 0, image.width, image.height);
-
-                  pdf.save("screenshot.pdf");
+                  // pdf.save("screenshot.pdf");
+                  printPage();
                 })
               },
             },
