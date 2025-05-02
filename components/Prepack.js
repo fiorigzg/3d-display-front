@@ -4,9 +4,6 @@ import { useRef } from "react";
 
 import styles from "./css/prepack.module.scss";
 import { serverUrl } from "constants/main";
-import { usePrepackStore } from "store/prepackStore";
-import { useProductsStore } from "store/productsStore";
-import Info from "components/Info";
 import VerticalSize from "components/VerticalSize";
 import HorizontalSize from "components/HorizontalSize";
 
@@ -42,7 +39,7 @@ export default function Prepack({ prepackStore, scale, clientProducts }) {
                 prepackStore.frontThickness -
                 shelf.padding * 2 +
                 row.between) /
-                (Math.max(product.depth, 1) + row.between)
+                (Math.max(product.depth, 1) + row.between),
             );
           }
 
@@ -57,7 +54,7 @@ export default function Prepack({ prepackStore, scale, clientProducts }) {
                   left: `${productLeft * scale}px`,
                   bottom: `${prepackStore.shelfThickness * scale + 1}px`,
                 }}
-              />
+              />,
             );
           } else if (product.packagingType.front_svg != "") {
             productsArr.push(
@@ -70,7 +67,7 @@ export default function Prepack({ prepackStore, scale, clientProducts }) {
                   left: `${(productLeft + shelf.padding) * scale}px`,
                   bottom: `${prepackStore.shelfThickness * scale}px`,
                 }}
-              />
+              />,
             );
           } else {
             productsArr.push(
@@ -82,14 +79,14 @@ export default function Prepack({ prepackStore, scale, clientProducts }) {
                   left: `${productLeft * scale}px`,
                   bottom: `${prepackStore.shelfThickness * scale + 1}px`,
                 }}
-              />
+              />,
             );
           }
 
           if (isFirstShelf) {
             forSizes.firstShelfMaxProduct = Math.max(
               forSizes.firstShelfMaxProduct,
-              product.height
+              product.height,
             );
           }
           productLeft += product.width;
@@ -114,7 +111,7 @@ export default function Prepack({ prepackStore, scale, clientProducts }) {
                       (elem.z + prepackStore.shelfThickness) * scale
                     }px`,
                   }}
-                />
+                />,
               );
             } else if (product.packagingType.front_svg != "") {
               productsArr.push(
@@ -129,7 +126,7 @@ export default function Prepack({ prepackStore, scale, clientProducts }) {
                       (elem.z + prepackStore.shelfThickness) * scale
                     }px`,
                   }}
-                />
+                />,
               );
             } else {
               productsArr.push(
@@ -143,7 +140,7 @@ export default function Prepack({ prepackStore, scale, clientProducts }) {
                       (elem.z + prepackStore.shelfThickness) * scale + 1
                     }px`,
                   }}
-                />
+                />,
               );
             }
           }
@@ -151,7 +148,7 @@ export default function Prepack({ prepackStore, scale, clientProducts }) {
           if (isFirstShelf) {
             forSizes.firstShelfMaxProduct = Math.max(
               forSizes.firstShelfMaxProduct,
-              product.height + elem.z
+              product.height + elem.z,
             );
           }
         }
@@ -168,7 +165,7 @@ export default function Prepack({ prepackStore, scale, clientProducts }) {
                 left: `${(stand.x + shelf.padding) * scale}px`,
                 bottom: `${(stand.z + prepackStore.shelfThickness) * scale}px`,
               }}
-            />
+            />,
           );
         }
       }
@@ -186,7 +183,7 @@ export default function Prepack({ prepackStore, scale, clientProducts }) {
                   (partition.z + prepackStore.shelfThickness) * scale
                 }px`,
               }}
-            />
+            />,
           );
         }
       }
@@ -207,7 +204,7 @@ export default function Prepack({ prepackStore, scale, clientProducts }) {
         {productsArr}
         {standsArr}
         {partitionsArr}
-      </div>
+      </div>,
     );
 
     if (isFirstShelf) isFirstShelf = false;
@@ -262,7 +259,7 @@ export default function Prepack({ prepackStore, scale, clientProducts }) {
       height={forSizes.prepackHeight * scale - 2}
       left={-60}
       top={0}
-    />
+    />,
   );
 
   sizesArr.push(
@@ -277,7 +274,7 @@ export default function Prepack({ prepackStore, scale, clientProducts }) {
       width={forSizes.prepackWidth * scale}
       bottom={-45}
       left={0}
-    />
+    />,
   );
 
   return (

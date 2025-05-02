@@ -17,6 +17,7 @@ export default function FrontShelf({
   let productsArr = [];
   let standsArr = [];
   let partitionsArr = [];
+  let maxHeight = 0;
 
   if (shelf.isRows) {
     jsonFromRows(clientProducts, prepackStore, id);
@@ -52,6 +53,8 @@ export default function FrontShelf({
             />
           ),
         );
+
+        maxHeight = Math.max(maxHeight, elem.z + product.height);
       }
     }
   }
@@ -69,6 +72,8 @@ export default function FrontShelf({
           }}
         />,
       );
+
+      maxHeight = Math.max(maxHeight, stand.z + stand.height);
     }
   }
 
@@ -85,20 +90,31 @@ export default function FrontShelf({
           }}
         />,
       );
+
+      maxHeight = Math.max(maxHeight, partition.z + partition.height);
     }
   }
 
   return (
     <div
-      className={styles.shelf}
+      className={styles.container}
       style={{
-        width: `${shelfWidth * scale}px`,
-        height: `${shelfHeight * scale}px`,
+        width: `${(shelfWidth + 2) * scale}px`,
+        height: `${(maxHeight + shelfHeight + 2) * scale}px`,
       }}
     >
-      {productsArr}
-      {standsArr}
-      {partitionsArr}
+      <div
+        className={styles.shelf}
+        style={{
+          width: `${shelfWidth * scale}px`,
+          height: `${shelfHeight * scale}px`,
+          marginTop: `${maxHeight * scale}px`,
+        }}
+      >
+        {productsArr}
+        {standsArr}
+        {partitionsArr}
+      </div>
     </div>
   );
 }

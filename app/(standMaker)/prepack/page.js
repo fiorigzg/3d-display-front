@@ -339,8 +339,10 @@ export default function Home() {
           {
             text: "Сделать отчет",
             onClick: () => {
-              window.open(`/doc?id=${prepackStore.id}&clientId=${queryParams.clientId}`);
-            }
+              window.open(
+                `/doc?id=${prepackStore.id}&clientId=${queryParams.clientId}`,
+              );
+            },
           },
         ]}
       />

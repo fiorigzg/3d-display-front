@@ -2,19 +2,16 @@
 
 import { useEffect, useRef, useState } from "react";
 import { toPng } from "html-to-image";
-import jsPDF from "jspdf";
+import cx from "classnames";
 
 import { usePrepackStore } from "store/prepackStore";
 import { useProductsStore } from "store/productsStore";
 import styles from "./page.module.scss";
-import VerticalTable from "components/VerticalTable";
-import HorizontalTable from "components/HorizontalTable";
 import VerticalDivider from "components/VerticalDivider";
 import Prepack from "components/Prepack";
 import TopShelf from "components/TopShelf";
 import FrontShelf from "components/FrontShelf";
 import { jsonFromRows } from "api/prepackApi";
-import cx from "classnames";
 
 export default function Home() {
   const prepackStore = usePrepackStore();
@@ -23,9 +20,43 @@ export default function Home() {
     id: null,
     clientId: null,
   });
-  const [prepackScale, setPrepackScale] = useState(0.4);
-  const [shelvesScale, setShelvesScale] = useState(0.7);
+  const [scale, setScale] = useState(
+    (Math.min(window.innerWidth, 1550) * 0.9 - 600) / (4 * prepackStore.width),
+  );
   const [dividerLeft, setDividerLeft] = useState(30);
+
+  const calculateScale = () => {
+    setScale(
+      (Math.min(window.innerWidth, 1550) * 0.9 - 600) /
+        (4 * prepackStore.width),
+    );
+  };
+
+  async function takeScreenshot(after) {
+    try {
+      const element = document.body;
+
+      const exportButton = document.querySelector("#export-btn");
+      exportButton.style.display = "none";
+
+      const dataUrl = await toPng(element, {
+        width: element.scrollWidth,
+        height: element.scrollHeight,
+        style: {
+          transform: "none",
+          transformOrigin: "top left",
+        },
+      });
+
+      exportButton.style.display = "block";
+
+      const image = new Image();
+      image.src = dataUrl;
+      image.onload = () => after(image);
+    } catch (error) {
+      console.error("Failed to capture screenshot:", error);
+    }
+  }
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -41,46 +72,8 @@ export default function Home() {
     if (newQueryParams.id != null) {
       prepackStore.initAll(newQueryParams.id);
     }
+    window.addEventListener("resize", calculateScale);
   }, []);
-
-  async function takeScreenshot(after) {
-    try {
-      const element = document.documentElement;
-      const printButton = document.querySelector("#print-btn");
-      const exportButton = document.querySelector("#export-btn");
-
-      printButton.style.display = "none";
-      exportButton.style.display = "none";
-
-      const dataUrl = await toPng(element);
-
-      printButton.style.display = "block";
-      exportButton.style.display = "block";
-
-      const image = new Image();
-      image.src = dataUrl;
-      image.onload = () => after(image);
-    } catch (error) {
-      console.error("Failed to capture screenshot:", error);
-    }
-  }
-
-  function printPage() {
-    try {
-      const printButton = document.querySelector("#print-btn");
-      const exportButton = document.querySelector("#export-btn");
-
-      printButton.style.display = "none";
-      exportButton.style.display = "none";
-
-      print();
-
-      printButton.style.display = "block";
-      exportButton.style.display = "block";
-    } catch (error) {
-      console.error("Failed to print page:", error);
-    }
-  }
 
   if (prepackStore.step == "load") {
     return (
@@ -135,26 +128,26 @@ export default function Home() {
           <TopShelf
             prepackStore={prepackStore}
             id={shelfId}
-            scale={shelvesScale}
+            scale={scale}
             clientProducts={productsStore.products[queryParams.clientId]}
           />
         </div>
-
-        <FrontShelf
-          prepackStore={prepackStore}
-          id={shelfId}
-          scale={shelvesScale}
-          clientProducts={productsStore.products[queryParams.clientId]}
-        />
-        <div className={cx(styles.column, styles.info)} style={{ width: `${500 * shelvesScale}px` }}>
+        <div className={styles.column}>
+          <FrontShelf
+            prepackStore={prepackStore}
+            id={shelfId}
+            scale={scale}
+            clientProducts={productsStore.products[queryParams.clientId]}
+          />
+        </div>
+        <div
+          className={cx(styles.column, styles.info)}
+          style={{ width: `${500 * scale}px` }}
+        >
           {Object.keys(shelfProducts).map((id) => (
             <div className={styles.product} key={id}>
-              <p>
-                {shelfProducts[id].name}
-              </p>
-              <p>
-                {shelfProducts[id].count}
-              </p>
+              <p>{shelfProducts[id].name}</p>
+              <p>{shelfProducts[id].count}</p>
             </div>
           ))}
         </div>
@@ -169,23 +162,12 @@ export default function Home() {
       <div className={styles.header}>
         <h1>{`${prepackStore.clientName} - ${prepackStore.projectName} - ${prepackStore.name}`}</h1>
       </div>
-      <div className={styles.doc}>
-        <div
-          className={styles.prepack}
-          style={{ width: `${dividerLeft}%` }}
-          onWheel={(e) => {
-            setPrepackScale(
-              prepackScale +
-              (e.deltaY < 0
-                ? 0.05 * (prepackScale < 1)
-                : -0.05 * (prepackScale > 0.1)),
-            );
-          }}
-        >
+      <div id="docContainer" className={styles.doc}>
+        <div className={styles.prepack} style={{ width: `${dividerLeft}%` }}>
           <div className={styles.container}>
             <Prepack
               prepackStore={prepackStore}
-              scale={prepackScale}
+              scale={scale}
               clientProducts={productsStore.products[queryParams.clientId]}
             />
           </div>
@@ -206,24 +188,6 @@ export default function Home() {
           setLeft={setDividerLeft}
           buttons={[
             {
-              text: "Экспорт PDF",
-              id: "print-btn",
-              onClick: () => {
-                takeScreenshot((image) => {
-                  // const pdf = new jsPDF({
-                  //   orientation: "landscape",
-                  //   unit: "px",
-                  //   format: [image.width, image.height],
-                  // });
-                  //
-                  // pdf.addImage(image, "PNG", 0, 0, image.width, image.height);
-
-                  // pdf.save("screenshot.pdf");
-                  printPage();
-                })
-              },
-            },
-            {
               text: "Экспорт JPG",
               id: "export-btn",
               onClick: () => {
@@ -231,9 +195,8 @@ export default function Home() {
                   const link = document.createElement("a");
                   link.href = image.src;
                   link.download = "screenshot.jpg";
-
                   link.click();
-                })
+                });
               },
             },
           ]}
@@ -241,14 +204,6 @@ export default function Home() {
         <div
           className={styles.shelves}
           style={{ width: `calc(${100 - dividerLeft}% - 1px)` }}
-          onWheel={(e) => {
-            setShelvesScale(
-              shelvesScale +
-              (e.deltaY < 0
-                ? 0.05 * (shelvesScale < 1)
-                : -0.05 * (shelvesScale > 0.1)),
-            );
-          }}
         >
           {rowsArr}
         </div>
