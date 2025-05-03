@@ -20,9 +20,7 @@ export default function Home() {
     id: null,
     clientId: null,
   });
-  const [scale, setScale] = useState(
-    (Math.min(window.innerWidth, 1550) * 0.9 - 600) / (4 * prepackStore.width),
-  );
+  const [scale, setScale] = useState(0.5);
   const [dividerLeft, setDividerLeft] = useState(30);
 
   const calculateScale = () => {
@@ -72,6 +70,7 @@ export default function Home() {
     if (newQueryParams.id != null) {
       prepackStore.initAll(newQueryParams.id);
     }
+    calculateScale();
     window.addEventListener("resize", calculateScale);
   }, []);
 
