@@ -35,7 +35,9 @@ export default function Home() {
       const element = document.body;
 
       const exportButton = document.querySelector("#export-btn");
+      const printButton = document.querySelector("#print-btn");
       exportButton.style.display = "none";
+      printButton.style.display = "none";
 
       const dataUrl = await toPng(element, {
         width: element.scrollWidth,
@@ -47,6 +49,7 @@ export default function Home() {
       });
 
       exportButton.style.display = "block";
+      printButton.style.display = "block";
 
       const image = new Image();
       image.src = dataUrl;
@@ -54,6 +57,18 @@ export default function Home() {
     } catch (error) {
       console.error("Failed to capture screenshot:", error);
     }
+  }
+
+  function printPage() {
+    const exportButton = document.querySelector("#export-btn");
+    const printButton = document.querySelector("#print-btn");
+    exportButton.style.display = "none";
+    printButton.style.display = "none";
+
+    window.print();
+
+    exportButton.style.display = "block";
+    printButton.style.display = "block";
   }
 
   useEffect(() => {
@@ -196,6 +211,13 @@ export default function Home() {
                   link.download = "screenshot.jpg";
                   link.click();
                 });
+              },
+            },
+            {
+              text: "Печать",
+              id: "print-btn",
+              onClick: () => {
+                printPage();
               },
             },
           ]}
