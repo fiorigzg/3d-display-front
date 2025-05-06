@@ -8,6 +8,7 @@ import { useClientsStore } from "store/clientsStore";
 import { useFilterStore } from "store/filterStore";
 import HorizontalTable from "components/HorizontalTable";
 import getOptions from "components/getOptions";
+import agreeMenu from "components/agreeMenu";
 
 export default function Home() {
   const productsStore = useProductsStore();
@@ -65,8 +66,11 @@ export default function Home() {
       icon: "delete",
       type: "button",
       width: "50px",
-      onClick: (ids) =>
-        productsStore.deleteProduct(ids.clientId, ids.productId),
+      onClick: (ids) => {
+        agreeMenu(`Точно удалить продукт ${ids.productId}?`, () =>
+          productsStore.deleteProduct(ids.clientId, ids.productId),
+        );
+      },
     },
     {
       name: "Копирование",
@@ -89,7 +93,7 @@ export default function Home() {
           "name",
           value,
           "text",
-          true
+          true,
         ),
     },
     {
@@ -105,7 +109,7 @@ export default function Home() {
           "width",
           value,
           "number",
-          true
+          true,
         ),
     },
     {
@@ -121,7 +125,7 @@ export default function Home() {
           "height",
           value,
           "number",
-          true
+          true,
         ),
     },
     {
@@ -137,7 +141,7 @@ export default function Home() {
           "depth",
           value,
           "number",
-          true
+          true,
         ),
     },
     {
@@ -153,7 +157,7 @@ export default function Home() {
           "weight",
           value,
           "number",
-          true
+          true,
         ),
     },
     {
@@ -169,7 +173,7 @@ export default function Home() {
           "count",
           value,
           "number",
-          true
+          true,
         ),
     },
     {
@@ -185,7 +189,7 @@ export default function Home() {
           "volume",
           value,
           "number",
-          true
+          true,
         ),
     },
     {
@@ -201,7 +205,7 @@ export default function Home() {
           "qrcode",
           value,
           "text",
-          true
+          true,
         ),
     },
     {
@@ -217,7 +221,7 @@ export default function Home() {
           "categoryId",
           value,
           "select",
-          true
+          true,
         ),
     },
     {
@@ -233,7 +237,7 @@ export default function Home() {
           "packageTypeId",
           value,
           "select",
-          true
+          true,
         ),
     },
     {
@@ -249,7 +253,7 @@ export default function Home() {
           "frontProjection",
           data.original_file.slice(10),
           "text",
-          true
+          true,
         );
       },
     },

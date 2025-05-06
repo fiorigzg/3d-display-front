@@ -9,6 +9,7 @@ import { useFilterStore } from "store/filterStore";
 import HorizontalTable from "components/HorizontalTable";
 import getOptions from "components/getOptions";
 import isFiltred from "components/isFiltred";
+import agreeMenu from "components/agreeMenu";
 
 export default function Home() {
   const projectsStore = useProjectsStore();
@@ -71,7 +72,7 @@ export default function Home() {
           "number",
           value,
           "text",
-          true
+          true,
         ),
     },
     {
@@ -86,7 +87,7 @@ export default function Home() {
           "name",
           value,
           "text",
-          true
+          true,
         ),
     },
     {
@@ -120,7 +121,7 @@ export default function Home() {
           "number",
           value,
           "text",
-          true
+          true,
         ),
     },
     {
@@ -135,7 +136,7 @@ export default function Home() {
           "name",
           value,
           "text",
-          true
+          true,
         ),
     },
     {
@@ -151,7 +152,7 @@ export default function Home() {
           "prepackTypeId",
           value,
           "number",
-          true
+          true,
         ),
     },
     {
@@ -162,9 +163,13 @@ export default function Home() {
       width: "50px",
       onClick: (ids) => {
         if (ids.prepackId) {
-          projectsStore.deletePrepack(ids.projectId, ids.prepackId);
+          agreeMenu(`Точно удалить препак ${ids.prepackId}?`, () =>
+            projectsStore.deletePrepack(ids.projectId, ids.prepackId),
+          );
         } else if (ids.projectId) {
-          projectsStore.deleteProject(ids.clientId, ids.projectId);
+          agreeMenu(`Точно удалить проект ${ids.projectId}?`, () =>
+            projectsStore.deleteProject(ids.clientId, ids.projectId),
+          );
         }
       },
     },
@@ -211,7 +216,7 @@ export default function Home() {
     const projects = projectsStore.projects[clientId];
     for (const projectId in projects) {
       const project = projects[projectId];
-      console.log(project.number, project.name)
+      console.log(project.number, project.name);
       const projectEl = {
         projectId: projectId,
         projectName: project.name,
