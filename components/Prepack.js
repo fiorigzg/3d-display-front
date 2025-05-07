@@ -278,7 +278,11 @@ export default function Prepack({ prepackStore, scale, clientProducts }) {
   );
 
   return (
-    <div className={styles.prepackContainer} ref={prepackContainerRef}>
+    <div
+      className={styles.prepackContainer}
+      ref={prepackContainerRef}
+      id={"prepack-image"}
+    >
       <div
         className={styles.prepack}
         style={{

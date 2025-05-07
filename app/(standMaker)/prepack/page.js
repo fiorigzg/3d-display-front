@@ -273,7 +273,6 @@ export default function Home() {
                 rowEl.between) /
                 (Math.max(productEl.depth, 1) + rowEl.between),
             );
-            console.log(productsCount);
           }
           shelfLoad += productEl.weight * productsCount;
         }

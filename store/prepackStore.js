@@ -2,12 +2,7 @@
 
 import structuredClone from "@ungap/structured-clone";
 import { create } from "zustand";
-import {
-  getAll,
-  getJsonShelf,
-  openShelfEditor,
-  saveAll,
-} from "api/prepackApi";
+import { getAll, getJsonShelf, openShelfEditor, saveAll } from "api/prepackApi";
 import { changeOne, createOne, deleteOne } from "api/prepackApi";
 import { prepackFields, shelfFields, rowFields } from "constants/fields";
 import { initShelf, initRow } from "constants/initValues";
@@ -124,7 +119,6 @@ export const usePrepackStore = create((set, get) => ({
     let shelves = get().shelves;
     let session = get().session;
     let json = await getJsonShelf(ids.shelfId, session);
-    console.log(json);
     shelves[ids.shelfId].json = json;
 
     set({ shelves: shelves });

@@ -22,7 +22,6 @@ export default function TopShelf({ prepackStore, id, scale, clientProducts }) {
 
   if ("elems" in shelf.json) {
     for (const elem of shelf.json.elems) {
-      console.log(elem);
       const product = clientProducts[elem.productId];
 
       if (product != undefined) {
@@ -93,6 +92,8 @@ export default function TopShelf({ prepackStore, id, scale, clientProducts }) {
   return (
     <div
       className={styles.shelf}
+      id={`top-shelf-${id}-image`}
+      key={`top-shelf-${id}`}
       style={{
         width: `${shelfWidth * scale}px`,
         height: `${shelfDepth * scale}px`,

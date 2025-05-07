@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import cx from "classnames";
+import axios from "axios";
 
 import { usePrepackStore } from "store/prepackStore";
 import { useProductsStore } from "store/productsStore";
@@ -12,6 +13,7 @@ import Prepack from "components/Prepack";
 import TopShelf from "components/TopShelf";
 import FrontShelf from "components/FrontShelf";
 import { jsonFromRows } from "api/prepackApi";
+import { serverUrl } from "constants/main";
 
 export default function Home() {
   const prepackStore = usePrepackStore();
@@ -59,16 +61,121 @@ export default function Home() {
     }
   }
 
-  function printPage() {
-    const exportButton = document.querySelector("#export-btn");
-    const printButton = document.querySelector("#print-btn");
-    exportButton.style.display = "none";
-    printButton.style.display = "none";
+  async function uploadForPrintImage(querySelector, saveName) {
+    try {
+      const element = document.querySelector(querySelector);
+      const dataUrl = await toPng(element, {
+        width: element.scrollWidth,
+        height: element.scrollHeight,
+        style: {
+          transform: "none",
+          transformOrigin: "top left",
+        },
+      });
 
-    window.print();
+      const response = await fetch(dataUrl);
+      const blob = await response.blob();
+      const formData = new FormData();
+      formData.append("file", blob, `${saveName}.png`);
 
-    exportButton.style.display = "block";
-    printButton.style.display = "block";
+      const axiosResponse = await axios.post(
+        `${serverUrl}/uploadfile?save_name=${saveName}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+
+      if (axiosResponse.status !== 200) {
+        throw new Error(`Failed to upload element: ${axiosResponse.status}`);
+      }
+
+      return axiosResponse.data.original_file.replace("/loadfile", "media");
+    } catch (error) {
+      console.error("Failed to upload element:", error);
+    }
+  }
+
+  async function printPage() {
+    try {
+      let req = {};
+
+      req.header = {
+        client_name: prepackStore.clientName,
+        project_name: prepackStore.projectName,
+        poultice_name: prepackStore.name,
+        date: new Date().toLocaleDateString(),
+      };
+
+      req.footer = {
+        pack_size: `${prepackStore.sideHeight + prepackStore.frontonHeight}x${prepackStore.width}x${prepackStore.depth}`,
+        pack_in_box: `${prepackStore.boxSizes.width}x${prepackStore.boxSizes.height}x${prepackStore.boxSizes.depth}`,
+      };
+
+      req.left_image = await uploadForPrintImage(
+        "#prepack-image",
+        `prepack-${prepackStore.id}`,
+      );
+
+      req.shelf_data = [];
+      for (const shelfId in prepackStore.shelves) {
+        const shelf = prepackStore.shelves[shelfId];
+        let shelfJson = {};
+
+        shelfJson.images = [
+          await uploadForPrintImage(
+            `#front-shelf-${shelfId}-image`,
+            `front-shelf-${prepackStore.id}-${shelfId}`,
+          ),
+          await uploadForPrintImage(
+            `#top-shelf-${shelfId}-image`,
+            `top-shelf-${prepackStore.id}-${shelfId}`,
+          ),
+        ];
+
+        let shelfProducts = {};
+        if ("elems" in shelf.json) {
+          for (const elem of shelf.json.elems) {
+            const product =
+              productsStore.products[queryParams.clientId][elem.productId];
+
+            if (product != undefined) {
+              if (!(elem.productId in shelfProducts)) {
+                shelfProducts[elem.productId] = {
+                  name: product.name,
+                  quantity: 1,
+                };
+              } else {
+                shelfProducts[elem.productId].quantity++;
+              }
+            }
+          }
+        }
+
+        shelfJson.description = Object.values(shelfProducts);
+        req.shelf_data.push(shelfJson);
+      }
+
+      const res = await axios.post(
+        `${serverUrl}/pdf_maker/generate_plannogram`,
+        req,
+      );
+      console.log(res);
+      const blob = new Blob([res.data], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = "document.pdf"; // You can change the filename if needed
+
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.log("Failed to print page:", error);
+    }
   }
 
   useEffect(() => {

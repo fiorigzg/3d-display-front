@@ -3,7 +3,7 @@ import { useDropzone } from "react-dropzone";
 import { useTable } from "react-table";
 import cx from "classnames";
 import axios from "axios";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 
 import styles from "./css/horizontalTable.module.scss";
 import { isIdInTable, serverUrl } from "constants/main";
@@ -39,7 +39,7 @@ const TableUpload = ({ value, ids, onUpload, accept }) => {
               headers: {
                 "Content-Type": "multipart/form-data",
               },
-            }
+            },
           );
 
           if (response.data.status === "ok") {
@@ -50,7 +50,7 @@ const TableUpload = ({ value, ids, onUpload, accept }) => {
         }
       }
     },
-    [ids, onUpload]
+    [ids, onUpload],
   );
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -104,7 +104,7 @@ export default function HorizontalTable({
     }
   }, [extended, name]);
 
-	useEffect(() => {
+  useEffect(() => {
     const savedExtended = Cookies.get(name);
     if (savedExtended) {
       setExtended(JSON.parse(savedExtended));
@@ -171,7 +171,6 @@ export default function HorizontalTable({
             }
           } else if ("children" in element) {
             let children = filterData(element.children);
-            console.log(children);
             if (children.length > 0) {
               element.children = children;
               return true;
@@ -301,20 +300,20 @@ export default function HorizontalTable({
                 <button onClick={() => column.onAdd(thisIds)}>
                   <img src="/add.svg" />
                 </button>
-              </td>
+              </td>,
             );
           }
         } else if (column.type == "const") {
           cellsArr.push(
             <td key={cellsArr.length}>
               <p>{value}</p>
-            </td>
+            </td>,
           );
         } else if (column.type == "date") {
           cellsArr.push(
             <td key={cellsArr.length}>
               <TableDate value={value} />
-            </td>
+            </td>,
           );
         } else if (column.type == "input") {
           const thisOnEnter = (e) => {
@@ -330,7 +329,7 @@ export default function HorizontalTable({
                 column={column}
                 thisIds={thisIds}
               />
-            </td>
+            </td>,
           );
         } else if (column.type == "select") {
           let optionsArr = [];
@@ -343,7 +342,7 @@ export default function HorizontalTable({
                 value={optionId}
               >
                 {option}
-              </option>
+              </option>,
             );
           }
 
@@ -356,7 +355,7 @@ export default function HorizontalTable({
               >
                 {optionsArr}
               </select>
-            </td>
+            </td>,
           );
         } else if (column.type == "button") {
           if (value)
@@ -365,7 +364,7 @@ export default function HorizontalTable({
                 <button onClick={() => column.onClick(thisIds)}>
                   <img src={`/${column.icon}.svg`} />
                 </button>
-              </td>
+              </td>,
             );
           else cellsArr.push(<td key={cellsArr.length}></td>);
         } else if (column.type == "upload") {
@@ -377,12 +376,12 @@ export default function HorizontalTable({
                 accept={column.accept}
                 onUpload={column.onUpload}
               />
-            </td>
+            </td>,
           );
         }
       } else {
         cellsArr.push(
-          <td key={cellsArr.length} className={styles.bordless}></td>
+          <td key={cellsArr.length} className={styles.bordless}></td>,
         );
       }
     }

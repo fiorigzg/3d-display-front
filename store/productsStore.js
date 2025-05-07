@@ -295,7 +295,6 @@ export const useProductsStore = create((set, get) => ({
       await useSaveStore
         .getState()
         .changeOne("packageType", id, changes, packageTypeFields);
-    console.log(changes);
 
     set((state) => {
       let packageTypes = state.packageTypes;
