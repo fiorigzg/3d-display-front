@@ -1,22 +1,23 @@
 .container {
   position: relative;
+  background-color: #ffffff;
+  width: auto;
+  height: auto;
 }
 
 .shelf {
   position: relative;
   border: 1px solid #bebebe;
-  background-color: null;
+  background-color: #ffffff;
 
   .box {
     position: absolute;
     border: 1px solid #bebebe;
-    background-color: null;
   }
 
   .stand {
     position: absolute;
     border: 2px solid #45ff29;
-    background-color: null;
   }
 
   .partition {

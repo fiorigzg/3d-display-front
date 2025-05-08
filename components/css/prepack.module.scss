@@ -2,23 +2,23 @@
   padding: 5px;
   padding-left: 80px;
   padding-bottom: 50px;
+  background-color: #ffffff;
 }
 
 .prepack {
   position: relative;
   border: 1px solid #bebebe;
-  background-color: #ffffff;
 
   .box {
     position: absolute;
     border: 1px solid #bebebe;
-    background-color: #ffffff;
+    background-color: null;
   }
 
   .stand {
     position: absolute;
     border: 2px solid #45ff29;
-    background-color: #ffffff;
+    background-color: null;
   }
 
   .partition {

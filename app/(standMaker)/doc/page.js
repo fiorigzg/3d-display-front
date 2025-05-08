@@ -62,7 +62,13 @@ export default function Home() {
   }
 
   async function uploadForPrintImage(querySelector, saveName) {
+    const exportButton = document.querySelector("#export-btn");
+    const printButton = document.querySelector("#print-btn");
+
     try {
+      exportButton.style.display = "none";
+      printButton.style.display = "none";
+
       const element = document.querySelector(querySelector);
       const dataUrl = await toPng(element, {
         width: element.scrollWidth,
@@ -95,6 +101,9 @@ export default function Home() {
       return axiosResponse.data.original_file.replace("/loadfile", "media");
     } catch (error) {
       console.error("Failed to upload element:", error);
+    } finally {
+      exportButton.style.display = "block";
+      printButton.style.display = "block";
     }
   }
 
