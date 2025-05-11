@@ -112,11 +112,10 @@ export default function FrontShelf({
           height: `${shelfHeight * scale}px`,
           marginTop: `${maxHeight * scale}px`,
         }}
-      >
-        {productsArr}
-        {standsArr}
-        {partitionsArr}
-      </div>
+      />
+      {productsArr}
+      {standsArr}
+      {partitionsArr}
     </div>
   );
 }

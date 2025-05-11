@@ -3,12 +3,12 @@
   background-color: #ffffff;
   width: auto;
   height: auto;
-}
 
-.shelf {
-  position: relative;
-  border: 1px solid #bebebe;
-  background-color: #ffffff;
+  .shelf {
+    position: absolute;
+    border: 1px solid #bebebe;
+    background-color: #ffffff;
+  }
 
   .box {
     position: absolute;
