@@ -163,18 +163,27 @@ export default function Home() {
       const res = await axios.post(
         `${serverUrl}/pdf_maker/generate_plannogram`,
         req,
+        {
+          headers: {
+            Accept: "application/pdf",
+          },
+          responseType: "arraybuffer",
+        },
       );
-      console.log(res);
-      const blob = new Blob([res.data], { type: "application/pdf" });
+
+      const blob = new Blob([res.data], {
+        type: "application/pdf",
+      });
+
       const url = URL.createObjectURL(blob);
-
       const link = document.createElement("a");
-
       link.href = url;
-      link.download = "document.pdf"; // You can change the filename if needed
-
+      link.download = "document.pdf";
       document.body.appendChild(link);
       link.click();
+
+      URL.revokeObjectURL(url);
+      document.body.removeChild(link);
     } catch (error) {
       console.log("Failed to print page:", error);
     }
