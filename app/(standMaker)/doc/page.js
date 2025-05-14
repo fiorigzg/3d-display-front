@@ -111,8 +111,8 @@ export default function Home() {
       };
 
       req.footer = {
-        pack_size: `${prepackStore.sideHeight + prepackStore.frontonHeight}x${prepackStore.width}x${prepackStore.depth}`,
-        pack_in_box: `${prepackStore.boxSizes.width}x${prepackStore.boxSizes.height}x${prepackStore.boxSizes.depth}`,
+        pack_size: `${prepackStore.width}x${prepackStore.depth}x${prepackStore.sideHeight + prepackStore.frontonHeight}`,
+        pack_in_box: `${prepackStore.boxSizes.width}x${prepackStore.boxSizes.depth}x${prepackStore.boxSizes.height}`,
       };
 
       req.left_image = await uploadForPrintImage(
@@ -305,13 +305,12 @@ export default function Home() {
           </div>
           <div className={styles.info}>
             <p>
-              Размеры препака:{" "}
-              {prepackStore.sideHeight + prepackStore.frontonHeight}x
-              {prepackStore.width}x{prepackStore.depth}
+              Размеры препака: {prepackStore.width}x{prepackStore.depth}x
+              {prepackStore.sideHeight + prepackStore.frontonHeight}
             </p>
             <p>
               Размеры короба: {prepackStore.boxSizes.width}x
-              {prepackStore.boxSizes.height}x{prepackStore.boxSizes.depth}
+              {prepackStore.boxSizes.depth}x{prepackStore.boxSizes.height}
             </p>
           </div>
         </div>
