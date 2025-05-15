@@ -99,8 +99,8 @@ export default function FrontShelf({
     <div
       className={styles.container}
       style={{
-        width: `${(shelfWidth + 2) * scale}px`,
-        height: `${(maxHeight + shelfHeight + 2) * scale}px`,
+        width: `${(shelfWidth + 2) * scale + 2}px`,
+        height: `${(maxHeight + shelfHeight + 2) * scale + 2}px`,
       }}
       id={`front-shelf-${id}-image`}
       key={`front-shelf-${id}`}
