@@ -92,7 +92,6 @@ export default function TopShelf({ prepackStore, id, scale, clientProducts }) {
   return (
     <div
       className={styles.container}
-      id={`top-shelf-${id}-image`}
       key={`top-shelf-${id}`}
       style={{
         width: `${shelfWidth * scale + 2}px`,

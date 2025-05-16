@@ -253,7 +253,7 @@ export default function Home() {
 
     rowsArr.push(
       <div className={styles.row} key={shelfId}>
-        <div className={styles.column}>
+        <div className={styles.column} id={`top-shelf-${shelfId}-image`}>
           <h1>
             Полка {shelfNumber} - {shelfWeight} г.
           </h1>
