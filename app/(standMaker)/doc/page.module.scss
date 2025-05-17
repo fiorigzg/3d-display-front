@@ -57,6 +57,13 @@
   justify-content: center;
   align-items: center;
 
+  .shelfContainer {
+    aspect-ratio: 1/1;
+    background-color: #ffffff;
+    width: auto;
+    height: auto;
+  }
+
   .row {
     display: flex;
     flex-direction: row;

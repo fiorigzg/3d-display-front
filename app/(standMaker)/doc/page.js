@@ -253,7 +253,7 @@ export default function Home() {
 
     rowsArr.push(
       <div className={styles.row} key={shelfId}>
-        <div className={styles.column} id={`top-shelf-${shelfId}-image`}>
+        <div className={cx(styles.column, styles.shelfContainer)} id={`top-shelf-${shelfId}-image`}>
           <h1>
             Полка {shelfNumber} - {shelfWeight} г.
           </h1>
@@ -264,7 +264,7 @@ export default function Home() {
             clientProducts={productsStore.products[queryParams.clientId]}
           />
         </div>
-        <div className={styles.column}>
+        <div className={cx(styles.column, styles.shelfContainer)} id={`front-shelf-${shelfId}-image`}>
           <FrontShelf
             prepackStore={prepackStore}
             id={shelfId}
