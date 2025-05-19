@@ -101,6 +101,13 @@ export default function Home() {
 
   async function printPage() {
     try {
+      const element = document.body;
+
+      const exportButton = document.querySelector("#export-btn");
+      const printButton = document.querySelector("#print-btn");
+      exportButton.style.display = "none";
+      printButton.style.display = "none";
+
       let req = {};
 
       req.header = {
@@ -171,6 +178,9 @@ export default function Home() {
         },
       );
 
+      exportButton.style.display = "block";
+      printButton.style.display = "block";
+
       const blob = new Blob([res.data], {
         type: "application/pdf",
       });
@@ -217,6 +227,7 @@ export default function Home() {
 
   let rowsArr = [];
   let shelfNumber = 1;
+  const shelvesCount = Object.keys(prepackStore.shelves).length;
   for (const shelfId in prepackStore.shelves) {
     const shelf = prepackStore.shelves[shelfId];
     let shelfWeight = 0,
@@ -251,9 +262,18 @@ export default function Home() {
       }
     }
 
+    const shelfStyle = {
+      aspectRatio: `113.386/${(411.024 - (shelvesCount - 1) * 14.173) / shelvesCount}`,
+      backgroundColor: "#ffffff",
+    };
+
     rowsArr.push(
       <div className={styles.row} key={shelfId}>
-        <div className={cx(styles.column, styles.shelfContainer)} id={`top-shelf-${shelfId}-image`}>
+        <div
+          className={cx(styles.column)}
+          id={`top-shelf-${shelfId}-image`}
+          style={shelfStyle}
+        >
           <h1>
             Полка {shelfNumber} - {shelfWeight} г.
           </h1>
@@ -264,7 +284,11 @@ export default function Home() {
             clientProducts={productsStore.products[queryParams.clientId]}
           />
         </div>
-        <div className={cx(styles.column, styles.shelfContainer)} id={`front-shelf-${shelfId}-image`}>
+        <div
+          className={cx(styles.column)}
+          id={`front-shelf-${shelfId}-image`}
+          style={shelfStyle}
+        >
           <FrontShelf
             prepackStore={prepackStore}
             id={shelfId}
