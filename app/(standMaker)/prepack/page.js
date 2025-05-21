@@ -36,7 +36,7 @@ export default function Home() {
     }
   }, []);
 
-  if (prepackStore.step == "load") {
+  if (prepackStore.step == "load" || productsStore.products[queryParams.clientId] == undefined) {
     return (
       <div className={styles.main}>
         <p className={styles.load}>Загрузка...</p>
@@ -259,6 +259,7 @@ export default function Home() {
     if (shelf.isRows) {
       for (const rowId in shelf.rows) {
         const rowEl = shelf.rows[rowId];
+        console.log(rowEl.productId, productsStore.products[queryParams.clientId])
         const productEl =
           productsStore.products[queryParams.clientId][rowEl.productId];
         let productsCount = rowEl.count || rowEl.count;
