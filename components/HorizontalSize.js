@@ -8,21 +8,23 @@ export default function HorizontalSize({
     width,
     bottom,
     left,
-    style = {},
-    className = null,
+    color,
 }) {
     return (
         <div
-            className={cx(styles.horizontalSize, className)}
+            className={styles.horizontalSize}
             style={{
                 bottom: bottom,
                 left: left,
                 width: width,
-                ...style,
             }}
         >
-            <p>{value}</p>
-            <div />
+          <p style={{
+            color: color,
+          }}>{value}</p>
+          <div style={{
+            backgroundColor: color,
+          }}/>
         </div>
     );
 }

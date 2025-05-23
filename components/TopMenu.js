@@ -8,7 +8,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import styles from "./css/topMenu.module.scss";
 import { useFilterStore } from "store/filterStore";
 
-export default function TopMenu({ style = {}, className = null }) {
+export default function TopMenu() {
   const filterStore = useFilterStore();
 
   const [fieldFilterValue, setFieldFilterValue] = useState("");
@@ -41,17 +41,31 @@ export default function TopMenu({ style = {}, className = null }) {
   ];
 
   const selectStyle = {
-    control: (base) => ({
+    control: (base, state) => ({
       ...base,
       fontSize: "14px",
       maxWidth: "300px",
+      border: state.isFocused ? "4px solid #c8dff6" : "0px solid #c8dff6",
+      boxShadow: "0px 0px 0px 1px #dcdbd9 inset",
+      borderRadius: "8px",
+      margin: state.isFocused ? "0" : "0 4px",
+      "&:hover": {
+        boxShadow: "0px 0px 0px 1px #8d879c inset",
+      }
     }),
   };
   const multiSelectStyle = {
-    control: (base) => ({
+    control: (base, state) => ({
       ...base,
       fontSize: "14px",
       maxWidth: "250px",
+      border: state.isFocused ? "4px solid #c8dff6" : "none",
+      boxShadow: "0px 0px 0px 1px #dcdbd9 inset",
+      borderRadius: "8px",
+      margin: state.isFocused ? "0" : "0 4px",
+      "&:hover": {
+        boxShadow: "0px 0px 0px 1px #8d879c inset",
+      }
     }),
     valueContainer: (base) => ({
       ...base,
@@ -63,7 +77,7 @@ export default function TopMenu({ style = {}, className = null }) {
   };
 
   return (
-    <div className={cx(styles.topMenu, className)} style={style}>
+    <div className={styles.topMenu}>
       <div className={styles.menuRow}>
         <div className={styles.fieldFilter}>
           <p>Фильтр по полю</p>

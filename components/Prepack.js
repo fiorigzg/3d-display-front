@@ -7,7 +7,7 @@ import { serverUrl } from "constants/main";
 import VerticalSize from "components/VerticalSize";
 import HorizontalSize from "components/HorizontalSize";
 
-export default function Prepack({ prepackStore, scale, clientProducts }) {
+export default function Prepack({ prepackStore, scale, clientProducts, mainColor="#5e5e8f" }) {
   const prepackContainerRef = useRef(null);
 
   let forSizes = { firstShelfMaxProduct: 0 };
@@ -235,30 +235,35 @@ export default function Prepack({ prepackStore, scale, clientProducts }) {
       height={forSizes.firstShelfProductTop * scale - 2}
       left={-20}
       top={0}
+      color={mainColor}
     />,
     <VerticalSize
       value={forSizes.lastShelfBottom}
       height={forSizes.lastShelfBottom * scale - 2}
       left={-20}
       top={forSizes.lastShelfTop * scale + 2}
+      color={mainColor}
     />,
     <VerticalSize
       value={forSizes.frontonHeight}
       height={forSizes.frontonHeight * scale - 2}
       left={-40}
       top={0}
+      color={mainColor}
     />,
     <VerticalSize
       value={forSizes.sideHeight}
       height={forSizes.sideHeight * scale - 2}
       left={-40}
       top={forSizes.frontonHeight * scale + 2}
+      color={mainColor}
     />,
     <VerticalSize
       value={forSizes.prepackHeight}
       height={forSizes.prepackHeight * scale - 2}
       left={-60}
       top={0}
+      color={mainColor}
     />,
   );
 
@@ -268,12 +273,14 @@ export default function Prepack({ prepackStore, scale, clientProducts }) {
       width={forSizes.shelfWidth * scale}
       bottom={-25}
       left={prepackStore.sideThickness * scale}
+      color={mainColor}
     />,
     <HorizontalSize
       value={forSizes.prepackWidth}
       width={forSizes.prepackWidth * scale}
       bottom={-45}
       left={0}
+      color={mainColor}
     />,
   );
 

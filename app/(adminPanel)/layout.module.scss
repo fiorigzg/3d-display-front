@@ -1,0 +1,13 @@
+.tableContainer {
+  position: absolute;
+  align-items: center;
+  margin-top: calc(180px - 1px);
+  margin-left: 10px;
+  width: calc(100% - 20px);
+  height: calc(100% - 190px);
+
+  background-color: #faf9f5;
+  overflow: scroll;
+  border: 1px solid #dcdbd9;
+  border-radius: 8px 0 8px 0;
+}

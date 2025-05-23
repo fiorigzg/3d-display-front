@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { usePrepackStore } from "store/prepackStore";
 import { useProductsStore } from "store/productsStore";
@@ -39,7 +39,11 @@ export default function Home() {
   if (prepackStore.step == "load" || productsStore.products[queryParams.clientId] == undefined) {
     return (
       <div className={styles.main}>
-        <p className={styles.load}>Загрузка...</p>
+        <div className={styles.loadingContainer}>
+          <div className={styles.loadingIndicator}>
+            <div className={styles.spinner}></div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -305,7 +309,7 @@ export default function Home() {
 
   return (
     <main className={styles.main}>
-      <div className={styles.tables} style={{ width: `${dividerLeft}%` }}>
+      <div className={styles.tables} style={{ width: `calc(${dividerLeft}% - 20px)` }}>
         <h1>Параметры препака</h1>
         <div className={styles.prepackTableContainer}>
           <VerticalTable
@@ -318,11 +322,11 @@ export default function Home() {
         <div className={styles.shelvesTableContainer}>
           <HorizontalTable
             name={`shelves-${prepackStore.id}`}
-            className={styles.shelvesTable}
             header={shelvesHeader}
             headerHeight="60px"
             data={shelvesData}
             excludedColumns={[]}
+            loadingText={"Добавить полки можно в параметрах препака"}
           />
         </div>
       </div>
@@ -337,7 +341,7 @@ export default function Home() {
             },
           },
           {
-            text: "Сделать отчет",
+            text: "Отчет",
             onClick: () => {
               window.open(
                 `/doc?id=${prepackStore.id}&clientId=${queryParams.clientId}`,
@@ -359,6 +363,7 @@ export default function Home() {
           prepackStore={prepackStore}
           scale={scale}
           clientProducts={productsStore.products[queryParams.clientId]}
+          mainColor="#cf6249"
         />
       </div>
     </main>

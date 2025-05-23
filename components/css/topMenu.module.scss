@@ -1,76 +1,87 @@
 .topMenu {
-    position: fixed;
-    top: 50px;
-    height: calc(110px - 1px);
-    width: calc(100% - 50px);
-    padding: 0px 30px;
-    border-bottom: 1px solid #bebebe;
+  position: fixed;
+  top: calc(50px + 10px);
+  left: 10px;
+  height: calc(120px - 13px);
+  width: calc(100% - 50px - 31px);
+  padding: 0px 30px;
+  border: 1px solid #dcdbd9;
+  border-radius: 8px;
 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  row-gap: 5px;
+  z-index: 1;
+
+  background-color: #faf9f5;
+
+  .menuRow {
+    width: 100%;
+    height: 45px;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: row;
+    justify-content: space-between;
     align-items: center;
-    row-gap: 5px;
-    z-index: 1;
+  }
 
+  .fieldFilter {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .multiSelectFilter {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .dateFilter {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+  }
+
+  select,
+  input {
+    width: 140px;
+    height: 25px;
+    padding: 0;
+    border: 1px solid #bebebe;
+    border-radius: 5px;
+    outline: none;
+    text-align: center;
+    font-size: 14px;
     background-color: #ffffff;
+  }
 
-    .menuRow {
-        width: 100%;
-        height: 45px;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
+  .textInput {
+    height: 37px;
+    border: 0px solid #c8dff6;
+    box-shadow: 0px 0px 0px 1px #dcdbd9 inset;
+    transition: all 0.1s ease-in-out;
+    margin: 0 4px;
+
+    &:focus {
+      border: 4px solid #c8dff6;
+      margin: 0;
     }
 
-    .fieldFilter {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 5px;
+    &:hover {
+      box-shadow: 0px 0px 0px 1px #8d879c inset;
     }
+  }
 
-    .multiSelectFilter {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 5px;
-    }
+  .dateInput {
+    width: 100px;
+  }
 
-    .dateFilter {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 5px;
-    }
-
-    select,
-    input {
-        width: 140px;
-        height: 25px;
-        padding: 0;
-        border: 1px solid #bebebe;
-        border-radius: 5px;
-        outline: none;
-        text-align: center;
-        font-size: 14px;
-        background-color: #ffffff;
-    }
-
-    .textInput {
-        height: 37px;
-
-        &:focus {
-            border: 2px solid #2684ff;
-        }
-    }
-
-    .dateInput {
-        width: 100px;
-    }
-
-    p {
-        font-size: 14px;
-    }
+  p {
+    font-size: 14px;
+  }
 }

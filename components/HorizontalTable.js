@@ -91,9 +91,8 @@ const TableInput = ({ value, onEnter, column, thisIds }) => {
 export default function HorizontalTable({
   data,
   header,
-  style = {},
-  className = null,
   name = "",
+  loadingText = null,
 }) {
   const [extended, setExtended] = useState({});
   const filterStore = useFilterStore();
@@ -390,12 +389,23 @@ export default function HorizontalTable({
     rowsArr.push(<tr key={rowsArr.length}>{cellsArr}</tr>);
   }
 
+  if (!data || data.length === 0 || data[0]?.id === 'add') {
+    return (
+      <div
+        className={cx(styles.horizontalTable, styles.loadingContainer)}
+      >
+        <div className={styles.loadingIndicator}>
+          { loadingText === null ? <div className={styles.spinner}></div> : <p>{loadingText}</p> }
+        </div>
+      </div>
+    );
+  }
+
   return (
     <table
       {...getTableProps()}
       key={getTableProps().key}
-      style={{ ...style }}
-      className={cx(styles.horizontalTable, className)}
+      className={cx(styles.horizontalTable)}
     >
       <thead>
         {headerGroups.map((headerGroup) => (

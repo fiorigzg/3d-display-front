@@ -8,22 +8,22 @@
 
   button, a {
     width: 120px;
-    height: 40px;
+    height: 33px;
     position: absolute;
     left: -60px;
     cursor: pointer;
-    background-color: #8a86ce;
-    font-size: 16px;
+    background-color: #969696;
+    font-size: 15px;
     font-weight: 400;
     color: #ffffff;
     border: none;
     outline: none;
     cursor: pointer;
     padding: none;
-    border-radius: 10px;
+    border-radius: 8px;
   }
 
   .firstBtn {
-    border-radius: 10px 10px 0 0;
+    border-radius: 8px 8px 0 0;
   }
 }

@@ -52,7 +52,7 @@ export default function VerticalDivider({ left, setLeft, buttons }) {
       </button>
     );
 
-    marginBottom += 50;
+    marginBottom += 37;
   }
 
   return (

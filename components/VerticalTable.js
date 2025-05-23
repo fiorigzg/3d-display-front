@@ -9,8 +9,6 @@ export default function VerticalTable({
   data,
   header,
   onEnter,
-  style = {},
-  className = null,
 }) {
   const realHeader = useMemo(() => header, [header]);
   const realData = useMemo(() => data, [data]);
@@ -49,7 +47,7 @@ export default function VerticalTable({
   }
 
   return (
-    <table style={{ ...style }} className={cx(styles.verticalTable, className)}>
+    <table className={styles.verticalTable}>
       <tbody>{rowsArr}</tbody>
     </table>
   );

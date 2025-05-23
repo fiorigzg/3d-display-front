@@ -9,21 +9,23 @@ export default function VerticalSize({
     height,
     top,
     left,
-    style = {},
-    className = null,
+    color,
 }) {
     return (
         <div
-            className={cx(styles.verticalSize, className)}
+            className={styles.verticalSize}
             style={{
                 top: top,
                 left: left - 17,
                 height: height,
-                ...style,
             }}
         >
-            <p>{value}</p>
-            <div />
+            <p style={{
+              color: color,
+            }}>{value}</p>
+            <div style={{
+              backgroundColor: color,
+            }}/>
         </div>
     );
 }
