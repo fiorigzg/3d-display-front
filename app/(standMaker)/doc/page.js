@@ -275,7 +275,7 @@ export default function Home() {
           style={shelfStyle}
         >
           <h1>
-            Полка {shelfNumber} - {shelfWeight} г.
+            Полка {shelfNumber} - {shelfWeight / 1000} кг.
           </h1>
           <TopShelf
             prepackStore={prepackStore}
@@ -330,7 +330,7 @@ export default function Home() {
           <div className={styles.info}>
             <p>
               Размеры препака: {prepackStore.width}x{prepackStore.depth}x
-              {prepackStore.sideHeight + prepackStore.frontonHeight}
+              {prepackStore.sideHeight + prepackStore.topperHeight}
             </p>
             <p>
               Размеры короба: {prepackStore.boxSizes.width}x

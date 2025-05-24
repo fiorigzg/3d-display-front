@@ -18,8 +18,8 @@ export const usePrepackStore = create((set, get) => ({
   backThickness: 10,
   frontThickness: 25,
   shelfThickness: 20,
-  frontonHeight: 200,
-  topperHeight: 0,
+  topperHeight: 200,
+  frontonHeight: 0,
   boxSizes: { width: 0, height: 0, depth: 0 },
   session: 0,
 

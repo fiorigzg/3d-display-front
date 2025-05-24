@@ -12,7 +12,7 @@ export default function Prepack({ prepackStore, scale, clientProducts, mainColor
 
   let forSizes = { firstShelfMaxProduct: 0 };
   let shelvesArr = [];
-  let shelfTop = prepackStore.frontonHeight;
+  let shelfTop = prepackStore.topperHeight;
 
   for (const shelfId in prepackStore.shelves) {
     const shelf = prepackStore.shelves[shelfId];
@@ -217,13 +217,13 @@ export default function Prepack({ prepackStore, scale, clientProducts, mainColor
     forSizes.firstShelfTop =
       prepackStore.shelves[Object.keys(prepackStore.shelves)[0]].margin;
   }
-  forSizes.frontonHeight = prepackStore.frontonHeight;
+  forSizes.topperHeight = prepackStore.topperHeight;
   forSizes.sideHeight = prepackStore.sideHeight;
-  forSizes.prepackHeight = forSizes.sideHeight + forSizes.frontonHeight;
+  forSizes.prepackHeight = forSizes.sideHeight + forSizes.topperHeight;
   forSizes.lastShelfTop = shelfTop;
   forSizes.lastShelfBottom = forSizes.prepackHeight - forSizes.lastShelfTop;
   forSizes.firstShelfProductTop =
-    forSizes.frontonHeight +
+    forSizes.topperHeight +
     forSizes.firstShelfTop -
     forSizes.firstShelfMaxProduct;
   forSizes.shelfWidth = prepackStore.width - prepackStore.sideThickness * 2;
@@ -245,8 +245,8 @@ export default function Prepack({ prepackStore, scale, clientProducts, mainColor
       color={mainColor}
     />,
     <VerticalSize
-      value={forSizes.frontonHeight}
-      height={forSizes.frontonHeight * scale - 2}
+      value={forSizes.topperHeight}
+      height={forSizes.topperHeight * scale - 2}
       left={-40}
       top={0}
       color={mainColor}
@@ -255,7 +255,7 @@ export default function Prepack({ prepackStore, scale, clientProducts, mainColor
       value={forSizes.sideHeight}
       height={forSizes.sideHeight * scale - 2}
       left={-40}
-      top={forSizes.frontonHeight * scale + 2}
+      top={forSizes.topperHeight * scale + 2}
       color={mainColor}
     />,
     <VerticalSize
@@ -295,7 +295,7 @@ export default function Prepack({ prepackStore, scale, clientProducts, mainColor
         style={{
           width: `${prepackStore.width * scale}px`,
           height: `${
-            (prepackStore.sideHeight + prepackStore.frontonHeight) * scale
+            (prepackStore.sideHeight + prepackStore.topperHeight) * scale
           }px`,
           borderRadius: `${30 * scale}px ${30 * scale}px 0 0`,
         }}

@@ -1,23 +1,23 @@
 .horizontalSize {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    height: 17px;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: 17px;
 
-    div {
-        width: 100%;
-        height: 2px;
-        background-color: #8a86ce;
-    }
+  div {
+    width: 100%;
+    height: 2px;
+    background-color: #8a86ce;
+  }
 
-    p {
-        top: 0;
-        margin: 0;
-        height: 10px;
-        font-size: 12px;
-        font-weight: 700;
-        color: #605e92;
-    }
+  p {
+    top: 0;
+    margin: 0;
+    height: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #605e92;
+  }
 }

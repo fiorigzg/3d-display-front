@@ -134,7 +134,7 @@ export default function Home() {
       width: "80px",
     },
     {
-      name: "Нагрузка",
+      name: "Нагрузка кг.",
       param: "load",
       type: "const",
       width: "80px",
@@ -302,7 +302,7 @@ export default function Home() {
       }
     }
 
-    shelfEl.load = shelfLoad;
+    shelfEl.load = shelfLoad / 1000;
 
     shelvesData.push(shelfEl);
   }
