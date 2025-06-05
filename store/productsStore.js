@@ -16,6 +16,7 @@ import { getAll, checkValueType } from "api/commonApi";
 import { useSaveStore } from "./saveStore";
 
 export const useProductsStore = create((set, get) => ({
+  isLoading: true,
   products: {},
   newProductId: 0,
   productImages: {},
@@ -37,7 +38,7 @@ export const useProductsStore = create((set, get) => ({
     }
 
     set((state) => {
-      return { products: realProducts };
+      return { products: realProducts, isLoading: false };
     });
   },
   initProducts: async (clientId) => {
@@ -48,7 +49,7 @@ export const useProductsStore = create((set, get) => ({
     );
 
     set((state) => {
-      return { products: { ...state.products, [clientId]: products } };
+      return { products: { ...state.products, [clientId]: products }, isLoading: false };
     });
   },
   createProduct: async (clientId) => {
@@ -140,7 +141,7 @@ export const useProductsStore = create((set, get) => ({
     );
 
     set((state) => {
-      return { categories: categories };
+      return { categories: categories, isLoading: false };
     });
   },
   createCategory: async () => {
@@ -217,7 +218,7 @@ export const useProductsStore = create((set, get) => ({
     }
 
     set((state) => {
-      return { packageTypes: packageTypes };
+      return { packageTypes: packageTypes, isLoading: false };
     });
   },
   createPackageType: async () => {

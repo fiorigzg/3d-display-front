@@ -8,6 +8,7 @@ import { useSaveStore } from "./saveStore";
 import { create } from "zustand";
 
 export const useClientsStore = create((set, get) => ({
+    isLoading: true,
     clients: {},
     newClientId: 0,
 
@@ -15,7 +16,7 @@ export const useClientsStore = create((set, get) => ({
         const clients = await getAll("/clients", "clients", clientFields);
 
         set((state) => {
-            return { clients: clients };
+            return { clients: clients, isLoading: false };
         });
     },
     createClient: async () => {

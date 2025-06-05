@@ -93,6 +93,7 @@ export default function HorizontalTable({
   header,
   name = "",
   loadingText = null,
+  isLoading = false,
 }) {
   const [extended, setExtended] = useState({});
   const filterStore = useFilterStore();
@@ -389,7 +390,7 @@ export default function HorizontalTable({
     rowsArr.push(<tr key={rowsArr.length}>{cellsArr}</tr>);
   }
 
-  if (!data || data.length === 0 || data[0]?.id === 'add') {
+  if (isLoading) {
     return (
       <div
         className={cx(styles.horizontalTable, styles.loadingContainer)}

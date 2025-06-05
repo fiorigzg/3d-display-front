@@ -16,6 +16,7 @@ import { getAll, checkValueType } from "api/commonApi";
 import { useSaveStore } from "./saveStore";
 
 export const useProjectsStore = create((set, get) => ({
+  isLoading: true,
   projects: {},
   newProjectId: 0,
   prepacks: {},
@@ -36,7 +37,7 @@ export const useProjectsStore = create((set, get) => ({
     }
 
     set((state) => ({
-      projects: realProjects,
+      projects: realProjects, isLoading: false
     }));
   },
   initProjects: async (clientId) => {
@@ -47,7 +48,7 @@ export const useProjectsStore = create((set, get) => ({
     }
 
     set((state) => {
-      return { projects: { ...state.projects, [clientId]: projects } };
+      return { projects: { ...state.projects, [clientId]: projects }, isLoading: false };
     });
   },
   createProject: async (clientId) => {
@@ -146,6 +147,7 @@ export const useProjectsStore = create((set, get) => ({
 
     set((state) => ({
       prepacks: realPrepacks,
+      isLoading: false
     }));
   },
   initPrepacks: async (projectId) => {
@@ -156,7 +158,7 @@ export const useProjectsStore = create((set, get) => ({
     );
 
     set((state) => {
-      return { prepacks: { ...state.prepacks, [projectId]: prepacks } };
+      return { prepacks: { ...state.prepacks, [projectId]: prepacks }, isLoading: false };
     });
   },
   createPrepack: async (projectId) => {
@@ -235,7 +237,7 @@ export const useProjectsStore = create((set, get) => ({
     );
 
     set((state) => {
-      return { prepackTypes: prepackTypes };
+      return { prepackTypes: prepackTypes, isLoading: false };
     });
   },
   createPrepackType: async () => {

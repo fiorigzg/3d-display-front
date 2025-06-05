@@ -327,6 +327,7 @@ export default function Home() {
             data={shelvesData}
             excludedColumns={[]}
             loadingText={"Добавить полки можно в параметрах препака"}
+            isLoading={shelvesData.length == 0}
           />
         </div>
       </div>

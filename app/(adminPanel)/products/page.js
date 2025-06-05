@@ -321,7 +321,7 @@ export default function Home() {
   return (
     <main>
       <div className={styles.table}>
-        <HorizontalTable data={data} header={header} name="products" />
+        <HorizontalTable data={data} header={header} name="products" isLoading={clientsStore.isLoading || productsStore.isLoading}/>
       </div>
     </main>
   );

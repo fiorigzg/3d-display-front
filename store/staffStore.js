@@ -8,6 +8,7 @@ import { useSaveStore } from "./saveStore";
 import { create } from "zustand";
 
 export const useStaffStore = create((set, get) => ({
+    isLoading: true,
     members: {},
     newMemberId: 0,
 
@@ -15,7 +16,7 @@ export const useStaffStore = create((set, get) => ({
         const members = await getAll("/employees", "employees", memberFields);
 
         set((state) => {
-            return { members: members };
+            return { members: members, isLoading: false };
         });
     },
 
